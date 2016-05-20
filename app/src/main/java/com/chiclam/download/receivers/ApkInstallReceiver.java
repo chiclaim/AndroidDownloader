@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.chiclam.download.SpUtils;
 
-public class InstallReceiver extends BroadcastReceiver {
+public class ApkInstallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {

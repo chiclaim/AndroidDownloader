@@ -20,7 +20,7 @@
         </activity>
 
 
-        <receiver android:name=".receivers.InstallReceiver">
+        <receiver android:name=".receivers.ApkInstallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
