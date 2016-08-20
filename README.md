@@ -284,3 +284,63 @@ public static void download(Context context, String url, String title) {
 
 > 为了严谨起见，在ApkInstallReceiver里不仅要对downloadId判断，还应当把当前程序和本地apk包名和版本号对比。
 
+
+## 3> 如果用户停止了下载服务[也就是`下载管理程序`]
+
+可以通过如下代码进入 启用/停止 `下载管理程序` 界面:
+
+```
+    String packageName = "com.android.providers.downloads";
+    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    intent.setData(Uri.parse("package:" + packageName));
+    startActivity(intent);
+```
+
+我们先停止下载管理程序,然后点击demo里的`Download` 按钮报出如下错误:
+
+```
+Caused by: java.lang.IllegalArgumentException: Unknown URL content://downloads/my_downloads
+          at android.content.ContentResolver.insert(ContentResolver.java:1227)
+          at android.app.DownloadManager.enqueue(DownloadManager.java:946)
+          at com.chiclam.download.FileDownloadManager.startDownload(FileDownloadManager.java:61)
+          at com.chiclam.download.ApkUpdateUtils.start(ApkUpdateUtils.java:47)
+          at com.chiclam.download.ApkUpdateUtils.download(ApkUpdateUtils.java:42)
+          at com.chiclam.download.MainActivity.download(MainActivity.java:34)
+          at java.lang.reflect.Method.invoke(Native Method) 
+          at android.support.v7.app.AppCompatViewInflater$DeclaredOnClickListener.onClick(AppCompatViewInflater.java:288) 
+          at android.view.View.performClick(View.java:5204) 
+          at android.view.View$PerformClick.run(View.java:21153) 
+          at android.os.Handler.handleCallback(Handler.java:739) 
+          at android.os.Handler.dispatchMessage(Handler.java:95) 
+          at android.os.Looper.loop(Looper.java:148) 
+          at android.app.ActivityThread.main(ActivityThread.java:5417) 
+          at java.lang.reflect.Method.invoke(Native Method) 
+          at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726) 
+          at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616) 
+```
+
+也就是说如果停止了`下载管理程序` 调用dm.enqueue(req);就会上面的错误,从而程序闪退.
+
+所以在使用该组件的时候,需要判断该组件是否可用:
+
+```
+    private boolean canDownloadState() {
+        try {
+            int state = this.getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");
+
+            if (state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                    || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
+                    || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED) {
+                return false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+```
+
+具体详情, 查看代码.

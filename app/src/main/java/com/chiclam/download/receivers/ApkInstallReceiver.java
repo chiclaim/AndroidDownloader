@@ -24,8 +24,8 @@ public class ApkInstallReceiver extends BroadcastReceiver {
 
     private static void installApk(Context context, long downloadApkId) {
 
-        DownloadManager dManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         Intent install = new Intent(Intent.ACTION_VIEW);
+        DownloadManager dManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri downloadFileUri = dManager.getUriForDownloadedFile(downloadApkId);
         if (downloadFileUri != null) {
             Log.d("DownloadManager", downloadFileUri.toString());

@@ -56,7 +56,7 @@ public class FileDownloadManager {
         // 设置一些基本显示信息
         req.setTitle(title);
         req.setDescription(description);
-        req.setMimeType("application/vnd.android.package-archive");
+        //req.setMimeType("application/vnd.android.package-archive");
 
         return dm.enqueue(req);
 
