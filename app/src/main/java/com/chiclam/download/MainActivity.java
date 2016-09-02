@@ -21,9 +21,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editText = (EditText) findViewById(R.id.et_download);
-
-        //如果没有停用,先去停用,然后点击下载按钮. 测试用
-        showDownloadSetting();
+        editText.setText("http://releases.b0.upaiyun.com/hoolay.apk");
+        //如果没有停用,先去停用,然后点击下载按钮. 测试用户关闭下载服务
+        //showDownloadSetting();
     }
 
     private void showDownloadSetting() {
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         }
         String url;
         if (TextUtils.isEmpty(editText.getText().toString())) {
-            url = "http://www.hoolay.cn";
+            url = "http://releases.b0.upaiyun.com/hoolay.apk";
         } else {
             url = editText.getText().toString();
         }
