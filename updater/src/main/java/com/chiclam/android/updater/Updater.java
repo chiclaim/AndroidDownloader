@@ -5,7 +5,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.widget.Toast;
 
-import static com.chiclam.android.updater.UpdaterUtils.startInstall;
 
 /**
  * Description：
@@ -15,12 +14,7 @@ import static com.chiclam.android.updater.UpdaterUtils.startInstall;
 
 public class Updater {
 
-    private static final String TAG = "Updater";
-
-
     private static Updater mInstance;
-
-    private boolean mShowLog;
 
     public synchronized static Updater get() {
         if (mInstance == null) {
@@ -30,7 +24,7 @@ public class Updater {
     }
 
     public Updater log(boolean log) {
-        mShowLog = log;
+        Logger.get().setShowLog(log);
         return this;
     }
 
@@ -44,9 +38,7 @@ public class Updater {
         }
 
         long downloadId = UpdaterUtils.getLocalDownloadId(context);
-        if (mShowLog) {
-            Logger.get().d("local download id is " + downloadId);
-        }
+        Logger.get().d("local download id is " + downloadId);
         if (downloadId != -1L) {
             FileDownloadManager fdm = FileDownloadManager.get(context);
             //获取下载状态
@@ -57,7 +49,7 @@ public class Updater {
                     Uri uri = fdm.getDownloadUri(downloadId);
                     if (uri != null) {
                         if (UpdaterUtils.compare(context, uri.getPath())) {
-                            startInstall(context, uri);
+                            UpdaterUtils.startInstall(context, uri);
                             return;
                         } else {
                             fdm.getDm().remove(downloadId);

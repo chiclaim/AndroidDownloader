@@ -23,6 +23,14 @@ public class Logger {
         return instance;
     }
 
+    public void setShowLog(boolean log) {
+        isShowLog = log;
+    }
+
+    public boolean getShowLog() {
+        return isShowLog;
+    }
+
     public void i(String log) {
         if (isShowLog) {
             Log.i(TAG, log);

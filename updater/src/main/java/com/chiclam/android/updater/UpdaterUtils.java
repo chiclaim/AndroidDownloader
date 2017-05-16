@@ -33,11 +33,11 @@ public class UpdaterUtils {
         PackageManager pm = context.getPackageManager();
         PackageInfo info = pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
         if (info != null) {
-            //String packageName = info.packageName;
-            //String version = info.versionName;
-            //Log.d(TAG, "packageName:" + packageName + ";version:" + version);
-            //String appName = pm.getApplicationLabel(appInfo).toString();
-            //Drawable icon = pm.getApplicationIcon(appInfo);//得到图标信息
+            if (Logger.get().getShowLog()) {
+                Logger.get().e("apk file packageName=" + info.packageName + ",versionName=" + info.versionName);
+                //String appName = pm.getApplicationLabel(appInfo).toString();
+                //Drawable icon = pm.getApplicationIcon(appInfo);//得到图标信息
+            }
             return info;
         }
         return null;
