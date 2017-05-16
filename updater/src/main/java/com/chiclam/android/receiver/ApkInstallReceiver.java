@@ -1,4 +1,4 @@
-package com.chiclam.android.receivers;
+package com.chiclam.android.receiver;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import com.chiclam.android.updater.SpUtils;
+import com.chiclam.android.updater.UpdaterUtils;
 
 public class ApkInstallReceiver extends BroadcastReceiver {
 
@@ -15,8 +15,8 @@ public class ApkInstallReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
             long downloadApkId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            long id = SpUtils.getInstance(context).getLong("downloadId", -1L);
-            if (downloadApkId == id) {
+            long localDownloadId = UpdaterUtils.getLocalDownloadId(context);
+            if (downloadApkId == localDownloadId) {
                 installApk(context, downloadApkId);
             }
         }

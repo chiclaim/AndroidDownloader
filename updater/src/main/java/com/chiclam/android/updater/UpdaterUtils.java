@@ -1,54 +1,19 @@
 package com.chiclam.android.updater;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.util.Log;
+
+import java.util.List;
 
 /**
  * Created by chiclaim on 2016/05/18
  */
-public class ApkUpdateUtils {
-    public static final String TAG = ApkUpdateUtils.class.getSimpleName();
+public class UpdaterUtils {
 
     private static final String KEY_DOWNLOAD_ID = "downloadId";
-
-    public static void download(Context context, String url, String title) {
-        long downloadId = SpUtils.getInstance(context).getLong(KEY_DOWNLOAD_ID, -1L);
-        if (downloadId != -1L) {
-            FileDownloadManager fdm = FileDownloadManager.getInstance(context);
-            int status = fdm.getDownloadStatus(downloadId);
-            if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                //启动更新界面
-                Uri uri = fdm.getDownloadUri(downloadId);
-                if (uri != null) {
-                    if (compare(getApkInfo(context, uri.getPath()), context)) {
-                        startInstall(context, uri);
-                        return;
-                    } else {
-                        fdm.getDm().remove(downloadId);
-                    }
-                }
-                start(context, url, title);
-            } else if (status == DownloadManager.STATUS_FAILED) {
-                start(context, url, title);
-            } else {
-                Log.d(TAG, "apk is already downloading");
-            }
-        } else {
-            start(context, url, title);
-        }
-    }
-
-    private static void start(Context context, String url, String title) {
-        long id = FileDownloadManager.getInstance(context).startDownload(url,
-                title, "下载完成后点击打开");
-        SpUtils.getInstance(context).putLong(KEY_DOWNLOAD_ID, id);
-        Log.d(TAG, "apk start download " + id);
-    }
 
     public static void startInstall(Context context, Uri uri) {
         Intent install = new Intent(Intent.ACTION_VIEW);
@@ -82,11 +47,14 @@ public class ApkUpdateUtils {
     /**
      * 下载的apk和当前程序版本比较
      *
-     * @param apkInfo apk file's packageInfo
-     * @param context Context
+     * @param context Context 当前运行程序的Context
+     * @param path    apk file's location
      * @return 如果当前应用版本小于apk的版本则返回true
      */
-    private static boolean compare(PackageInfo apkInfo, Context context) {
+    public static boolean compare(Context context, String path) {
+
+        PackageInfo apkInfo = getApkInfo(context, path);
+
         if (apkInfo == null) {
             return false;
         }
@@ -102,6 +70,57 @@ public class ApkUpdateUtils {
             }
         }
         return false;
+    }
+
+
+    /**
+     * 要启动的intent是否可用
+     *
+     * @return boolean
+     */
+    public static boolean intentAvailable(Context context, Intent intent) {
+        PackageManager packageManager = context.getPackageManager();
+        List list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+
+
+    /**
+     * 系统的下载组件是否可用
+     *
+     * @return boolean
+     */
+    public static boolean checkDownloadState(Context context) {
+        try {
+            int state = context.getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");
+            if (state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                    || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
+                    || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED) {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
+    public static void showDownloadSetting(Context context) {
+        String packageName = "com.android.providers.downloads";
+        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.parse("package:" + packageName));
+        if (UpdaterUtils.intentAvailable(context, intent)) {
+            context.startActivity(intent);
+        }
+    }
+
+    public static long getLocalDownloadId(Context context) {
+        return SpUtils.getInstance(context).getLong(KEY_DOWNLOAD_ID, -1L);
+    }
+
+    public static void saveDownloadId(Context context, long id) {
+        SpUtils.getInstance(context).putLong(KEY_DOWNLOAD_ID, id);
     }
 
 

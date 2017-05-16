@@ -1,0 +1,4 @@
+<resources>
+    <string name="system_download_component_disable">下载服务不用,请您启用</string>
+    <string name="system_download_description">版本更新</string>
+</resources>

@@ -9,7 +9,7 @@ import android.os.Environment;
 /**
  * Created by chiclaim on 2016/05/18
  */
-public class FileDownloadManager {
+class FileDownloadManager {
 
     private DownloadManager dm;
     private Context context;
@@ -20,7 +20,7 @@ public class FileDownloadManager {
         this.context = context.getApplicationContext();
     }
 
-    public static FileDownloadManager getInstance(Context context) {
+    static FileDownloadManager get(Context context) {
         if (instance == null) {
             instance = new FileDownloadManager(context);
         }
@@ -34,7 +34,7 @@ public class FileDownloadManager {
      * @param description
      * @return download id
      */
-    public long startDownload(String uri, String title, String description) {
+    long startDownload(String uri, String title, String description) {
         DownloadManager.Request req = new DownloadManager.Request(Uri.parse(uri));
 
         req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
@@ -58,8 +58,10 @@ public class FileDownloadManager {
         req.setDescription(description);
         //req.setMimeType("application/vnd.android.package-archive");
 
-        return dm.enqueue(req);
-
+        long id = dm.enqueue(req);
+        //把DownloadId保存到本地
+        UpdaterUtils.saveDownloadId(context, id);
+        return id;
         //long downloadId = dm.enqueue(req);
         //Log.d("DownloadManager", downloadId + "");
         //dm.openDownloadedFile()
@@ -74,7 +76,7 @@ public class FileDownloadManager {
      * @return file path
      * @see FileDownloadManager#getDownloadUri(long)
      */
-    public String getDownloadPath(long downloadId) {
+    String getDownloadPath(long downloadId) {
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
         Cursor c = dm.query(query);
         if (c != null) {
@@ -97,11 +99,11 @@ public class FileDownloadManager {
      *                   This ID is used to make future calls related to this download.
      * @see FileDownloadManager#getDownloadPath(long)
      */
-    public Uri getDownloadUri(long downloadId) {
+    Uri getDownloadUri(long downloadId) {
         return dm.getUriForDownloadedFile(downloadId);
     }
 
-    public DownloadManager getDm() {
+    DownloadManager getDm() {
         return dm;
     }
 
@@ -118,7 +120,7 @@ public class FileDownloadManager {
      * @see DownloadManager#STATUS_SUCCESSFUL
      * @see DownloadManager#STATUS_FAILED
      */
-    public int getDownloadStatus(long downloadId) {
+    int getDownloadStatus(long downloadId) {
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
         Cursor c = dm.query(query);
         if (c != null) {
