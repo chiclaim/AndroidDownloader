@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.et_download);
         editText.setText(APK_URL);
         //如果没有停用,先去停用,然后点击下载按钮. 测试用户关闭下载服务
-        //showDownloadSetting();
+        //UpdaterUtils.showDownloadSetting(this);
     }
 
     public void download(View view) {
