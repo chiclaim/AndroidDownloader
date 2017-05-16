@@ -5,8 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 
+import com.chiclam.android.updater.Logger;
 import com.chiclam.android.updater.UpdaterUtils;
 
 public class ApkInstallReceiver extends BroadcastReceiver {
@@ -28,12 +28,12 @@ public class ApkInstallReceiver extends BroadcastReceiver {
         DownloadManager dManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri downloadFileUri = dManager.getUriForDownloadedFile(downloadApkId);
         if (downloadFileUri != null) {
-            Log.d("DownloadManager", downloadFileUri.toString());
+            Logger.get().d(downloadFileUri.toString());
             install.setDataAndType(downloadFileUri, "application/vnd.android.package-archive");
             install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(install);
         } else {
-            Log.e("DownloadManager", "下载失败");
+            Logger.get().d("download failed");
         }
     }
 }

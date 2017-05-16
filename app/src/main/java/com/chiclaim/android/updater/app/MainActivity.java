@@ -10,27 +10,26 @@ import com.chiclam.android.updater.Updater;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText editText;
+    private static final String APK_URL = "http://releases.b0.upaiyun.com/hoolay.apk";
+
+    private EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editText = (EditText) findViewById(R.id.et_download);
-        editText.setText("http://releases.b0.upaiyun.com/hoolay.apk");
+        editText.setText(APK_URL);
         //如果没有停用,先去停用,然后点击下载按钮. 测试用户关闭下载服务
         //showDownloadSetting();
     }
 
-
     public void download(View view) {
-        String url;
+        String url = editText.getText().toString();
         if (TextUtils.isEmpty(editText.getText().toString())) {
-            url = "http://releases.b0.upaiyun.com/hoolay.apk";
-        } else {
-            url = editText.getText().toString();
+            url = APK_URL;
         }
-        Updater.get().download(this, url, getResources().getString(R.string.app_name));
+        Updater.get().log(true).download(this, url, getResources().getString(R.string.app_name));
     }
 
 }
