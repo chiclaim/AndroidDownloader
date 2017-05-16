@@ -1,4 +1,4 @@
-package com.chiclam.download;
+package com.chiclam.android;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

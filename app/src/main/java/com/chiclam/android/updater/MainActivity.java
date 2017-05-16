@@ -1,4 +1,4 @@
-package com.chiclam.download;
+package com.chiclam.android.updater;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.chiclam.android.R;
 
 import java.util.List;
 

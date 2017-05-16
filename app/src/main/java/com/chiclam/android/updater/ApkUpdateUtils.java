@@ -1,4 +1,4 @@
-package com.chiclam.download;
+package com.chiclam.android.updater;
 
 import android.app.DownloadManager;
 import android.content.Context;

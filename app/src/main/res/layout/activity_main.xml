@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.chiclam.download.MainActivity">
+    tools:context="com.chiclam.android.updater.MainActivity">
 
     <EditText
         android:id="@+id/et_download"

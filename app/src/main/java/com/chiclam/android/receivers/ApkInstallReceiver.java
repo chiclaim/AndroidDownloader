@@ -1,4 +1,4 @@
-package com.chiclam.download.receivers;
+package com.chiclam.android.receivers;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import com.chiclam.download.SpUtils;
+import com.chiclam.android.updater.SpUtils;
 
 public class ApkInstallReceiver extends BroadcastReceiver {
 
