@@ -63,8 +63,17 @@ public class Updater {
                     Logger.get().d("download failed " + downloadId);
                     startDownload(context, url, title);
                     break;
+                case DownloadManager.STATUS_RUNNING:
+                    Logger.get().d("status = STATUS_RUNNING");
+                    break;
+                case DownloadManager.STATUS_PENDING:
+                    Logger.get().d("status = STATUS_PENDING");
+                    break;
+                case DownloadManager.STATUS_PAUSED:
+                    Logger.get().d("status = STATUS_PAUSED");
+                    break;
                 default:
-                    Logger.get().d("apk is already downloading" + downloadId);
+                    Logger.get().d("status = " + status);
                     break;
             }
         } else {
