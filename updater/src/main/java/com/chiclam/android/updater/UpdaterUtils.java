@@ -24,27 +24,6 @@ public class UpdaterUtils {
 
 
     /**
-     * 获取apk程序信息[packageName,versionName...]
-     *
-     * @param context Context
-     * @param path    apk path
-     */
-    private static PackageInfo getApkInfo(Context context, String path) {
-        PackageManager pm = context.getPackageManager();
-        PackageInfo info = pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
-        if (info != null) {
-            if (Logger.get().getShowLog()) {
-                Logger.get().e("apk file packageName=" + info.packageName + ",versionName=" + info.versionName);
-                //String appName = pm.getApplicationLabel(appInfo).toString();
-                //Drawable icon = pm.getApplicationIcon(appInfo);//得到图标信息
-            }
-            return info;
-        }
-        return null;
-    }
-
-
-    /**
      * 下载的apk和当前程序版本比较
      *
      * @param context Context 当前运行程序的Context
@@ -54,22 +33,47 @@ public class UpdaterUtils {
     public static boolean compare(Context context, String path) {
 
         PackageInfo apkInfo = getApkInfo(context, path);
-
         if (apkInfo == null) {
             return false;
         }
+
         String localPackage = context.getPackageName();
-        if (apkInfo.packageName.equals(localPackage)) {
-            try {
-                PackageInfo packageInfo = context.getPackageManager().getPackageInfo(localPackage, 0);
+
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(localPackage, 0);
+            if (Logger.get().getShowLog()) {
+                Logger.get().e("apk file packageName=" + apkInfo.packageName +
+                        ",versionName=" + apkInfo.versionName);
+                Logger.get().e("current app packageName=" + packageInfo.packageName +
+                        ",versionName=" + packageInfo.versionName);
+                //String appName = pm.getApplicationLabel(appInfo).toString();
+                //Drawable icon = pm.getApplicationIcon(appInfo);//得到图标信息
+            }
+            if (apkInfo.packageName.equals(localPackage)) {
                 if (apkInfo.versionCode > packageInfo.versionCode) {
                     return true;
                 }
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
             }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
         }
         return false;
+    }
+
+
+    /**
+     * 获取apk程序信息[packageName,versionName...]
+     *
+     * @param context Context
+     * @param path    apk path
+     */
+    private static PackageInfo getApkInfo(Context context, String path) {
+        PackageManager pm = context.getPackageManager();
+        PackageInfo info = pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
+        if (info != null) {
+            return info;
+        }
+        return null;
     }
 
 

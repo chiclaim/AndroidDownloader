@@ -46,16 +46,21 @@ public class Updater {
             switch (status) {
                 //下载成功
                 case DownloadManager.STATUS_SUCCESSFUL:
+                    Logger.get().d("status = STATUS_SUCCESSFUL");
                     Uri uri = fdm.getDownloadUri(downloadId);
                     if (uri != null) {
+                        //本地的版本大于当前程序的版本直接安装
                         if (UpdaterUtils.compare(context, uri.getPath())) {
+                            Logger.get().d("start install UI");
                             UpdaterUtils.startInstall(context, uri);
                             return;
                         } else {
+                            //从FileDownloadManager中移除这个任务
                             fdm.getDm().remove(downloadId);
                         }
                     }
-                    Logger.get().d("download successful start install activity " + downloadId);
+
+                    //重新下载
                     startDownload(context, url, title);
                     break;
                 //下载失败
