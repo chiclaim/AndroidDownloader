@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.chiclam.android.updater.Updater;
+import com.chiclam.android.updater.UpdaterConfig;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +30,13 @@ public class MainActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(editText.getText().toString())) {
             url = APK_URL;
         }
-        Updater.get().log(true).download(this, url, getResources().getString(R.string.app_name));
+        UpdaterConfig config = new UpdaterConfig.Builder(this)
+                .setTitle(getResources().getString(R.string.app_name))
+                .setDescription(getString(R.string.system_download_description))
+                .setFileUrl(url)
+                .setCanMediaScanner(true)
+                .build();
+        Updater.get().showLog(true).download(config);
     }
 
 }

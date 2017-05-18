@@ -17,6 +17,7 @@ public class ApkInstallReceiver extends BroadcastReceiver {
             long downloadApkId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             long localDownloadId = UpdaterUtils.getLocalDownloadId(context);
             if (downloadApkId == localDownloadId) {
+                Logger.get().d("download complete. downloadId is " + downloadApkId);
                 installApk(context, downloadApkId);
             }
         }
@@ -28,7 +29,7 @@ public class ApkInstallReceiver extends BroadcastReceiver {
         DownloadManager dManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri downloadFileUri = dManager.getUriForDownloadedFile(downloadApkId);
         if (downloadFileUri != null) {
-            Logger.get().d(downloadFileUri.toString());
+            Logger.get().d("file location " + downloadFileUri.toString());
             install.setDataAndType(downloadFileUri, "application/vnd.android.package-archive");
             install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(install);

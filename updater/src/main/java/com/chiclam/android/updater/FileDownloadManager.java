@@ -7,54 +7,56 @@ import android.net.Uri;
 import android.os.Environment;
 
 /**
+ * Singleton
  * Created by chiclaim on 2016/05/18
  */
 class FileDownloadManager {
 
-    private DownloadManager dm;
-    private Context context;
     private static FileDownloadManager instance;
 
-    private FileDownloadManager(Context context) {
-        dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        this.context = context.getApplicationContext();
+    private DownloadManager mDownloadManager;
+
+
+    private FileDownloadManager() {
     }
 
-    static FileDownloadManager get(Context context) {
+    static FileDownloadManager get() {
         if (instance == null) {
-            instance = new FileDownloadManager(context);
+            instance = new FileDownloadManager();
         }
         return instance;
     }
 
+    public DownloadManager getDM(Context context) {
+        if (mDownloadManager == null) {
+            mDownloadManager = (DownloadManager) context
+                    .getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        }
+        return mDownloadManager;
+    }
 
-    /**
-     * @param uri
-     * @param title
-     * @param description
-     * @return download id
-     */
-    long startDownload(String uri, String title, String description) {
-        DownloadManager.Request req = new DownloadManager.Request(Uri.parse(uri));
 
-        //
-        req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
+    long startDownload(UpdaterConfig updaterConfig) {
+        DownloadManager.Request req = new DownloadManager.Request(Uri.parse(updaterConfig.getFileUrl()));
+        req.setAllowedNetworkTypes(updaterConfig.getAllowedNetworkTypes());
         //req.setAllowedOverMetered()
         //移动网络是否允许下载
-        //req.setAllowedOverRoaming(false);
+        req.setAllowedOverRoaming(updaterConfig.isAllowedOverRoaming());
 
-        //能够被MediaScanner扫描
-        req.allowScanningByMediaScanner();
+        if (updaterConfig.isCanMediaScanner()) {
+            //能够被MediaScanner扫描
+            req.allowScanningByMediaScanner();
+        }
 
         //是否显示状态栏下载UI
         req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         //点击正在下载的Notification进入下载详情界面，如果设为true则可以看到下载任务的进度，如果设为false，则看不到我们下载的任务
-        req.setVisibleInDownloadsUi(true);
+        req.setVisibleInDownloadsUi(updaterConfig.isShowDownloadUI());
 
         //设置文件的保存的位置[三种方式]
         //第一种
         //file:///storage/emulated/0/Android/data/your-package/files/Download/update.apk
-        req.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, "update.apk");
+        req.setDestinationInExternalFilesDir(updaterConfig.getContext(), Environment.DIRECTORY_DOWNLOADS, "update.apk");
         //第二种
         //file:///storage/emulated/0/Download/update.apk
         //req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "update.apk");
@@ -63,19 +65,19 @@ class FileDownloadManager {
 
 
         // 设置一些基本显示信息
-        req.setTitle(title);
-        req.setDescription(description);
+        req.setTitle(updaterConfig.getTitle());
+        req.setDescription(updaterConfig.getDescription());
 
 
         //req.setMimeType("application/vnd.android.package-archive");
 
-        long id = dm.enqueue(req);
+        long id = getDM(updaterConfig.getContext()).enqueue(req);
         //把DownloadId保存到本地
-        UpdaterUtils.saveDownloadId(context, id);
+        UpdaterUtils.saveDownloadId(updaterConfig.getContext(), id);
         return id;
-        //long downloadId = dm.enqueue(req);
+        //long downloadId = mDownloadManager.enqueue(req);
         //Log.d("DownloadManager", downloadId + "");
-        //dm.openDownloadedFile()
+        //mDownloadManager.openDownloadedFile()
     }
 
 
@@ -85,11 +87,11 @@ class FileDownloadManager {
      * @param downloadId an ID for the download, unique across the system.
      *                   This ID is used to make future calls related to this download.
      * @return file path
-     * @see FileDownloadManager#getDownloadUri(long)
+     * @see FileDownloadManager#getDownloadUri(Context, long)
      */
-    String getDownloadPath(long downloadId) {
+    private String getDownloadPath(Context context, long downloadId) {
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
-        Cursor c = dm.query(query);
+        Cursor c = getDM(context).query(query);
         if (c != null) {
             try {
                 if (c.moveToFirst()) {
@@ -108,16 +110,11 @@ class FileDownloadManager {
      *
      * @param downloadId an ID for the download, unique across the system.
      *                   This ID is used to make future calls related to this download.
-     * @see FileDownloadManager#getDownloadPath(long)
+     * @see FileDownloadManager#getDownloadPath(Context, long)
      */
-    Uri getDownloadUri(long downloadId) {
-        return dm.getUriForDownloadedFile(downloadId);
+    public Uri getDownloadUri(Context context, long downloadId) {
+        return getDM(context).getUriForDownloadedFile(downloadId);
     }
-
-    DownloadManager getDm() {
-        return dm;
-    }
-
 
     /**
      * 获取下载状态
@@ -131,14 +128,13 @@ class FileDownloadManager {
      * @see DownloadManager#STATUS_SUCCESSFUL
      * @see DownloadManager#STATUS_FAILED
      */
-    int getDownloadStatus(long downloadId) {
+    public int getDownloadStatus(Context context, long downloadId) {
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
-        Cursor c = dm.query(query);
+        Cursor c = getDM(context).query(query);
         if (c != null) {
             try {
                 if (c.moveToFirst()) {
                     return c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
-
                 }
             } finally {
                 c.close();

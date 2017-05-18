@@ -1,7 +1,6 @@
 package com.chiclam.android.updater;
 
 import android.app.DownloadManager;
-import android.content.Context;
 import android.net.Uri;
 import android.widget.Toast;
 
@@ -14,83 +13,83 @@ import android.widget.Toast;
 
 public class Updater {
 
-    private static Updater mInstance;
+    private static Updater instance;
 
-    public synchronized static Updater get() {
-        if (mInstance == null) {
-            mInstance = new Updater();
-        }
-        return mInstance;
+    private Updater() {
+        //
     }
 
-    public Updater log(boolean log) {
+    public synchronized static Updater get() {
+        if (instance == null) {
+            instance = new Updater();
+        }
+        return instance;
+    }
+
+    public Updater showLog(boolean log) {
         Logger.get().setShowLog(log);
         return this;
     }
 
+    public void download(UpdaterConfig updaterConfig) {
 
-    public void download(Context context, String url, String title) {
-
-        if (!UpdaterUtils.checkDownloadState(context)) {
-            Toast.makeText(context, R.string.system_download_component_disable, Toast.LENGTH_SHORT).show();
-            UpdaterUtils.showDownloadSetting(context);
+        if (!UpdaterUtils.checkDownloadState(updaterConfig.getContext())) {
+            Toast.makeText(updaterConfig.getContext(), R.string.system_download_component_disable, Toast.LENGTH_SHORT).show();
+            UpdaterUtils.showDownloadSetting(updaterConfig.getContext());
             return;
         }
 
-        long downloadId = UpdaterUtils.getLocalDownloadId(context);
+        long downloadId = UpdaterUtils.getLocalDownloadId(updaterConfig.getContext());
         Logger.get().d("local download id is " + downloadId);
         if (downloadId != -1L) {
-            FileDownloadManager fdm = FileDownloadManager.get(context);
+            FileDownloadManager fdm = FileDownloadManager.get();
             //获取下载状态
-            int status = fdm.getDownloadStatus(downloadId);
+            int status = fdm.getDownloadStatus(updaterConfig.getContext(), downloadId);
             switch (status) {
                 //下载成功
                 case DownloadManager.STATUS_SUCCESSFUL:
-                    Logger.get().d("status = STATUS_SUCCESSFUL");
-                    Uri uri = fdm.getDownloadUri(downloadId);
+                    Logger.get().d("downloadId=" + downloadId + " ,status = STATUS_SUCCESSFUL");
+                    Uri uri = fdm.getDownloadUri(updaterConfig.getContext(), downloadId);
                     if (uri != null) {
                         //本地的版本大于当前程序的版本直接安装
-                        if (UpdaterUtils.compare(context, uri.getPath())) {
+                        if (UpdaterUtils.compare(updaterConfig.getContext(), uri.getPath())) {
                             Logger.get().d("start install UI");
-                            UpdaterUtils.startInstall(context, uri);
+                            UpdaterUtils.startInstall(updaterConfig.getContext(), uri);
                             return;
                         } else {
                             //从FileDownloadManager中移除这个任务
-                            fdm.getDm().remove(downloadId);
+                            fdm.getDM(updaterConfig.getContext()).remove(downloadId);
                         }
                     }
-
                     //重新下载
-                    startDownload(context, url, title);
+                    startDownload(updaterConfig);
                     break;
                 //下载失败
                 case DownloadManager.STATUS_FAILED:
                     Logger.get().d("download failed " + downloadId);
-                    startDownload(context, url, title);
+                    startDownload(updaterConfig);
                     break;
                 case DownloadManager.STATUS_RUNNING:
-                    Logger.get().d("status = STATUS_RUNNING");
+                    Logger.get().d("downloadId=" + downloadId + " ,status = STATUS_RUNNING");
                     break;
                 case DownloadManager.STATUS_PENDING:
-                    Logger.get().d("status = STATUS_PENDING");
+                    Logger.get().d("downloadId=" + downloadId + " ,status = STATUS_PENDING");
                     break;
                 case DownloadManager.STATUS_PAUSED:
-                    Logger.get().d("status = STATUS_PAUSED");
+                    Logger.get().d("downloadId=" + downloadId + " ,status = STATUS_PAUSED");
                     break;
                 default:
-                    Logger.get().d("status = " + status);
+                    Logger.get().d("downloadId=" + downloadId + " ,status = " + status);
                     break;
             }
         } else {
-            startDownload(context, url, title);
+            startDownload(updaterConfig);
         }
     }
 
-    private void startDownload(Context context, String url, String title) {
-        long id = FileDownloadManager.get(context).startDownload(url, title,
-                context.getResources().getString(R.string.system_download_description));
+    private void startDownload(UpdaterConfig updaterConfig) {
+        long id = FileDownloadManager.get().startDownload(updaterConfig);
         Logger.get().d("apk download start, downloadId is " + id);
     }
-
 
 }
