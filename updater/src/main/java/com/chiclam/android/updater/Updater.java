@@ -13,6 +13,11 @@ import android.widget.Toast;
 
 public class Updater {
 
+    /**
+     * FileDownloadManager.getDownloadStatus如果没找到会返回-1
+     */
+    private static final int STATUS_UN_FIND = -1;
+
     private static Updater instance;
 
     private Updater() {
@@ -77,6 +82,10 @@ public class Updater {
                     break;
                 case DownloadManager.STATUS_PAUSED:
                     Logger.get().d("downloadId=" + downloadId + " ,status = STATUS_PAUSED");
+                    break;
+                case STATUS_UN_FIND:
+                    Logger.get().d("downloadId=" + downloadId + " ,status = STATUS_UN_FIND");
+                    startDownload(updaterConfig);
                     break;
                 default:
                     Logger.get().d("downloadId=" + downloadId + " ,status = " + status);
