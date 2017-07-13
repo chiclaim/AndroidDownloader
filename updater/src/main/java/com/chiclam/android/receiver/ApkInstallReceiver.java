@@ -20,6 +20,11 @@ public class ApkInstallReceiver extends BroadcastReceiver {
                 Logger.get().d("download complete. downloadId is " + downloadApkId);
                 installApk(context, downloadApkId);
             }
+        } else if (intent.getAction().equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
+            //处理 如果还未完成下载，用户点击Notification
+            Intent viewDownloadIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
+            viewDownloadIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(viewDownloadIntent);
         }
     }
 

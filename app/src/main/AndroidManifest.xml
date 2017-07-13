@@ -19,6 +19,7 @@
 
         <receiver android:name="com.chiclam.android.receiver.ApkInstallReceiver">
             <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
