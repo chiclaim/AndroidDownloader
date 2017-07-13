@@ -12,12 +12,14 @@
 
 > 下载功能，Google官方推荐使用 `DownloadManager` 服务。
 
-## 经过测试的机型
+### 经过测试的机型
 
 | 厂商        | 机型    |  系统版本  |
 | --------   | -----:   | :----: |
 | 小米        | Redmi4     |   Android6.0.1/MIUI8.5    |
 | 华为        | 荣耀7i      |   Android6.0.1/EMUI4.0.3  |
+| 华为        | 荣耀V8      |   Android7.0/EMUI5.0  |
+
 
 ### 1.  如何使用DownloadManager
 
