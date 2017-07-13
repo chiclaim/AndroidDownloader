@@ -17,12 +17,6 @@
 | 小米        | Redmi4      |   Android6.0.1/MIUI8.5    |
 | 华为        | 荣耀7i      |   Android6.0.1/EMUI4.0.3   |
 
-
-作者：yacogo
-链接：http://www.jianshu.com/p/abaff828100d
-來源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-
 > 下载功能，Google官方推荐使用 `DownloadManager` 服务。
 
 ### 1.  如何使用DownloadManager
