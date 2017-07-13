@@ -10,14 +10,14 @@
 如果下载成功，则判断本地的apk的包名是否和当前程序是相同的，并且本地apk的版本号大于当前程序的版本，如果都满足则直接启动安装程序。
 ```
 
-> 经过测试的机型
+> 下载功能，Google官方推荐使用 `DownloadManager` 服务。
+
+## 经过测试的机型
 
 | 厂商        | 机型    |  系统版本  |
 | --------   | -----:   | :----: |
-| 小米        | Redmi4      |   Android6.0.1/MIUI8.5    |
-| 华为        | 荣耀7i      |   Android6.0.1/EMUI4.0.3   |
-
-> 下载功能，Google官方推荐使用 `DownloadManager` 服务。
+| 小米        | Redmi4     |   Android6.0.1/MIUI8.5    |
+| 华为        | 荣耀7i      |   Android6.0.1/EMUI4.0.3  |
 
 ### 1.  如何使用DownloadManager
 
