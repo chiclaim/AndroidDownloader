@@ -37,6 +37,10 @@ class FileDownloadManager {
 
 
     long startDownload(UpdaterConfig updaterConfig) {
+        // TODO: 2017/8/3 github issue 为什么只有在WIFI情况下才能下载 
+        // TODO: 2017/8/3 github issue 7.0以上需要Intent.FLAG_GRANT_READ_URI_PERMISSION 权限？
+        // TODO: 2017/8/3 实现上层设置文件的下载路径
+
         DownloadManager.Request req = new DownloadManager.Request(Uri.parse(updaterConfig.getFileUrl()));
         req.setAllowedNetworkTypes(updaterConfig.getAllowedNetworkTypes());
         //req.setAllowedOverMetered()
@@ -59,8 +63,8 @@ class FileDownloadManager {
         req.setDestinationInExternalFilesDir(updaterConfig.getContext(), Environment.DIRECTORY_DOWNLOADS, "update.apk");
         //第二种
         //file:///storage/emulated/0/Download/update.apk
-        //req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "update.apk");
-        //第三种 自定义文件路径
+        req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "update.apk");
+        ////第三种 自定义文件路径
         //req.setDestinationUri()
 
 
