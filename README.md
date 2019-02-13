@@ -20,7 +20,8 @@
 | 小米        | Redmi4     |   Android6.0.1/MIUI8.5    |
 | 华为        | 荣耀7i      |   Android6.0.1/EMUI4.0.3  |
 | 华为        | 荣耀V8      |   Android7.0/EMUI5.0  |
-
+| 华为        | 荣耀V10      |   Android9.0  |
+| 华为        | Mate20      |   Android9.0  |
 
 ### 1.  如何使用DownloadManager
 
