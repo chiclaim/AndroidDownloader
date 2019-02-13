@@ -117,9 +117,7 @@ public class UpdaterUtils {
      * @return boolean
      */
     public static boolean intentAvailable(Context context, Intent intent) {
-        PackageManager packageManager = context.getPackageManager();
-        List list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return list.size() > 0;
+        return intent.resolveActivity(context.getPackageManager()) != null;
     }
 
 
@@ -148,7 +146,7 @@ public class UpdaterUtils {
         String packageName = "com.android.providers.downloads";
         Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.parse("package:" + packageName));
-        if (UpdaterUtils.intentAvailable(context, intent)) {
+        if (intentAvailable(context, intent)) {
             context.startActivity(intent);
         }
     }
