@@ -8,6 +8,7 @@ import android.widget.EditText;
 
 import com.chiclam.android.updater.Updater;
 import com.chiclam.android.updater.UpdaterConfig;
+import com.chiclam.android.util.UpdaterUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,8 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         editText = (EditText) findViewById(R.id.et_download);
         editText.setText(APK_URL);
-        //如果没有停用,先去停用,然后点击下载按钮. 测试用户关闭下载服务
-        //UpdaterUtils.showDownloadSetting(this);
+
     }
 
     public void download(View view) {
@@ -37,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
                 .setCanMediaScanner(true)
                 .build();
         Updater.get().showLog(true).download(config);
+    }
+
+    public void setting(View view) {
+        //如果没有停用,先去停用,然后点击下载按钮. 测试用户关闭下载服务
+        UpdaterUtils.showDownloadSetting(this);
     }
 
 }
