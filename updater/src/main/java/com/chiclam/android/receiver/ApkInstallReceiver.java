@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.chiclam.android.updater.Logger;
-import com.chiclam.android.updater.UpdaterUtils;
+import com.chiclam.android.util.Logger;
+import com.chiclam.android.util.UpdaterUtils;
 
 public class ApkInstallReceiver extends BroadcastReceiver {
 

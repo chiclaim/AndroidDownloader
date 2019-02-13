@@ -1,11 +1,16 @@
-package com.chiclam.android.updater;
+package com.chiclam.android.util;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -23,40 +28,68 @@ public class UpdaterUtils {
         context.startActivity(install);
     }
 
+    private static String getRealPathFromURI(Context context, Uri contentURI) {
+        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            Cursor cursor = context.getContentResolver().query(contentURI, null,
+                    null, null, null);
+            if (cursor != null) {
+                try {
+                    cursor.moveToFirst();
+                    int index = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+                    return cursor.getString(index);
+                /*for (String name : cursor.getColumnNames()) {
+                    int index = cursor.getColumnIndex(name);
+                    String value = cursor.getString(index);
+                    Logger.get().e("key:" + name + "; value:" + value);
+                }*/
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    cursor.close();
+                }
+            }
+        } else {
+            return contentURI.getPath();
+        }
+        return null;
+    }
+
 
     /**
      * 下载的apk和当前程序版本比较
      *
      * @param context Context 当前运行程序的Context
-     * @param path    apk file's location
-     * @return 如果当前应用版本小于apk的版本则返回true
+     * @param uri     apk file's location
+     * @return 如果当前应用版本小于apk的版本则返回true；如果当前没有安装也返回true
      */
-    public static boolean compare(Context context, String path) {
+    public static boolean compare(Context context, Uri uri) {
 
-        PackageInfo apkInfo = getApkInfo(context, path);
+        String realPathUri = getRealPathFromURI(context, uri);
+
+        PackageInfo apkInfo = getApkInfo(context, realPathUri);
         if (apkInfo == null) {
             return false;
         }
 
-        String localPackage = context.getPackageName();
-
         try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(localPackage, 0);
+            PackageInfo currentPackageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             if (Logger.get().getShowLog()) {
                 Logger.get().e("apk file packageName=" + apkInfo.packageName +
                         ",versionName=" + apkInfo.versionName);
-                Logger.get().e("current app packageName=" + packageInfo.packageName +
-                        ",versionName=" + packageInfo.versionName);
+                Logger.get().e("current app packageName=" + currentPackageInfo.packageName +
+                        ",versionName=" + currentPackageInfo.versionName);
                 //String appName = pm.getApplicationLabel(appInfo).toString();
                 //Drawable icon = pm.getApplicationIcon(appInfo);//得到图标信息
             }
-            if (apkInfo.packageName.equals(localPackage)) {
-                if (apkInfo.versionCode > packageInfo.versionCode) {
+            //如果下载的apk包名和当前应用不同，则不执行更新操作
+            if (apkInfo.packageName.equals(currentPackageInfo.packageName)) {
+                if (apkInfo.versionCode > currentPackageInfo.versionCode) {
                     return true;
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
+            return true; //如果程序没有安装
         }
         return false;
     }
@@ -69,12 +102,12 @@ public class UpdaterUtils {
      * @param path    apk path
      */
     private static PackageInfo getApkInfo(Context context, String path) {
-        PackageManager pm = context.getPackageManager();
-        PackageInfo info = pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
-        if (info != null) {
-            return info;
+        File file = new File(path);
+        if(!file.exists()){
+            return null;
         }
-        return null;
+        PackageManager pm = context.getPackageManager();
+        return pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
     }
 
 

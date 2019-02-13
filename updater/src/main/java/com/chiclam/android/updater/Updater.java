@@ -1,5 +1,8 @@
 package com.chiclam.android.updater;
 
+import com.chiclam.android.util.Logger;
+import com.chiclam.android.util.UpdaterUtils;
+
 import android.app.DownloadManager;
 import android.net.Uri;
 import android.widget.Toast;
@@ -55,10 +58,11 @@ public class Updater {
                 case DownloadManager.STATUS_SUCCESSFUL:
                     Logger.get().d("downloadId=" + downloadId + " ,status = STATUS_SUCCESSFUL");
                     Uri uri = fdm.getDownloadUri(updaterConfig.getContext(), downloadId);
+
                     if (uri != null) {
                         //本地的版本大于当前程序的版本直接安装
-                        if (UpdaterUtils.compare(updaterConfig.getContext(), uri.getPath())) {
-                            Logger.get().d("start install UI");
+                        if (UpdaterUtils.compare(updaterConfig.getContext(), uri)) {
+                            Logger.get().d("start install UI with local apk");
                             UpdaterUtils.startInstall(updaterConfig.getContext(), uri);
                             return;
                         } else {

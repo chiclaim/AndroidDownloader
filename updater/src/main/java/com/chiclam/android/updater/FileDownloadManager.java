@@ -1,5 +1,7 @@
 package com.chiclam.android.updater;
 
+import com.chiclam.android.util.UpdaterUtils;
+
 import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -37,9 +39,6 @@ class FileDownloadManager {
 
 
     long startDownload(UpdaterConfig updaterConfig) {
-        // TODO: 2017/8/3 github issue 为什么只有在WIFI情况下才能下载 
-        // 【在android 7.0小米4 机器上，会报错。在android6.0上乐视1S,也会报错。但在android5.1及以下机器上就没有这个问题】
-        // TODO: 2017/8/3 实现上层设置文件的下载路径
 
         DownloadManager.Request req = new DownloadManager.Request(Uri.parse(updaterConfig.getFileUrl()));
         req.setAllowedNetworkTypes(updaterConfig.getAllowedNetworkTypes());
