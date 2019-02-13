@@ -45,6 +45,8 @@ class FileDownloadManager {
         //req.setAllowedOverMetered()
         //移动网络是否允许下载
         req.setAllowedOverRoaming(updaterConfig.isAllowedOverRoaming());
+        //下载环境
+        req.setAllowedNetworkTypes(updaterConfig.getAllowedNetworkTypes());
 
         if (updaterConfig.isCanMediaScanner()) {
             //能够被MediaScanner扫描

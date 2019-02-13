@@ -1,5 +1,6 @@
 package com.chiclaim.android.updater.app;
 
+import android.app.DownloadManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
                 .setDescription(getString(R.string.system_download_description))
                 .setFileUrl(url)
                 .setCanMediaScanner(true)
+                .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE
+                        | DownloadManager.Request.NETWORK_WIFI)
                 .build();
         Updater.get().showLog(true).download(config);
     }

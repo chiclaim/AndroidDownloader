@@ -219,8 +219,8 @@ public class UpdaterConfig {
          * By default, all network types are allowed
          *
          * @param allowedNetworkTypes
-         * @see AllowedNetworkType#NETWORK_MOBILE
-         * @see AllowedNetworkType#NETWORK_WIFI
+         * @see  android.app.DownloadManager.Request#NETWORK_MOBILE
+         * @see android.app.DownloadManager.Request#NETWORK_WIFI
          */
         public Builder setAllowedNetworkTypes(int allowedNetworkTypes) {
             updaterConfig.mAllowedNetworkTypes = allowedNetworkTypes;
@@ -233,18 +233,6 @@ public class UpdaterConfig {
         }
 
 
-    }
-
-    public interface AllowedNetworkType {
-        /**
-         * Bit flag for {@link android.app.DownloadManager.Request#NETWORK_MOBILE}
-         */
-        int NETWORK_MOBILE = 1 << 0;
-
-        /**
-         * Bit flag for {@link android.app.DownloadManager.Request#NETWORK_WIFI}
-         */
-        int NETWORK_WIFI = 1 << 1;
     }
 
 
