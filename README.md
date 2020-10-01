@@ -1,15 +1,16 @@
 
 
-### App版本更新的主要逻辑：
+### App(The main logic of the version update)：
 
-- 第一次下载成功，弹出安装界面；
+- (The first download is successful, the installation interface pops up) 第一次下载成功，弹出安装界面；
 
-- 下载成功，用户没有点击安装，而是按了返回键，在某个时候，又再次使用了我们的APP，不会重新下载，弹出安装界面
+- (The download was successful, the user did not click to install, but pressed the return key. At some point, we used our APP again, and the download will not be re-downloaded, and the installation interface will pop up)
+下载成功，用户没有点击安装，而是按了返回键，在某个时候，又再次使用了我们的APP，不会重新下载，弹出安装界面
 
-- 如果下载成功，则判断本地的apk的包名是否和当前程序是相同的，并且本地apk的版本号大于当前程序的版本，如果都满足则直接启动安装程序。
+- (If the download is successful, it is judged whether the package name of the local apk is the same as the current program, and the version number of the local apk is greater than the version of the current program, and if all are satisfied, the installation program is directly started.) 如果下载成功，则判断本地的apk的包名是否和当前程序是相同的，并且本地apk的版本号大于当前程序的版本，如果都满足则直接启动安装程序。
 
 
-> 下载功能，Google官方推荐使用 `DownloadManager` 服务。
+> (Download function, Google officially recommends using the `DownloadManager` service) 下载功能，Google官方推荐使用 `DownloadManager` 服务。
 
 ### 经过测试的机型
 
@@ -65,7 +66,7 @@
 Android自带的DownloadManager模块来下载, 我们通过通知栏知道, 该模块属于系统自带, 它已经帮我们处理了下载失败、重新下载等功能。
 
 
-### 2. 如何检测下载完成，然后启动安装界面
+### 2. (How to detect the download is complete, and then start the installation interface) 如何检测下载完成，然后启动安装界面
 
 DownloadManager下载完成后会发出一个广播 `android.intent.action.DOWNLOAD_COMPLETE` 新建一个广播接收者即可：
 
