@@ -316,17 +316,17 @@ Caused by: java.lang.IllegalArgumentException: Unknown URL content://downloads/m
           at com.chiclam.download.ApkUpdateUtils.start(ApkUpdateUtils.java:47)
           at com.chiclam.download.ApkUpdateUtils.download(ApkUpdateUtils.java:42)
           at com.chiclam.download.MainActivity.download(MainActivity.java:34)
-          at java.lang.reflect.Method.invoke(Native Method) 
-          at android.support.v7.app.AppCompatViewInflater$DeclaredOnClickListener.onClick(AppCompatViewInflater.java:288) 
-          at android.view.View.performClick(View.java:5204) 
-          at android.view.View$PerformClick.run(View.java:21153) 
-          at android.os.Handler.handleCallback(Handler.java:739) 
-          at android.os.Handler.dispatchMessage(Handler.java:95) 
-          at android.os.Looper.loop(Looper.java:148) 
-          at android.app.ActivityThread.main(ActivityThread.java:5417) 
-          at java.lang.reflect.Method.invoke(Native Method) 
-          at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726) 
-          at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616) 
+          at java.lang.reflect.Method.invoke(Native Method)
+          at android.support.v7.app.AppCompatViewInflater$DeclaredOnClickListener.onClick(AppCompatViewInflater.java:288)
+          at android.view.View.performClick(View.java:5204)
+          at android.view.View$PerformClick.run(View.java:21153)
+          at android.os.Handler.handleCallback(Handler.java:739)
+          at android.os.Handler.dispatchMessage(Handler.java:95)
+          at android.os.Looper.loop(Looper.java:148)
+          at android.app.ActivityThread.main(ActivityThread.java:5417)
+          at java.lang.reflect.Method.invoke(Native Method)
+          at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+          at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
 ```
 
 也就是说如果停止了`下载管理程序` 调用dm.enqueue(req);就会上面的错误,从而程序闪退.
@@ -354,3 +354,12 @@ Caused by: java.lang.IllegalArgumentException: Unknown URL content://downloads/m
 ```
 
 具体详情, 查看代码.
+
+## todo
+
+- 判断 DownloadManager 是否可用，如果可用，优先使用 DownloadManager，不可用，则使用常规的下载方式
+- 下载成功后，启动安装界面前，判断是否存在安装未知应用的权限。
+
+
+
+

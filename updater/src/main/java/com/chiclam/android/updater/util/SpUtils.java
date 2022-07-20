@@ -1,4 +1,4 @@
-package com.chiclam.android.util;
+package com.chiclam.android.updater.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;

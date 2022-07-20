@@ -7,13 +7,13 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
-import com.chiclam.android.updater.Updater;
-import com.chiclam.android.updater.UpdaterConfig;
-import com.chiclam.android.util.UpdaterUtils;
+import com.chiclam.android.updater.Downloader;
+import com.chiclam.android.updater.DownloadRequest;
+import com.chiclam.android.updater.util.UpdaterUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String APK_URL = "http://releases.b0.upaiyun.com/hoolay.apk";
+    private static final String APK_URL = "https://app.2dfire.com/fandian/tv/tv_release_2010300.apk";
 
     private EditText editText;
 
@@ -31,15 +31,14 @@ public class MainActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(editText.getText().toString())) {
             url = APK_URL;
         }
-        UpdaterConfig config = new UpdaterConfig.Builder(this)
+        DownloadRequest request = new DownloadRequest(url)
                 .setTitle(getResources().getString(R.string.app_name))
                 .setDescription(getString(R.string.system_download_description))
-                .setFileUrl(url)
-                .setCanMediaScanner(true)
+                .allowScanningByMediaScanner()
                 .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE
-                        | DownloadManager.Request.NETWORK_WIFI)
-                .build();
-        Updater.get().showLog(true).download(config);
+                        | DownloadManager.Request.NETWORK_WIFI);
+
+        new Downloader(getApplicationContext()).start(request);
     }
 
     public void setting(View view) {

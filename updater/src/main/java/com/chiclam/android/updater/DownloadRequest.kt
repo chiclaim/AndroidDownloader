@@ -1,239 +1,67 @@
-package com.chiclam.android.updater;
+package com.chiclam.android.updater
 
-import android.content.Context;
-
-/**
- * Description：下载器参数配置
- * <br/>
- * Created by kumu on 2017/5/17.
- */
-
-public class UpdaterConfig {
-
-    private boolean mIsLog;
-    private String mTitle;
-    private String mDescription;
-    private String mDownloadPath;
-    private String mFileUrl;
-    private String mFilename;
-    private boolean mIsShowDownloadUI = true;
-    private int mNotificationVisibility;
-    private boolean mCanMediaScanner;
-    private boolean mAllowedOverRoaming;
-    private int mAllowedNetworkTypes = ~0;// default to all network types allowed
-
-    private Context mContext;
+import android.app.DownloadManager
+import android.content.Context
+import android.net.Uri
 
 
-    private UpdaterConfig(Context context) {
-        this.mContext = context;
+class DownloadRequest(fileUrl: String) {
+
+    internal var rawRequest = DownloadManager.Request(Uri.parse(fileUrl))
+
+    fun setTitle(title: CharSequence): DownloadRequest {
+        rawRequest.setTitle(title)
+        return this
     }
 
-    public boolean isLog() {
-        return mIsLog;
+    fun setDescription(description: CharSequence): DownloadRequest {
+        rawRequest.setDescription(description)
+        return this
     }
 
-    public void setIsLog(boolean mIsLog) {
-        this.mIsLog = mIsLog;
+    fun allowScanningByMediaScanner(): DownloadRequest {
+        rawRequest.allowScanningByMediaScanner()
+        return this
     }
 
-    public String getTitle() {
-        return mTitle;
+    fun setDestinationInExternalFilesDir(
+        context: Context,
+        dirType: String?,
+        subPath: String?
+    ): DownloadRequest {
+        rawRequest.setDestinationInExternalFilesDir(context, dirType, subPath)
+        return this
     }
 
-    public void setTitle(String mTitle) {
-        this.mTitle = mTitle;
+    fun setDestinationUri(downloadDir: String): DownloadRequest {
+        rawRequest.setDestinationUri(Uri.parse(downloadDir))
+        return this
     }
 
-    public String getDescription() {
-        return mDescription;
+
+    fun setMimeType(mimeType: String): DownloadRequest {
+        rawRequest.setMimeType(mimeType)
+        return this
     }
 
-    public void setDescription(String mDescription) {
-        this.mDescription = mDescription;
+    fun setNotificationVisibility(visibility: Int): DownloadRequest {
+        rawRequest.setNotificationVisibility(visibility)
+        return this
     }
 
-    public String getDownloadPath() {
-        return mDownloadPath;
+    fun setAllowedNetworkTypes(flags: Int): DownloadRequest {
+        rawRequest.setAllowedNetworkTypes(flags)
+        return this
     }
 
-    public void setDownloadPath(String mDownloadPath) {
-        this.mDownloadPath = mDownloadPath;
+    fun setAllowedOverRoaming(allowed: Boolean): DownloadRequest {
+        rawRequest.setAllowedOverRoaming(allowed)
+        return this
     }
 
-    public String getFileUrl() {
-        return mFileUrl;
+    fun setAllowedOverMetered(allow: Boolean): DownloadRequest {
+        rawRequest.setAllowedOverMetered(allow)
+        return this
     }
-
-    public void setFileUrl(String fileUrl) {
-        this.mFileUrl = fileUrl;
-    }
-
-    public String getFilename() {
-        return mFilename;
-    }
-
-    public void setFilename(String mFilename) {
-        this.mFilename = mFilename;
-    }
-
-    public boolean isShowDownloadUI() {
-        return mIsShowDownloadUI;
-    }
-
-    public void setIsShowDownloadUI(boolean mIsShowDownloadUI) {
-        this.mIsShowDownloadUI = mIsShowDownloadUI;
-    }
-
-    public int isIsNotificationVisibility() {
-        return mNotificationVisibility;
-    }
-
-    public void setIsNotificationVisibility(int mIsNotificationVisibility) {
-        this.mNotificationVisibility = mIsNotificationVisibility;
-    }
-
-    public boolean isCanMediaScanner() {
-        return mCanMediaScanner;
-    }
-
-    public void setCanMediaScanner(boolean mCanMediaScanner) {
-        this.mCanMediaScanner = mCanMediaScanner;
-    }
-
-    public boolean isAllowedOverRoaming() {
-        return mAllowedOverRoaming;
-    }
-
-    public void setAllowedOverRoaming(boolean mAllowedOverRoaming) {
-        this.mAllowedOverRoaming = mAllowedOverRoaming;
-    }
-
-    public Context getContext() {
-        return mContext;
-    }
-
-    public void setContext(Context context) {
-        this.mContext = context;
-    }
-
-    public int getAllowedNetworkTypes() {
-        return mAllowedNetworkTypes;
-    }
-
-    public static class Builder {
-
-        UpdaterConfig updaterConfig;
-
-        public Builder(Context context) {
-            updaterConfig = new UpdaterConfig(context.getApplicationContext());
-        }
-
-        public Builder setIsLog(boolean mIsLog) {
-            updaterConfig.setIsLog(mIsLog);
-            return this;
-        }
-
-        public Builder setTitle(String title) {
-            updaterConfig.setTitle(title);
-            return this;
-        }
-
-        public Builder setDescription(String description) {
-            updaterConfig.setDescription(description);
-            return this;
-        }
-
-        /**
-         * 文件下载路径
-         *
-         * @param downloadPath
-         * @return
-         */
-        public Builder setDownloadPath(String downloadPath) {
-            updaterConfig.setDownloadPath(downloadPath);
-            return this;
-        }
-
-        /**
-         * 下载的文件名
-         *
-         * @param filename
-         * @return
-         */
-        public Builder setFilename(String filename) {
-            updaterConfig.setFilename(filename);
-            return this;
-        }
-
-        /**
-         * 文件网络地址
-         *
-         * @param url
-         * @return
-         */
-        public Builder setFileUrl(String url) {
-            updaterConfig.setFileUrl(url);
-            return this;
-        }
-
-        public Builder setIsShowDownloadUI(boolean isShowDownloadUI) {
-            updaterConfig.setIsShowDownloadUI(isShowDownloadUI);
-            return this;
-        }
-
-        public Builder setNotificationVisibility(int notificationVisibility) {
-            updaterConfig.mNotificationVisibility = notificationVisibility;
-            return this;
-        }
-
-        /**
-         * 能否被 MediaScanner 扫描
-         *
-         * @param canMediaScanner
-         * @return
-         */
-        public Builder setCanMediaScanner(boolean canMediaScanner) {
-            updaterConfig.mCanMediaScanner = canMediaScanner;
-            return this;
-        }
-
-        /**
-         * 移动网络是否允许下载
-         *
-         * @param allowedOverRoaming
-         * @return
-         */
-        public Builder setAllowedOverRoaming(boolean allowedOverRoaming) {
-            updaterConfig.mAllowedOverRoaming = allowedOverRoaming;
-            return this;
-        }
-
-        public Builder setContext(Context context) {
-            updaterConfig.mContext = context;
-            return this;
-
-        }
-
-        /**
-         * By default, all network types are allowed
-         *
-         * @param allowedNetworkTypes
-         * @see  android.app.DownloadManager.Request#NETWORK_MOBILE
-         * @see android.app.DownloadManager.Request#NETWORK_WIFI
-         */
-        public Builder setAllowedNetworkTypes(int allowedNetworkTypes) {
-            updaterConfig.mAllowedNetworkTypes = allowedNetworkTypes;
-            return this;
-        }
-
-
-        public UpdaterConfig build() {
-            return updaterConfig;
-        }
-
-
-    }
-
 
 }
