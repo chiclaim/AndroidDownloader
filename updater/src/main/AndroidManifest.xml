@@ -7,7 +7,7 @@
         android:supportsRtl="true">
 
         <receiver
-            android:name="com.chiclam.android.updater.receiver.DownloadReceiver"
+            android:name="com.chiclam.android.updater.DownloadReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />

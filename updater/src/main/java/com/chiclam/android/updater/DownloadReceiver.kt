@@ -1,4 +1,4 @@
-package com.chiclam.android.updater.receiver
+package com.chiclam.android.updater
 
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
@@ -17,9 +17,7 @@ class DownloadReceiver : BroadcastReceiver() {
         require(intent != null && context != null)
         if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == intent.action) {
             val downloadApkId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            val localDownloadId = UpdaterUtils.getLocalDownloadId(context)
-            if (downloadApkId == localDownloadId) {
-                d("download complete. downloadId is $downloadApkId")
+            if (downloadApkId != -1L) {
                 installApk(context, downloadApkId)
             }
         } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED == intent.action) {
@@ -35,10 +33,7 @@ class DownloadReceiver : BroadcastReceiver() {
             ?: return
         val downloadFileUri = dManager.getUriForDownloadedFile(downloadApkId)
         if (downloadFileUri != null) {
-            d("file location $downloadFileUri")
             UpdaterUtils.startInstall(context, downloadFileUri)
-        } else {
-            d("download failed")
         }
     }
 

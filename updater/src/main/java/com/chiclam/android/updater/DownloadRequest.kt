@@ -5,9 +5,14 @@ import android.content.Context
 import android.net.Uri
 
 
-class DownloadRequest(fileUrl: String) {
+class DownloadRequest(val fileUrl: String) {
 
     internal var rawRequest = DownloadManager.Request(Uri.parse(fileUrl))
+
+    /**
+     * 本次下载是否为更新当前的APP，如果是，则会自动处理弹出安装界面
+     */
+    var installDownloadApk = false
 
     fun setTitle(title: CharSequence): DownloadRequest {
         rawRequest.setTitle(title)
@@ -33,8 +38,8 @@ class DownloadRequest(fileUrl: String) {
         return this
     }
 
-    fun setDestinationUri(downloadDir: String): DownloadRequest {
-        rawRequest.setDestinationUri(Uri.parse(downloadDir))
+    fun setDestinationDir(uri: Uri): DownloadRequest {
+        rawRequest.setDestinationUri(uri)
         return this
     }
 
