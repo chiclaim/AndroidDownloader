@@ -1,3 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="UpgradeTransparentDialogStyle" parent="@style/Theme.AppCompat.Dialog">
+        <!--设置dialog的背景-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--设置无标题-->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:title">@null</item>
+        <item name="android:dialogTitle">@null</item>
+        <!--是否浮现在activity之上-->
+        <item name="android:windowIsFloating">true</item>
+        <!--背景是否模糊显示-->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!--没有ActionBar -->
+        <item name="windowActionBar">false</item>
+        <!--去掉头部标题栏 -->
+        <item name="windowNoTitle">true</item>
+        <!--点击外部是否关闭-->
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
 
 </resources>

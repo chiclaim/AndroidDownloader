@@ -1,6 +1,6 @@
 @file:JvmName("Logger")
 
-package com.chiclam.android.updater.util
+package com.chiclaim.android.updater.util
 
 import android.util.Log
 

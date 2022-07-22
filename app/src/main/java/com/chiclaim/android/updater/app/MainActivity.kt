@@ -8,12 +8,11 @@ import android.text.TextUtils
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-import com.chiclam.android.updater.DownloadListener
-import com.chiclam.android.updater.DownloadRequest
-import com.chiclam.android.updater.Downloader
-import com.chiclam.android.updater.util.UpdaterUtils.showDownloadSetting
-import com.chiclam.android.updater.util.d
-import java.io.File
+import com.chiclaim.android.updater.DownloadListener
+import com.chiclaim.android.updater.DownloadRequest
+import com.chiclaim.android.updater.Downloader
+import com.chiclaim.android.updater.util.UpdaterUtils.showDownloadSetting
+import com.chiclaim.android.updater.util.d
 import java.math.BigDecimal
 import java.math.RoundingMode
 

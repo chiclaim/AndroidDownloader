@@ -1,11 +1,10 @@
-package com.chiclam.android.updater
+package com.chiclaim.android.updater
 
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.chiclam.android.updater.util.UpdaterUtils
-import com.chiclam.android.updater.util.d
+import com.chiclaim.android.updater.util.UpdaterUtils
 
 /**
  *

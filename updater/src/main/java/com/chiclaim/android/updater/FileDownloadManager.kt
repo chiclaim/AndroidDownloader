@@ -1,10 +1,10 @@
-package com.chiclam.android.updater
+package com.chiclaim.android.updater
 
 import android.app.DownloadManager
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
-import com.chiclam.android.updater.util.SpHelper
+import com.chiclaim.android.updater.util.SpHelper
 
 /**
  * 文件下载管理

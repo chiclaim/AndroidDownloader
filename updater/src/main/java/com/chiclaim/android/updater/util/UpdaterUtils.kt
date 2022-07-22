@@ -1,4 +1,4 @@
-package com.chiclam.android.updater.util
+package com.chiclaim.android.updater.util
 
 import android.content.Context
 import android.content.Intent

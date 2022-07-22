@@ -1,4 +1,4 @@
-package com.chiclam.android.updater.util
+package com.chiclaim.android.updater.util
 
 import java.io.InputStream
 import java.security.MessageDigest

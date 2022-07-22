@@ -1,9 +1,9 @@
 @file:JvmName("DownloadStatus.kt")
 
-package com.chiclam.android.updater
+package com.chiclaim.android.updater
 
 import android.app.DownloadManager
-import com.chiclam.android.updater.util.d
+import com.chiclaim.android.updater.util.d
 
 const val STATUS_PENDING = DownloadManager.STATUS_PENDING
 const val STATUS_PAUSED = DownloadManager.STATUS_PAUSED

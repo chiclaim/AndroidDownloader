@@ -1,9 +1,9 @@
-package com.chiclam.android.updater
+package com.chiclaim.android.updater
 
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
-import com.chiclam.android.updater.util.UpdaterUtils
+import com.chiclaim.android.updater.util.UpdaterUtils
 
 class Downloader(context: Context) {
 

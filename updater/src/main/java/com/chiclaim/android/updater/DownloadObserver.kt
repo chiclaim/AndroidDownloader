@@ -1,4 +1,4 @@
-package com.chiclam.android.updater
+package com.chiclaim.android.updater
 
 import android.content.Context
 import android.database.ContentObserver
