@@ -3,11 +3,11 @@ package com.chiclaim.android.updater.app
 import android.app.DownloadManager
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.chiclaim.android.updater.DownloadListener
 import com.chiclaim.android.updater.DownloadRequest
 import com.chiclaim.android.updater.Downloader
