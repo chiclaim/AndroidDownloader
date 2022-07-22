@@ -1,78 +1,94 @@
-package com.chiclam.android.updater.util;
+package com.chiclam.android.updater.util
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Context
+import android.content.SharedPreferences
+import kotlin.jvm.Synchronized
 
-public class SpUtils {
+internal class SpHelper private constructor(context: Context) {
 
-    private SharedPreferences sp;
-    private static SpUtils instance;
 
-    private SpUtils(Context context) {
-        sp = context.getSharedPreferences("download_sp", Context.MODE_PRIVATE);
+    private val sp: SharedPreferences
+
+    init {
+        sp = context.applicationContext.getSharedPreferences(
+            "dfire_download_sp",
+            Context.MODE_PRIVATE
+        )
     }
 
-    public static synchronized SpUtils getInstance(Context context) {
-        if (instance == null) {
-            instance = new SpUtils(context.getApplicationContext());
+    companion object {
+
+        private lateinit var spUtils: SpHelper
+
+        @Synchronized
+        fun get(context: Context): SpHelper {
+            if (!this::spUtils.isInitialized) spUtils = SpHelper(context)
+            return spUtils
         }
-        return instance;
+
     }
 
-    public SpUtils putInt(String key, int value) {
-        sp.edit().putInt(key, value).apply();
-        return this;
+
+    fun putInt(key: String?, value: Int): SpHelper {
+        sp.edit().putInt(key, value).apply()
+        return this
     }
 
-    public int getInt(String key, int dValue) {
-        return sp.getInt(key, dValue);
+    fun getInt(key: String?, dValue: Int): Int {
+        return sp.getInt(key, dValue)
     }
 
-    public SpUtils putLong(String key, long value) {
-        sp.edit().putLong(key, value).apply();
-        return this;
+    fun putLong(key: String?, value: Long): SpHelper {
+        sp.edit().putLong(key, value).apply()
+        return this
     }
 
-    public long getLong(String key, Long dValue) {
-        return sp.getLong(key, dValue);
+    fun getLong(key: String?, dValue: Long?): Long {
+        return sp.getLong(key, dValue!!)
     }
 
-    public SpUtils putFloat(String key, float value) {
-        sp.edit().putFloat(key, value).apply();
-        return this;
+    fun putFloat(key: String?, value: Float): SpHelper {
+        sp.edit().putFloat(key, value).apply()
+        return this
     }
 
-    public Float getFloat(String key, Float dValue) {
-        return sp.getFloat(key, dValue);
+    fun getFloat(key: String?, dValue: Float?): Float {
+        return sp.getFloat(key, dValue!!)
     }
 
-    public SpUtils putBoolean(String key, boolean value) {
-        sp.edit().putBoolean(key, value).apply();
-        return this;
+    fun putBoolean(key: String?, value: Boolean): SpHelper {
+        sp.edit().putBoolean(key, value).apply()
+        return this
     }
 
-    public Boolean getBoolean(String key, boolean dValue) {
-        return sp.getBoolean(key, dValue);
+    fun getBoolean(key: String?, dValue: Boolean): Boolean {
+        return sp.getBoolean(key, dValue)
     }
 
-    public SpUtils putString(String key, String value) {
-        sp.edit().putString(key, value).apply();
-        return this;
+    fun putString(key: String?, value: String?): SpHelper {
+        sp.edit().putString(key, value).apply()
+        return this
     }
 
-    public String getString(String key, String dValue) {
-        return sp.getString(key, dValue);
+    fun getString(key: String?, dValue: String?): String? {
+        return sp.getString(key, dValue)
     }
 
-    public void remove(String key) {
+    fun remove(key: String?) {
         if (isExist(key)) {
-            SharedPreferences.Editor editor = sp.edit();
-            editor.remove(key);
-            editor.apply();
+            val editor = sp.edit()
+            editor.remove(key)
+            editor.apply()
         }
     }
 
-    public boolean isExist(String key) {
-        return sp.contains(key);
+    private fun isExist(key: String?): Boolean {
+        return sp.contains(key)
     }
+
+    fun clear() {
+        sp.edit().clear().apply()
+    }
+
+
 }

@@ -1,25 +1,20 @@
 package com.chiclam.android.updater.util
 
 import android.content.Context
-import com.chiclam.android.updater.util.e
 import android.content.Intent
 import android.os.Build
 import android.provider.MediaStore
-import com.chiclam.android.updater.util.UpdaterUtils
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
-import com.chiclam.android.updater.util.SpUtils
 import java.io.File
 import java.lang.Exception
 
-/**
- * Created by chiclaim on 2016/05/18
- */
+
 object UpdaterUtils {
 
-    private const val KEY_DOWNLOAD_ID = "downloadId"
+    private const val DOWNLOAD_COMPONENT_PACKAGE = "com.android.providers.downloads"
 
     fun startInstall(context: Context, uri: Uri?) {
         val install = Intent(Intent.ACTION_VIEW)
@@ -35,21 +30,10 @@ object UpdaterUtils {
                 contentURI, null,
                 null, null, null
             )
-            if (cursor != null) {
-                try {
-                    cursor.moveToFirst()
-                    val index = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
-                    return cursor.getString(index)
-                    /*for (String name : cursor.getColumnNames()) {
-                    int index = cursor.getColumnIndex(name);
-                    String value = cursor.getString(index);
-                    Logger.get().e("key:" + name + "; value:" + value);
-                }*/
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    cursor.close()
-                }
+            cursor?.use {
+                cursor.moveToFirst()
+                val index = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
+                if (index != -1) return cursor.getString(index)
             }
         } else {
             return contentURI.path
@@ -58,37 +42,33 @@ object UpdaterUtils {
     }
 
     /**
-     * 下载的apk和当前程序版本比较
+     * 下载的 apk 和当前程序版本比较
      *
+     * - 首先会判断包名，程序的包名和apk包名是否一致
+     * -
      * @param context Context 当前运行程序的Context
      * @param uri     apk file's location
-     * @return 如果当前应用版本小于apk的版本则返回true；如果当前没有安装也返回true
+     * @return true 可以安装；false 不需安装
      */
     fun compare(context: Context, uri: Uri): Boolean {
-        val realPathUri = getRealPathFromURI(context, uri)
+        val realPathUri = getRealPathFromURI(context, uri) ?: return false
         val apkInfo = getApkInfo(context, realPathUri) ?: return false
         try {
-            val currentPackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            e(
-                "apk file packageName=" + apkInfo.packageName +
-                        ",versionName=" + apkInfo.versionName
-            )
-            e(
-                "current app packageName=" + currentPackageInfo.packageName +
-                        ",versionName=" + currentPackageInfo.versionName
-            )
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            e("apk file package=${apkInfo.packageName},versionCode=${apkInfo.versionCode}")
+            e("current package=${packageInfo.packageName},versionCode=${packageInfo.versionCode}")
             //String appName = pm.getApplicationLabel(appInfo).toString();
             //Drawable icon = pm.getApplicationIcon(appInfo);//得到图标信息
 
             //如果下载的apk包名和当前应用不同，则不执行更新操作
-            if (apkInfo.packageName == currentPackageInfo.packageName) {
-                if (apkInfo.versionCode > currentPackageInfo.versionCode) {
-                    return true
-                }
+            if (apkInfo.packageName == packageInfo.packageName
+                && apkInfo.versionCode > packageInfo.versionCode
+            ) {
+                return true
             }
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
-            return true //如果程序没有安装
+            return true
         }
         return false
     }
@@ -99,13 +79,13 @@ object UpdaterUtils {
      * @param context Context
      * @param path    apk path
      */
-    private fun getApkInfo(context: Context, path: String?): PackageInfo? {
+    private fun getApkInfo(context: Context, path: String): PackageInfo? {
         val file = File(path)
         if (!file.exists()) {
             return null
         }
         val pm = context.packageManager
-        return pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES)
+        return pm.getPackageArchiveInfo(path, PackageManager.GET_CONFIGURATIONS)
     }
 
     /**
@@ -113,7 +93,7 @@ object UpdaterUtils {
      *
      * @return boolean
      */
-    fun intentAvailable(context: Context, intent: Intent): Boolean {
+    private fun intentAvailable(context: Context, intent: Intent): Boolean {
         return intent.resolveActivity(context.packageManager) != null
     }
 
@@ -125,7 +105,7 @@ object UpdaterUtils {
     fun checkDownloadState(context: Context): Boolean {
         try {
             val state =
-                context.packageManager.getApplicationEnabledSetting("com.android.providers.downloads")
+                context.packageManager.getApplicationEnabledSetting(DOWNLOAD_COMPONENT_PACKAGE)
             if (state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED) {
                 return false
             }
@@ -138,19 +118,18 @@ object UpdaterUtils {
 
     @JvmStatic
     fun showDownloadSetting(context: Context) {
-        val packageName = "com.android.providers.downloads"
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.parse("package:$packageName")
+        intent.data = Uri.parse("package:$DOWNLOAD_COMPONENT_PACKAGE")
         if (intentAvailable(context, intent)) {
             context.startActivity(intent)
         }
     }
 
-    fun getLocalDownloadId(context: Context?): Long {
-        return SpUtils.getInstance(context).getLong(KEY_DOWNLOAD_ID, -1L)
+    fun getLocalDownloadId(context: Context, url: String): Long {
+        return SpHelper.get(context).getLong(MD5.md5(url), -1L)
     }
 
-    fun saveDownloadId(context: Context?, id: Long) {
-        SpUtils.getInstance(context).putLong(KEY_DOWNLOAD_ID, id)
+    fun saveDownloadId(context: Context, url: String, id: Long) {
+        SpHelper.get(context).putLong(MD5.md5(url), id)
     }
 }
