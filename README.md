@@ -359,7 +359,8 @@ Caused by: java.lang.IllegalArgumentException: Unknown URL content://downloads/m
 
 - 判断 DownloadManager 是否可用，如果可用，优先使用 DownloadManager，不可用，则使用常规的下载方式
 - 下载成功后，启动安装界面前，判断是否存在安装未知应用的权限。
-
+- 支持 MD5 校验
+- 判断文件是否已经下载，不仅要判断下载状态，还需要判断文件是否存在
 
 
 

@@ -1,6 +1,7 @@
 package com.chiclaim.android.updater.app
 
 import android.app.DownloadManager
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
@@ -8,9 +9,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.chiclaim.android.updater.DownloadListener
-import com.chiclaim.android.updater.DownloadRequest
-import com.chiclaim.android.updater.Downloader
+import com.chiclaim.android.updater.*
 import com.chiclaim.android.updater.util.UpdaterUtils.showDownloadSetting
 import com.chiclaim.android.updater.util.d
 import java.math.BigDecimal
@@ -30,14 +29,14 @@ class MainActivity : AppCompatActivity() {
         editText?.setText(APK_URL)
     }
 
-    fun download(view: View?) {
+    fun download(view: View) {
         var url = editText!!.text.toString()
         if (TextUtils.isEmpty(editText!!.text.toString())) {
             url = APK_URL
         }
         val request = DownloadRequest(url)
-            .setTitle(resources.getString(R.string.app_name))
-            .setDescription(getString(R.string.system_download_description))
+            .setNotificationTitle(resources.getString(R.string.app_name))
+            .setNotificationDescription(getString(R.string.system_download_description))
             .allowScanningByMediaScanner()
             .setAllowedNetworkTypes(
                 DownloadManager.Request.NETWORK_MOBILE
@@ -62,9 +61,17 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun setting(view: View?) {
+    fun setting(view: View) {
         //如果没有停用,先去停用,然后点击下载按钮. 测试用户关闭下载服务
         showDownloadSetting(this)
+    }
+
+    fun showUpdateDialog(view: View) {
+        UpgradeDialogActivity.launch(this, UpdaterDialogInfo().apply {
+            url = APK_URL
+            title = "发现新版本"
+            description = "1. 修复已知问题\n2. 修复已知问题"
+        })
     }
 
 }

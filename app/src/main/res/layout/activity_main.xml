@@ -15,26 +15,37 @@
         android:textSize="20sp" />
 
     <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:onClick="download"
-                android:text="Download"
-                android:textAllCaps="false"
-                android:textSize="20sp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:onClick="setting"
-                android:text="Setting"
-                android:textAllCaps="false"
-                android:textSize="20sp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:onClick="download"
+            android:text="Download"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:onClick="setting"
+            android:text="Setting"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:onClick="showUpdateDialog"
+            android:text="showUpdateDialog"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
+
     </LinearLayout>
 
 </LinearLayout>
