@@ -34,8 +34,9 @@ class DownloadObserver(
             1,
             1,
             2,
-            TimeUnit.SECONDS, LinkedBlockingQueue(100),
-            { Thread("DownloadProgressTask") },
+            TimeUnit.SECONDS,
+            LinkedBlockingQueue(100),
+            { r -> Thread(r, "DownloadProgressTask") },
             ThreadPoolExecutor.DiscardOldestPolicy()
         )
 
