@@ -11,7 +11,7 @@ import java.util.concurrent.*
  *
  * @author by chiclaim@google.com
  */
-class DownloadObserver(
+internal class DownloadObserver(
     context: Context,
     private val downloadId: Long,
     private var listener: DownloadListener?
@@ -50,7 +50,7 @@ class DownloadObserver(
 
         super.onChange(selfChange)
         execute.execute {
-            val info = FileDownloadManager(context).getDownloadInfo(downloadId)
+            val info = SystemDownloadManager(context).getDownloadInfo(downloadId)
             info?.let {
                 handler.post {
                     listener?.onProgressUpdate(info.status, info.totalSize, info.downloadedSize)

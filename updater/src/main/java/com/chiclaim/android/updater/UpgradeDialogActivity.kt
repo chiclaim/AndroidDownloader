@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.chiclaim.android.updater.util.d
 
 /**
  *
@@ -25,7 +24,7 @@ class UpgradeDialogActivity : AppCompatActivity() {
         private const val EXTRA_DIALOG_INFO = "EXTRA_DIALOG_INFO"
 
         @JvmStatic
-        fun launch(context: Context, info: UpdaterDialogInfo) {
+        fun launch(context: Context, info: UpgradeDialogInfo) {
             val intent = Intent(context, UpgradeDialogActivity::class.java)
             intent.putExtra(EXTRA_DIALOG_INFO, info)
             if (context is Application) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -39,7 +38,7 @@ class UpgradeDialogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dialog_layout)
 
-        val dialogInfo: UpdaterDialogInfo = intent.getParcelableExtra(EXTRA_DIALOG_INFO)
+        val dialogInfo: UpgradeDialogInfo = intent.getParcelableExtra(EXTRA_DIALOG_INFO)
             ?: error("need $EXTRA_DIALOG_INFO parameter")
 
         progressBar = findViewById(R.id.pb_updater)
@@ -63,27 +62,31 @@ class UpgradeDialogActivity : AppCompatActivity() {
         val appName = applicationInfo.loadLabel(packageManager)
 
         findViewById<View>(R.id.tv_updater_confirm).setOnClickListener {
-            val request =
-                DownloadRequest(dialogInfo.url!!)
-                    .setNotificationTitle(appName)
-                    .setNotificationDescription(getString(R.string.system_download_description))
-                    .allowScanningByMediaScanner()
-                    .setAllowedNetworkTypes(
-                        DownloadManager.Request.NETWORK_MOBILE
-                                or DownloadManager.Request.NETWORK_WIFI
-                    )
-            Downloader(applicationContext).start(request, object : DownloadListener {
-                override fun onProgressUpdate(status: Int, totalSize: Long, downloadedSize: Long) {
-                    val progress =
-                        if (totalSize <= 0) 0 else
-                            (downloadedSize / totalSize.toDouble() * 100).toInt()
-                    progressBar?.progress = progress
-                }
+            DownloadRequest.newRequest(dialogInfo.url!!)
+                .setNotificationTitle(appName)
+                .setNotificationDescription(getString(R.string.system_download_description))
+                .allowScanningByMediaScanner()
+                .setAllowedNetworkTypes(
+                    DownloadManager.Request.NETWORK_MOBILE
+                            or DownloadManager.Request.NETWORK_WIFI
+                )
+                .buildDownloader(applicationContext)
+                .startDownload(object : DownloadListener {
+                    override fun onProgressUpdate(
+                        status: Int,
+                        totalSize: Long,
+                        downloadedSize: Long
+                    ) {
+                        val progress =
+                            if (totalSize <= 0) 0 else
+                                (downloadedSize / totalSize.toDouble() * 100).toInt()
+                        progressBar?.progress = progress
+                    }
 
-                override fun onComplete(uri: Uri?) {
-                    finish()
-                }
-            })
+                    override fun onComplete(uri: Uri?) {
+                        finish()
+                    }
+                })
         }
 
     }

@@ -10,7 +10,7 @@ import com.chiclaim.android.updater.util.SpHelper
  * 文件下载管理
  * @author created by chiclaim@gmail.com
  */
-internal class FileDownloadManager(context: Context) {
+internal class SystemDownloadManager(context: Context) {
 
 
     private val context: Context
@@ -24,8 +24,8 @@ internal class FileDownloadManager(context: Context) {
     }
 
 
-    fun download(request: DownloadRequest): Long {
-        return downloadManager.enqueue(request.rawRequest)
+    fun download(request: DownloadManager.Request): Long {
+        return downloadManager.enqueue(request)
     }
 
 
@@ -35,7 +35,7 @@ internal class FileDownloadManager(context: Context) {
      * @param downloadId an ID for the download, unique across the system.
      * This ID is used to make future calls related to this download.
      * @return file path
-     * @see FileDownloadManager.getDownloadedFileUri
+     * @see SystemDownloadManager.getDownloadedFileUri
      */
     private fun getDownloadPath(downloadId: Long): String? {
         val query = DownloadManager.Query().setFilterById(downloadId)
@@ -53,7 +53,7 @@ internal class FileDownloadManager(context: Context) {
      *
      * @param downloadId an ID for the download, unique across the system.
      * This ID is used to make future calls related to this download.
-     * @see FileDownloadManager.getDownloadPath
+     * @see SystemDownloadManager.getDownloadPath
      */
     fun getDownloadedFileUri(downloadId: Long): Uri? {
         return downloadManager.getUriForDownloadedFile(downloadId)

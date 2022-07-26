@@ -7,7 +7,7 @@ import android.os.Parcelable
  *
  * @author by chiclaim@google.com
  */
-class UpdaterDialogInfo() : Parcelable {
+class UpgradeDialogInfo() : Parcelable {
 
     var url: String? = null
     var title: String? = null
@@ -35,12 +35,12 @@ class UpdaterDialogInfo() : Parcelable {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<UpdaterDialogInfo> {
-        override fun createFromParcel(parcel: Parcel): UpdaterDialogInfo {
-            return UpdaterDialogInfo(parcel)
+    companion object CREATOR : Parcelable.Creator<UpgradeDialogInfo> {
+        override fun createFromParcel(parcel: Parcel): UpgradeDialogInfo {
+            return UpgradeDialogInfo(parcel)
         }
 
-        override fun newArray(size: Int): Array<UpdaterDialogInfo?> {
+        override fun newArray(size: Int): Array<UpgradeDialogInfo?> {
             return arrayOfNulls(size)
         }
     }
