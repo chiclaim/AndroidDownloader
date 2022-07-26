@@ -30,7 +30,7 @@ class Downloader(context: Context) {
             //获取下载状态
             when (val status = downloader.getDownloadStatus(downloadId)) {
                 STATUS_SUCCESSFUL -> {
-                    val uri = downloader.getDownloadedFileUri(downloadId)
+                    /*val uri = downloader.getDownloadedFileUri(downloadId)
                     if (uri != null) {
                         listener?.onComplete(uri)
                         //本地的版本大于当前程序的版本直接安装
@@ -38,7 +38,7 @@ class Downloader(context: Context) {
                             UpdaterUtils.startInstall(context, uri)
                         }
                         return
-                    }
+                    }*/
                     //重新下载
                     download(request, listener)
                 }

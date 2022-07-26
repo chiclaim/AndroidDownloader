@@ -14,12 +14,12 @@ class DownloadRequest(val fileUrl: String) {
      */
     var installDownloadApk = false
 
-    fun setTitle(title: CharSequence): DownloadRequest {
+    fun setNotificationTitle(title: CharSequence): DownloadRequest {
         rawRequest.setTitle(title)
         return this
     }
 
-    fun setDescription(description: CharSequence): DownloadRequest {
+    fun setNotificationDescription(description: CharSequence): DownloadRequest {
         rawRequest.setDescription(description)
         return this
     }

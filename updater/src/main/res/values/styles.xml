@@ -17,6 +17,10 @@
         <item name="windowNoTitle">true</item>
         <!--点击外部是否关闭-->
         <item name="android:windowCloseOnTouchOutside">false</item>
+        <!--设置最小宽度-->
+        <item name="android:windowMinWidthMinor">85%</item>
+        <!--设置最大高度
+        <item name="android:windowFixedHeightMajor">85%</item>-->
     </style>
 
 </resources>
