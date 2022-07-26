@@ -14,17 +14,17 @@ class SystemDownloadRequest(val url: String) : Request {
      */
     var installDownloadApk = false
 
-    override fun setNotificationTitle(title: CharSequence): SystemDownloadRequest {
+    override fun setNotificationTitle(title: CharSequence): Request {
         rawRequest.setTitle(title)
         return this
     }
 
-    override fun setNotificationDescription(description: CharSequence): SystemDownloadRequest {
+    override fun setNotificationDescription(description: CharSequence): Request {
         rawRequest.setDescription(description)
         return this
     }
 
-    override fun allowScanningByMediaScanner(): SystemDownloadRequest {
+    override fun allowScanningByMediaScanner(): Request {
         rawRequest.allowScanningByMediaScanner()
         return this
     }
@@ -38,38 +38,38 @@ class SystemDownloadRequest(val url: String) : Request {
         return this
     }
 
-    override fun setDestinationDir(uri: Uri): SystemDownloadRequest {
+    override fun setDestinationDir(uri: Uri): Request {
         rawRequest.setDestinationUri(uri)
         return this
     }
 
 
-    override fun setMimeType(mimeType: String): SystemDownloadRequest {
+    override fun setMimeType(mimeType: String): Request {
         rawRequest.setMimeType(mimeType)
         return this
     }
 
-    override fun setNotificationVisibility(visibility: Int): SystemDownloadRequest {
+    override fun setNotificationVisibility(visibility: Int): Request {
         rawRequest.setNotificationVisibility(visibility)
         return this
     }
 
-    override fun setAllowedNetworkTypes(flags: Int): SystemDownloadRequest {
+    override fun setAllowedNetworkTypes(flags: Int): Request {
         rawRequest.setAllowedNetworkTypes(flags)
         return this
     }
 
-    override fun setAllowedOverRoaming(allowed: Boolean): SystemDownloadRequest {
+    override fun setAllowedOverRoaming(allowed: Boolean): Request {
         rawRequest.setAllowedOverRoaming(allowed)
         return this
     }
 
-    override fun setAllowedOverMetered(allow: Boolean): SystemDownloadRequest {
+    override fun setAllowedOverMetered(allow: Boolean): Request {
         rawRequest.setAllowedOverMetered(allow)
         return this
     }
 
-    fun getRequest():DownloadManager.Request = rawRequest
+    fun getRequest(): DownloadManager.Request = rawRequest
 
     override fun buildDownloader(context: Context): Downloader =
         SystemDownloader(context.applicationContext, this)
