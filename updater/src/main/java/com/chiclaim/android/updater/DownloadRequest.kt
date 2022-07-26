@@ -7,7 +7,7 @@ class DownloadRequest private constructor() {
         @JvmStatic
         fun newRequest(url: String, mode: DownloadMode = DownloadMode.DOWNLOAD_MANAGER): Request =
             when (mode) {
-                DownloadMode.EMBED -> SystemDownloadRequest(url)
+                DownloadMode.EMBED -> EmbedDownloadRequest(url)
                 DownloadMode.DOWNLOAD_MANAGER -> SystemDownloadRequest(url)
             }
     }

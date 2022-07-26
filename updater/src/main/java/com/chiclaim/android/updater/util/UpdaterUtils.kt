@@ -132,4 +132,6 @@ object UpdaterUtils {
     fun saveDownloadId(context: Context, url: String, id: Long) {
         SpHelper.get(context).putLong(MD5.md5(url), id)
     }
+
+    fun getDownloadPath(context: Context): File = context.externalCacheDir ?: context.filesDir
 }

@@ -1,7 +1,10 @@
 package com.chiclaim.android.updater.app
 
+import android.Manifest
 import android.app.DownloadManager
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
@@ -24,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         editText = findViewById(R.id.et_download) as? EditText
         editText?.setText(APK_URL)
+        requestPermission()
     }
 
     fun download(view: View) {
@@ -32,7 +36,7 @@ class MainActivity : AppCompatActivity() {
             url = APK_URL
         }
 
-        DownloadRequest.newRequest(url)
+        DownloadRequest.newRequest(url, DownloadMode.EMBED)
             .setNotificationTitle(resources.getString(R.string.app_name))
             .setNotificationDescription(getString(R.string.system_download_description))
             .allowScanningByMediaScanner()
@@ -40,7 +44,7 @@ class MainActivity : AppCompatActivity() {
                 DownloadManager.Request.NETWORK_MOBILE
                         or DownloadManager.Request.NETWORK_WIFI
             )
-            // 定义下载目录，默认为 /data/user/0/com.android.providers.downloads/cache/your_download_file_name
+            // DownloadMode.DOWNLOAD_MANAGER，默认为 /data/user/0/com.android.providers.downloads/cache/your_download_file_name
             //.setDestinationDir(Uri.fromFile(applicationContext.externalCacheDir))
             .buildDownloader(applicationContext).startDownload(object : DownloadListener {
                 override fun onProgressUpdate(status: Int, totalSize: Long, downloadedSize: Long) {
@@ -67,6 +71,22 @@ class MainActivity : AppCompatActivity() {
             title = "发现新版本"
             description = "1. 修复已知问题\n2. 修复已知问题"
         })
+    }
+
+    fun requestPermission(){
+        if (Build.VERSION.SDK_INT >= 23) {
+            val REQUEST_CODE_PERMISSION_STORAGE = 100
+            val permissions = arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+            for (str in permissions) {
+                if (checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(permissions, REQUEST_CODE_PERMISSION_STORAGE)
+                }
+            }
+        }
+
     }
 
 }

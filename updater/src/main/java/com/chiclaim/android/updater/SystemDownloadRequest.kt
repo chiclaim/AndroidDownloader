@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 
 
-class SystemDownloadRequest(val url: String) : Request {
+class SystemDownloadRequest(url: String) : Request(url) {
 
     private var rawRequest = DownloadManager.Request(Uri.parse(url))
 

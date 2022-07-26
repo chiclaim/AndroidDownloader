@@ -361,6 +361,7 @@ Caused by: java.lang.IllegalArgumentException: Unknown URL content://downloads/m
 - 下载成功后，启动安装界面前，判断是否存在安装未知应用的权限。
 - 支持 MD5 校验
 - 判断文件是否已经下载，不仅要判断下载状态，还需要判断文件是否存在
+- 断点续传
 
 
 

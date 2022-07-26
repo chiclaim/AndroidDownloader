@@ -4,7 +4,6 @@ import android.content.Context
 import android.database.ContentObserver
 import android.os.Handler
 import android.os.Looper
-import java.util.concurrent.*
 
 
 /**
@@ -29,27 +28,12 @@ internal class DownloadObserver(
     }
 
 
-    companion object {
-        private val execute = ThreadPoolExecutor(
-            1,
-            1,
-            2,
-            TimeUnit.SECONDS,
-            LinkedBlockingQueue(100),
-            { r -> Thread(r, "DownloadProgressTask") },
-            ThreadPoolExecutor.DiscardOldestPolicy()
-        )
-
-        init {
-            execute.allowCoreThreadTimeOut(true)
-        }
-    }
 
 
     override fun onChange(selfChange: Boolean) {
 
         super.onChange(selfChange)
-        execute.execute {
+        DownloadExecutor.execute {
             val info = SystemDownloadManager(context).getDownloadInfo(downloadId)
             info?.let {
                 handler.post {

@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:onClick="showUpdateDialog"
-            android:text="showUpdateDialog"
+            android:text="showDialog"
             android:textAllCaps="false"
             android:textSize="20sp" />
 

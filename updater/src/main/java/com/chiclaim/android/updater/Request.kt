@@ -7,34 +7,33 @@ import android.net.Uri
  *
  * @author by chiclaim@google.com
  */
-interface Request {
+abstract class Request(val url: String) {
 
+    abstract fun setNotificationTitle(title: CharSequence): Request
 
-    fun setNotificationTitle(title: CharSequence): Request
+    abstract fun setNotificationDescription(description: CharSequence): Request
 
-    fun setNotificationDescription(description: CharSequence): Request
+    open fun allowScanningByMediaScanner(): Request = this
 
-    fun allowScanningByMediaScanner(): Request
-
-    fun setDestinationInExternalFilesDir(
+    open fun setDestinationInExternalFilesDir(
         context: Context,
         dirType: String?,
         subPath: String?
-    ): Request
+    ): Request = this
 
-    fun setDestinationDir(uri: Uri): Request
-
-
-    fun setMimeType(mimeType: String): Request
-
-    fun setNotificationVisibility(visibility: Int): Request
-
-    fun setAllowedNetworkTypes(flags: Int): Request
-
-    fun setAllowedOverRoaming(allowed: Boolean): Request
-
-    fun setAllowedOverMetered(allow: Boolean): Request
+    open fun setDestinationDir(uri: Uri): Request = this
 
 
-    fun buildDownloader(context: Context): Downloader
+    open fun setMimeType(mimeType: String): Request = this
+
+    open fun setNotificationVisibility(visibility: Int): Request = this
+
+    open fun setAllowedNetworkTypes(flags: Int): Request = this
+
+    open fun setAllowedOverRoaming(allowed: Boolean): Request = this
+
+    open fun setAllowedOverMetered(allow: Boolean): Request = this
+
+
+    abstract fun buildDownloader(context: Context): Downloader
 }

@@ -62,7 +62,7 @@ class UpgradeDialogActivity : AppCompatActivity() {
         val appName = applicationInfo.loadLabel(packageManager)
 
         findViewById<View>(R.id.tv_updater_confirm).setOnClickListener {
-            DownloadRequest.newRequest(dialogInfo.url!!)
+            DownloadRequest.newRequest(dialogInfo.url!!, DownloadMode.EMBED)
                 .setNotificationTitle(appName)
                 .setNotificationDescription(getString(R.string.system_download_description))
                 .allowScanningByMediaScanner()
