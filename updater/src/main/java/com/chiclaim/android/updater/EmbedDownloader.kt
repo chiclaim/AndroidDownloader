@@ -2,6 +2,7 @@ package com.chiclaim.android.updater
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import com.chiclaim.android.updater.util.MD5
@@ -35,17 +36,21 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
 
     override fun startDownload(listener: DownloadListener?) {
         DownloadExecutor.execute {
+            var conn: HttpURLConnection? = null
             try {
                 val url = URL(request.url)
-                val conn = url.openConnection() as HttpURLConnection
+                conn = url.openConnection() as HttpURLConnection
 
                 conn.requestMethod = "GET"
                 conn.connectTimeout = 10 * 1000
+                // Defeat transparent gzip compression, since it doesn't allow us to
+                // easily resume partial downloads.
                 conn.setRequestProperty("Accept-Encoding", "identity")
-                conn.setRequestProperty(
-                    "User-Agent",
-                    "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)"
-                )
+                // Only splice in user agent when not already defined
+                if (conn.getRequestProperty("User-Agent") == null) {
+                    conn.addRequestProperty("User-Agent", "AndroidDownloader/1.0")
+                }
+
                 val dir = File(request.destinationDir.path ?: return@execute)
                 if (!dir.exists()) {
                     dir.mkdirs()
@@ -104,12 +109,14 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                     HttpURLConnection.HTTP_OK -> {
                         writeFile()
                     }
-                    // 断点续传
+                    // 206 断点续传
                     HttpURLConnection.HTTP_PARTIAL -> {
                         writeFile(true)
                     }
-                    // 301,302 重定向
-                    HttpURLConnection.HTTP_MOVED_PERM, HttpURLConnection.HTTP_MOVED_TEMP -> {
+                    // 301,302,303 重定向
+                    HttpURLConnection.HTTP_MOVED_PERM,
+                    HttpURLConnection.HTTP_MOVED_TEMP,
+                    HttpURLConnection.HTTP_SEE_OTHER -> {
                         conn.disconnect()
                         // 获取真实下载地址
                         val locationUrl: String = conn.getHeaderField("Location") ?: return@execute
@@ -126,7 +133,8 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                         listener.onFailed(e)
                     }
                 }
-
+            } finally {
+                conn?.disconnect()
             }
         }
 
