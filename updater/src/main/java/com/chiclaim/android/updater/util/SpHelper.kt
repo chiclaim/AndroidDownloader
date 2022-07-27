@@ -29,52 +29,52 @@ internal class SpHelper private constructor(context: Context) {
     }
 
 
-    fun putInt(key: String?, value: Int): SpHelper {
+    fun putInt(key: String, value: Int): SpHelper {
         sp.edit().putInt(key, value).apply()
         return this
     }
 
-    fun getInt(key: String?, dValue: Int): Int {
+    fun getInt(key: String, dValue: Int): Int {
         return sp.getInt(key, dValue)
     }
 
-    fun putLong(key: String?, value: Long): SpHelper {
+    fun putLong(key: String, value: Long): SpHelper {
         sp.edit().putLong(key, value).apply()
         return this
     }
 
-    fun getLong(key: String?, dValue: Long?): Long {
-        return sp.getLong(key, dValue!!)
+    fun getLong(key: String, dValue: Long): Long {
+        return sp.getLong(key, dValue)
     }
 
-    fun putFloat(key: String?, value: Float): SpHelper {
+    fun putFloat(key: String, value: Float): SpHelper {
         sp.edit().putFloat(key, value).apply()
         return this
     }
 
-    fun getFloat(key: String?, dValue: Float?): Float {
-        return sp.getFloat(key, dValue!!)
+    fun getFloat(key: String, dValue: Float): Float {
+        return sp.getFloat(key, dValue)
     }
 
-    fun putBoolean(key: String?, value: Boolean): SpHelper {
+    fun putBoolean(key: String, value: Boolean): SpHelper {
         sp.edit().putBoolean(key, value).apply()
         return this
     }
 
-    fun getBoolean(key: String?, dValue: Boolean): Boolean {
+    fun getBoolean(key: String, dValue: Boolean): Boolean {
         return sp.getBoolean(key, dValue)
     }
 
-    fun putString(key: String?, value: String?): SpHelper {
+    fun putString(key: String, value: String?): SpHelper {
         sp.edit().putString(key, value).apply()
         return this
     }
 
-    fun getString(key: String?, dValue: String?): String? {
+    fun getString(key: String, dValue: String?): String? {
         return sp.getString(key, dValue)
     }
 
-    fun remove(key: String?) {
+    fun remove(key: String) {
         if (isExist(key)) {
             val editor = sp.edit()
             editor.remove(key)
@@ -82,7 +82,7 @@ internal class SpHelper private constructor(context: Context) {
         }
     }
 
-    private fun isExist(key: String?): Boolean {
+    private fun isExist(key: String): Boolean {
         return sp.contains(key)
     }
 

@@ -2,7 +2,7 @@ package com.chiclaim.android.updater
 
 import android.content.Context
 import android.net.Uri
-import com.chiclaim.android.updater.util.UpdaterUtils.getDownloadPath
+import com.chiclaim.android.updater.util.Utils.getDownloadPath
 
 /**
  *

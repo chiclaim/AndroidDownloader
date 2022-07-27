@@ -4,7 +4,7 @@ import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.chiclaim.android.updater.util.UpdaterUtils
+import com.chiclaim.android.updater.util.Utils
 
 /**
  *
@@ -32,7 +32,7 @@ class DownloadReceiver : BroadcastReceiver() {
             ?: return
         val downloadFileUri = dManager.getUriForDownloadedFile(downloadApkId)
         if (downloadFileUri != null) {
-            UpdaterUtils.startInstall(context, downloadFileUri)
+            Utils.startInstall(context, downloadFileUri)
         }
     }
 

@@ -12,7 +12,7 @@ import java.io.File
 import java.lang.Exception
 
 
-object UpdaterUtils {
+internal object Utils {
 
     private const val DOWNLOAD_COMPONENT_PACKAGE = "com.android.providers.downloads"
 
@@ -126,11 +126,23 @@ object UpdaterUtils {
     }
 
     fun getLocalDownloadId(context: Context, url: String): Long {
-        return SpHelper.get(context).getLong(MD5.md5(url), -1L)
+        return SpHelper.get(context).getLong("${MD5.md5(url)}-id", -1L)
     }
 
     fun saveDownloadId(context: Context, url: String, id: Long) {
-        SpHelper.get(context).putLong(MD5.md5(url), id)
+        SpHelper.get(context).putLong("${MD5.md5(url)}-id", id)
+    }
+
+    fun saveFileSize(context: Context, url: String, size: Long) {
+        SpHelper.get(context).putLong("${MD5.md5(url)}-size", size)
+    }
+
+    fun getFileSize(context: Context, url: String, defaultValue: Long): Long {
+        return SpHelper.get(context).getLong("${MD5.md5(url)}-size", defaultValue)
+    }
+
+    fun removeFileSize(context: Context, url: String) {
+        return SpHelper.get(context).remove("${MD5.md5(url)}-size")
     }
 
     fun getDownloadPath(context: Context): File = context.externalCacheDir ?: context.filesDir

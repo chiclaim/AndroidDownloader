@@ -3,7 +3,7 @@ package com.chiclaim.android.updater
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
-import com.chiclaim.android.updater.util.UpdaterUtils
+import com.chiclaim.android.updater.util.Utils
 
 internal class SystemDownloader(context: Context, private val request: SystemDownloadRequest) : Downloader {
 
@@ -16,16 +16,16 @@ internal class SystemDownloader(context: Context, private val request: SystemDow
     }
 
     override fun startDownload(listener: DownloadListener?) {
-        if (!UpdaterUtils.checkDownloadState(context)) {
+        if (!Utils.checkDownloadState(context)) {
             Toast.makeText(
                 context,
                 R.string.system_download_component_disable,
                 Toast.LENGTH_SHORT
             ).show()
-            UpdaterUtils.showDownloadSetting(context)
+            Utils.showDownloadSetting(context)
             return
         }
-        val downloadId = UpdaterUtils.getLocalDownloadId(context, request.url)
+        val downloadId = Utils.getLocalDownloadId(context, request.url)
         if (downloadId != -1L) {
             //获取下载状态
             when (val status = downloader.getDownloadStatus(downloadId)) {
@@ -54,7 +54,7 @@ internal class SystemDownloader(context: Context, private val request: SystemDow
 
     private fun download(request: SystemDownloadRequest, listener: DownloadListener?) {
         val downloadId = downloader.download(request.getRequest())
-        UpdaterUtils.saveDownloadId(context, request.url, downloadId)
+        Utils.saveDownloadId(context, request.url, downloadId)
         context.contentResolver.registerContentObserver(
             Uri.parse("content://downloads/my_downloads/$downloadId"),
             true,

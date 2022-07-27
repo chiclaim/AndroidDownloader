@@ -14,5 +14,7 @@ interface DownloadListener {
 
     fun onComplete(uri: Uri?)
 
+    fun onFailed(e: Throwable)
+
 
 }
