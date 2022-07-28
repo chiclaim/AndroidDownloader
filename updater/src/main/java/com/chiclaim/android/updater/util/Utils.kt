@@ -2,16 +2,16 @@ package com.chiclaim.android.updater.util
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.provider.MediaStore
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
+import android.os.Handler
+import android.provider.MediaStore
 import android.provider.Settings
+import com.chiclaim.android.updater.DownloadListener
 import java.io.File
-import java.lang.Exception
-import kotlin.reflect.KClass
 
 
 internal object Utils {
@@ -168,6 +168,34 @@ internal object Utils {
             java.lang.Double::class.java -> cursor.getDouble(index)
             ByteArray::class.java -> cursor.getBlob(index)
             else -> null
+        }
+    }
+
+
+    internal fun DownloadListener.postSuccess(handler: Handler, file: File) {
+        handler.post {
+            onComplete(Uri.fromFile(file))
+        }
+    }
+
+    internal fun DownloadListener.postProgress(
+        handler: Handler,
+        status: Int,
+        totalBytes: Long,
+        wroteLength: Long
+    ) {
+        handler.post {
+            onProgressUpdate(
+                status,
+                totalBytes,
+                wroteLength
+            )
+        }
+    }
+
+    internal fun DownloadListener.postFailed(handler: Handler, e: Throwable) {
+        handler.post {
+            onFailed(e)
         }
     }
 
