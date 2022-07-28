@@ -50,10 +50,10 @@ class UpgradeDialogActivity : AppCompatActivity() {
             dialogInfo.description ?: ""
 
         findViewById<TextView>(R.id.tv_updater_cancel).text =
-            dialogInfo.leftButton ?: getString(R.string.updater_cancel)
+            dialogInfo.negativeText ?: getString(R.string.updater_cancel)
 
         findViewById<TextView>(R.id.tv_updater_confirm).text =
-            dialogInfo.rightButton ?: getString(R.string.updater_ok)
+            dialogInfo.positiveText ?: getString(R.string.updater_ok)
 
         findViewById<View>(R.id.tv_updater_cancel).setOnClickListener {
             finish()
@@ -63,6 +63,7 @@ class UpgradeDialogActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.tv_updater_confirm).setOnClickListener {
             DownloadRequest.newRequest(dialogInfo.url!!, DownloadMode.EMBED)
+                .setIgnoreLocal(dialogInfo.ignoreLocal)
                 .setNotificationTitle(appName)
                 .setNotificationDescription(getString(R.string.system_download_description))
                 .allowScanningByMediaScanner()
@@ -85,6 +86,9 @@ class UpgradeDialogActivity : AppCompatActivity() {
 
                     override fun onComplete(uri: Uri?) {
                         finish()
+                    }
+
+                    override fun onFailed(e: Throwable) {
                     }
                 })
         }
