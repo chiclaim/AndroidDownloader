@@ -6,10 +6,12 @@ import android.os.Build
 import android.provider.MediaStore
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.provider.Settings
 import java.io.File
 import java.lang.Exception
+import kotlin.reflect.KClass
 
 
 internal object Utils {
@@ -144,6 +146,31 @@ internal object Utils {
     fun removeFileSize(context: Context, url: String) {
         return SpHelper.get(context).remove("${MD5.md5(url)}-size")
     }
+
+    inline fun getValueFromCursor(cursor: Cursor, column: String, block: (index: Int) -> Unit) {
+        val index = cursor.getColumnIndex(column)
+        if (index != -1) block(index)
+    }
+
+    inline fun <reified T> Cursor.getValue(column: String): T? {
+        val index = getColumnIndex(column)
+        if (index == -1) return null
+        return getValueByType(this, index, T::class.java) as T?
+    }
+
+    private fun getValueByType(cursor: Cursor, index: Int, klass: Class<*>): Any? {
+        return when (klass) {
+            java.lang.String::class.java -> cursor.getString(index)
+            java.lang.Long::class.java -> cursor.getLong(index)
+            java.lang.Integer::class.java -> cursor.getInt(index)
+            java.lang.Short::class.java -> cursor.getShort(index)
+            java.lang.Float::class.java -> cursor.getFloat(index)
+            java.lang.Double::class.java -> cursor.getDouble(index)
+            ByteArray::class.java -> cursor.getBlob(index)
+            else -> null
+        }
+    }
+
 
     fun getDownloadPath(context: Context): File = context.externalCacheDir ?: context.filesDir
 }

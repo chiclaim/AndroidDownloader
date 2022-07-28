@@ -13,6 +13,7 @@ internal object DBManager {
     const val DOWNLOAD_DB_NAME = "download_db"
     const val DB_VERSION = 1
 
+    // share single database object
     private lateinit var dbHelper: DBHelper
 
     internal class DBHelper(context: Context) :
@@ -21,7 +22,7 @@ internal object DBManager {
         override fun onCreate(db: SQLiteDatabase?) {
             db?.execSQL(
                 """
-            CREATE TABLE t_download(
+            CREATE TABLE ${DownloadRecord.TABLE_NAME}(
                 ${DownloadRecord.COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT, 
                 ${DownloadRecord.COLUMN_URI} TEXT, 
                 ${DownloadRecord.COLUMN_FILENAME} TEXT, 
@@ -38,6 +39,9 @@ internal object DBManager {
     }
 
 
+    /**
+     * return single database object
+     */
     @Synchronized
     fun getDB(context: Context): DBHelper {
         if (!this::dbHelper.isInitialized) {
@@ -47,6 +51,9 @@ internal object DBManager {
     }
 
 
+    /**
+     * close database when you no longer need the database
+     */
     fun close() {
         if (this::dbHelper.isInitialized) {
             dbHelper.close()

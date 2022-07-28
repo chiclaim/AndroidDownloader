@@ -2,17 +2,13 @@ package com.chiclaim.android.updater
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import com.chiclaim.android.updater.util.MD5
-import com.chiclaim.android.updater.util.SpHelper
-import com.chiclaim.android.updater.util.Utils
 import com.chiclaim.android.updater.util.d
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -38,6 +34,43 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
         DownloadExecutor.execute {
             var conn: HttpURLConnection? = null
             try {
+
+                val urlHash = MD5.md5(request.url)
+                val dir = File(request.destinationDir.path ?: return@execute)
+                if (!dir.exists()) {
+                    dir.mkdirs()
+                }
+                val ext: String = request.url.substringAfterLast(".", "").run {
+                    if (length > 10) "" else ".${this}"
+                }
+                val destinationFile = File(dir, "$urlHash$ext")
+                d(destinationFile.absolutePath)
+
+
+                var record = DownloadRecord(hashUrl = urlHash)
+                record = record.queryByUrlHash(context).firstOrNull().run {
+                    if (this == null) {
+                        val rowId = record.insert(context)
+                        if (rowId != -1L) {
+                            record.queryByUrlHash(context).firstOrNull() ?: record
+                        } else {
+                            record
+                        }
+                    } else {
+                        this
+                    }
+                }
+
+                d(record.toString())
+
+
+                if (record.totalBytes > 0 && destinationFile.exists() && record.totalBytes == destinationFile.length()) {
+                    handler.post {
+                        listener?.onComplete(Uri.fromFile(destinationFile))
+                    }
+                    return@execute
+                }
+
                 val url = URL(request.url)
                 conn = url.openConnection() as HttpURLConnection
 
@@ -51,27 +84,11 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                     conn.addRequestProperty("User-Agent", "AndroidDownloader/1.0")
                 }
 
-                val dir = File(request.destinationDir.path ?: return@execute)
-                if (!dir.exists()) {
-                    dir.mkdirs()
-                }
-
-                val ext: String = request.url.substringAfterLast(".", "").run {
-                    if (length > 10) "" else ".${this}"
-                }
-                val fileName = MD5.md5(request.url)
-                val destinationFile = File(dir, "$fileName$ext")
-                d(destinationFile.absolutePath)
-
-                var contentLength = Utils.getFileSize(context, request.url, 0)
                 val currentLength = if (destinationFile.exists()) destinationFile.length() else 0
-                if (currentLength > 0 && contentLength > 0) {
+                val resuming = currentLength > 0
+                if (resuming) {
                     // continue last download
                     conn.setRequestProperty("Range", "bytes=$currentLength-")
-                } else {
-                    // first download
-                    contentLength = conn.contentLength.toLong()
-                    Utils.saveFileSize(context, request.url, contentLength)
                 }
 
                 // local function to reuse code
@@ -88,7 +105,7 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                                     handler.post {
                                         listener.onProgressUpdate(
                                             STATUS_RUNNING,
-                                            contentLength,
+                                            record.totalBytes,
                                             wroteLength
                                         )
                                     }
@@ -96,7 +113,6 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                             }
                         }
                     }
-                    Utils.removeFileSize(context, request.url)
                     listener?.let {
                         handler.post {
                             listener.onComplete(Uri.fromFile(destinationFile))
@@ -107,10 +123,18 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                 when (conn.responseCode) {
                     // 200 正常下载
                     HttpURLConnection.HTTP_OK -> {
+                        if (resuming) {
+                            throw IllegalStateException("Expected partial, but received OK")
+                        }
+                        record.totalBytes = conn.contentLength.toLong()
+                        record.update(context)
                         writeFile()
                     }
                     // 206 断点续传
                     HttpURLConnection.HTTP_PARTIAL -> {
+                        if (!resuming) {
+                            throw IllegalStateException("Expected OK, but received partial")
+                        }
                         writeFile(true)
                     }
                     // 301,302,303 重定向
@@ -123,7 +147,7 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                     }
                     // error
                     else -> {
-                        throw IOException("Download Failed: ${conn.responseCode}}")
+                        throw IOException("Download Failed: ${conn.responseCode}")
                     }
                 }
             } catch (e: Exception) {
