@@ -4,4 +4,6 @@
     <string name="updater_title">发现新版本啦</string>
     <string name="updater_cancel">取消</string>
     <string name="updater_ok">立即更新</string>
+    <string name="updater_notifier_channel_name">下载</string>
+    <string name="updater_notifier_subtext_placeholder">%1$d%%</string>
 </resources>

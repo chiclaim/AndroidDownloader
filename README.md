@@ -362,6 +362,13 @@ Caused by: java.lang.IllegalArgumentException: Unknown URL content://downloads/m
 - 支持 MD5 校验
 - 判断文件是否已经下载，不仅要判断下载状态，还需要判断文件是否存在
 - 断点续传
+- HTTPS 证书
+- 任务存入数据库，删除记录
+- 支持 ETAG
+- 通知栏进度条
+- 如果禁用通知栏
+- 国际化
+- 多文件下载通知栏能够聚合
 
 
 
