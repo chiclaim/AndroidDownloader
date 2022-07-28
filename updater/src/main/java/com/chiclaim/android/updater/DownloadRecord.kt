@@ -146,13 +146,19 @@ class DownloadRecord(
      * return the number of rows affected
      */
     fun delete(context: Context): Int {
-        return try {
+        val rows = try {
             val db = DBManager.getDB(context).writableDatabase
             db.delete(TABLE_NAME, "$COLUMN_ID=?", arrayOf(id.toString()))
         } catch (e: SQLiteException) {
             e.printStackTrace()
             -1
         }
+        if (rows > 0) {
+            d("record delete success $this")
+        } else {
+            d("record delete failed $this")
+        }
+        return rows
     }
 
     override fun toString(): String {
