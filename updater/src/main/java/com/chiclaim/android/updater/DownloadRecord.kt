@@ -14,11 +14,11 @@ import com.chiclaim.android.updater.util.d
  */
 class DownloadRecord(
     var id: Long = 0L,
-    var uri: String? = null,
-    var fileName: String? = null,
+    private var uri: String? = null,
+    private var fileName: String? = null,
     var hashUrl: String? = null,
     var totalBytes: Long = 0L,
-    var status: Int = 0
+    private var status: Int = 0
 ) {
 
     companion object {
