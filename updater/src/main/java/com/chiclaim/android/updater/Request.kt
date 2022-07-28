@@ -9,6 +9,19 @@ import android.net.Uri
  */
 abstract class Request(val url: String) {
 
+    /**
+     * Whether to ignore the local file, if true, it will be downloaded again
+     */
+    private var ignoreLocal = false
+
+
+    fun setIgnoreLocal(ignore: Boolean):Request {
+        this.ignoreLocal = ignore
+        return this
+    }
+
+    fun isIgnoreLocal() = ignoreLocal
+
     abstract fun setNotificationTitle(title: CharSequence): Request
 
     abstract fun setNotificationDescription(description: CharSequence): Request

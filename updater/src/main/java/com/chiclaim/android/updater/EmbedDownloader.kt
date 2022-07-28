@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import com.chiclaim.android.updater.util.MD5
-import com.chiclaim.android.updater.util.d
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -44,7 +43,7 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                     if (length > 10) "" else ".${this}"
                 }
                 val destinationFile = File(dir, "$urlHash$ext")
-                d(destinationFile.absolutePath)
+                // d(destinationFile.absolutePath)
 
 
                 var record = DownloadRecord(hashUrl = urlHash)
@@ -61,10 +60,8 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                     }
                 }
 
-                d(record.toString())
-
-
-                if (record.totalBytes > 0 && destinationFile.exists() && record.totalBytes == destinationFile.length()) {
+                val currentLength = if (destinationFile.exists()) destinationFile.length() else 0
+                if (!request.isIgnoreLocal() && record.totalBytes > 0 && record.totalBytes == currentLength) {
                     handler.post {
                         listener?.onComplete(Uri.fromFile(destinationFile))
                     }
@@ -84,8 +81,7 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                     conn.addRequestProperty("User-Agent", "AndroidDownloader/1.0")
                 }
 
-                val currentLength = if (destinationFile.exists()) destinationFile.length() else 0
-                val resuming = currentLength > 0
+                val resuming = !request.isIgnoreLocal() && currentLength > 0
                 if (resuming) {
                     // continue last download
                     conn.setRequestProperty("Range", "bytes=$currentLength-")
