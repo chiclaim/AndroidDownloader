@@ -62,6 +62,8 @@ class UpgradeDialogActivity : AppCompatActivity() {
         val appName = applicationInfo.loadLabel(packageManager)
 
         findViewById<View>(R.id.tv_updater_confirm).setOnClickListener {
+            progressBar?.isIndeterminate = true
+            progressBar?.visibility = View.VISIBLE
             DownloadRequest.newRequest(dialogInfo.url!!, DownloadMode.EMBED)
                 .setIgnoreLocal(dialogInfo.ignoreLocal)
                 .setNotificationTitle(appName)
@@ -81,6 +83,7 @@ class UpgradeDialogActivity : AppCompatActivity() {
                         val progress =
                             if (totalSize <= 0) 0 else
                                 (downloadedSize / totalSize.toDouble() * 100).toInt()
+                        progressBar?.isIndeterminate = progress == 0
                         progressBar?.progress = progress
                     }
 
