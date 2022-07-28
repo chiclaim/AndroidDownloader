@@ -14,13 +14,24 @@ abstract class Request(val url: String) {
      */
     private var ignoreLocal = false
 
+    /**
+     * 本次下载是否为更新当前的APP，如果是，则会自动处理弹出安装界面
+     */
+    private var needInstall = false
 
-    fun setIgnoreLocal(ignore: Boolean):Request {
+    fun setIgnoreLocal(ignore: Boolean): Request {
         this.ignoreLocal = ignore
         return this
     }
 
     fun isIgnoreLocal() = ignoreLocal
+
+    fun setNeedInstall(need: Boolean): Request {
+        this.needInstall = need
+        return this
+    }
+
+    fun isNeedInstall() = needInstall
 
     abstract fun setNotificationTitle(title: CharSequence): Request
 

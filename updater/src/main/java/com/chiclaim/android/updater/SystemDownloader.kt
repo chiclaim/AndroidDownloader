@@ -4,8 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import com.chiclaim.android.updater.util.Utils
+import java.io.File
 
-internal class SystemDownloader(context: Context, private val request: SystemDownloadRequest) : Downloader {
+internal class SystemDownloader(context: Context, private val request: SystemDownloadRequest) :
+    Downloader {
 
     private var context: Context
     private val downloader: SystemDownloadManager
@@ -25,20 +27,30 @@ internal class SystemDownloader(context: Context, private val request: SystemDow
             Utils.showDownloadSetting(context)
             return
         }
+
+        if (request.isIgnoreLocal()) {
+            download(request, listener)
+            return
+        }
+
         val downloadId = Utils.getLocalDownloadId(context, request.url)
         if (downloadId != -1L) {
             //获取下载状态
             when (val status = downloader.getDownloadStatus(downloadId)) {
                 STATUS_SUCCESSFUL -> {
-                    /*val uri = downloader.getDownloadedFileUri(downloadId)
+                    val uri = downloader.getDownloadedFileUri(downloadId)
                     if (uri != null) {
-                        listener?.onComplete(uri)
-                        //本地的版本大于当前程序的版本直接安装
-                        if (request.installDownloadApk && UpdaterUtils.compare(context, uri)) {
-                            UpdaterUtils.startInstall(context, uri)
+                        val path = uri.path
+                        // 判断文件是否被删除
+                        if (path != null && File(path).exists()) {
+                            listener?.onComplete(uri)
+                            //本地的版本大于当前程序的版本直接安装
+                            if (request.isNeedInstall() && Utils.compare(context, uri)) {
+                                Utils.startInstall(context, uri)
+                            }
+                            return
                         }
-                        return
-                    }*/
+                    }
                     //重新下载
                     download(request, listener)
                 }
