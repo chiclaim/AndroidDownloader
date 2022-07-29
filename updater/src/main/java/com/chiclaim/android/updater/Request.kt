@@ -2,6 +2,7 @@ package com.chiclaim.android.updater
 
 import android.content.Context
 import android.net.Uri
+import com.chiclaim.android.updater.util.NotifierVisibility
 
 /**
  *
@@ -61,7 +62,8 @@ abstract class Request(val url: String) {
      * @see [NOTIFIER_VISIBLE_NOTIFY_COMPLETED]
      * @see [NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION]
      */
-    open fun setNotificationVisibility(visibility: Int): Request {
+    open fun setNotificationVisibility(@NotifierVisibility visibility: Int): Request {
+        notificationVisibility = visibility
         return this
     }
 
