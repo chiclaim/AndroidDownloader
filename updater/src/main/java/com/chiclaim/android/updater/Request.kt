@@ -19,6 +19,8 @@ abstract class Request(val url: String) {
      */
     private var needInstall = false
 
+    private var notificationVisibility = NOTIFIER_VISIBLE_NOTIFY_COMPLETED
+
     fun setIgnoreLocal(ignore: Boolean): Request {
         this.ignoreLocal = ignore
         return this
@@ -32,6 +34,8 @@ abstract class Request(val url: String) {
     }
 
     fun isNeedInstall() = needInstall
+
+    fun getNotificationVisibility() = notificationVisibility
 
     abstract fun setNotificationTitle(title: CharSequence): Request
 
@@ -50,7 +54,16 @@ abstract class Request(val url: String) {
 
     open fun setMimeType(mimeType: String): Request = this
 
-    open fun setNotificationVisibility(visibility: Int): Request = this
+    /**
+     * 设置通知栏可见性
+     * @see [NOTIFIER_VISIBLE]
+     * @see [NOTIFIER_HIDDEN]
+     * @see [NOTIFIER_VISIBLE_NOTIFY_COMPLETED]
+     * @see [NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION]
+     */
+    open fun setNotificationVisibility(visibility: Int): Request {
+        return this
+    }
 
     open fun setAllowedNetworkTypes(flags: Int): Request = this
 
