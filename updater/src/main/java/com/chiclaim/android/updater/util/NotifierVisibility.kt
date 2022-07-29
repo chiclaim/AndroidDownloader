@@ -17,4 +17,4 @@ import com.chiclaim.android.updater.NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION
     NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION
 )
 @Retention(AnnotationRetention.SOURCE)
-annotation class NotifierVisibility()
+annotation class NotifierVisibility
