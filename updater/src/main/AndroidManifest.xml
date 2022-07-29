@@ -24,6 +24,18 @@
             </intent-filter>
         </receiver>
 
+
+        <provider
+            android:name="com.chiclaim.android.updater.DownloadFileProvider"
+            android:authorities="${applicationId}.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/download_file_paths" />
+        </provider>
+
+
     </application>
 
 </manifest>
