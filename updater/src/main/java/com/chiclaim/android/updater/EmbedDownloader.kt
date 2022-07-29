@@ -18,7 +18,8 @@ import java.net.URL
  *
  * @author by chiclaim@google.com
  */
-class EmbedDownloader(context: Context, private val request: EmbedDownloadRequest) : Downloader {
+class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
+    Downloader<EmbedDownloadRequest>(context.applicationContext, request) {
 
     companion object {
         private const val HTTP_TEMP_REDIRECT = 307
@@ -26,15 +27,8 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
         private const val MAX_REDIRECTS = 5  // can't be more than 7.
     }
 
-    private var context: Context
-
-
     private val handler by lazy {
         Handler(Looper.getMainLooper())
-    }
-
-    init {
-        this.context = context.applicationContext
     }
 
     private fun prepareConnection(uri: URL?, currentLength: Long): HttpURLConnection {
@@ -187,10 +181,11 @@ class EmbedDownloader(context: Context, private val request: EmbedDownloadReques
                 } catch (e: Exception) {
                     e.printStackTrace()
                     listener?.postFailed(handler, e)
+                    break // exception break while
                 } finally {
                     conn?.disconnect()
                 }
-                break
+                break // normal break while
             }
         }
     }

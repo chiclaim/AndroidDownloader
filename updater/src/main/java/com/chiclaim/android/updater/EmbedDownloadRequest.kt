@@ -36,27 +36,7 @@ class EmbedDownloadRequest(url: String) : Request(url) {
         return this
     }
 
-    override fun setMimeType(mimeType: String): Request {
-        return this
-    }
-
-    override fun setNotificationVisibility(visibility: Int): Request {
-        return this
-    }
-
-    override fun setAllowedNetworkTypes(flags: Int): Request {
-        return this
-    }
-
-    override fun setAllowedOverRoaming(allowed: Boolean): Request {
-        return this
-    }
-
-    override fun setAllowedOverMetered(allow: Boolean): Request {
-        return this
-    }
-
-    override fun buildDownloader(context: Context): Downloader {
+    override fun buildDownloader(context: Context): Downloader<*> {
         if (!this::destinationDir.isInitialized) {
             destinationDir = Uri.fromFile(getDownloadPath(context))
         }

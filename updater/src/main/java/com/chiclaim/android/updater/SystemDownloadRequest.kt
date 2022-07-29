@@ -66,7 +66,7 @@ class SystemDownloadRequest(url: String) : Request(url) {
 
     fun getRequest(): DownloadManager.Request = rawRequest
 
-    override fun buildDownloader(context: Context): Downloader =
+    override fun buildDownloader(context: Context): Downloader<*> =
         SystemDownloader(context.applicationContext, this)
 
 }

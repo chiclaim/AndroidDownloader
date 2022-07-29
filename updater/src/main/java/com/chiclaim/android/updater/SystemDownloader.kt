@@ -6,15 +6,11 @@ import android.widget.Toast
 import com.chiclaim.android.updater.util.Utils
 import java.io.File
 
-internal class SystemDownloader(context: Context, private val request: SystemDownloadRequest) :
-    Downloader {
+internal class SystemDownloader(context: Context, request: SystemDownloadRequest) :
+    Downloader<SystemDownloadRequest>(context.applicationContext, request) {
 
-    private var context: Context
-    private val downloader: SystemDownloadManager
-
-    init {
-        this.context = context.applicationContext
-        downloader = SystemDownloadManager(this.context)
+    private val downloader: SystemDownloadManager by lazy {
+        SystemDownloadManager(this.context)
     }
 
     override fun startDownload(listener: DownloadListener?) {

@@ -56,7 +56,7 @@ abstract class Request(val url: String) {
     open fun setMimeType(mimeType: String): Request = this
 
     /**
-     * 设置通知栏可见性
+     * 设置通知栏可见性，默认为 [NOTIFIER_VISIBLE_NOTIFY_COMPLETED]
      * @see [NOTIFIER_VISIBLE]
      * @see [NOTIFIER_HIDDEN]
      * @see [NOTIFIER_VISIBLE_NOTIFY_COMPLETED]
@@ -74,5 +74,5 @@ abstract class Request(val url: String) {
     open fun setAllowedOverMetered(allow: Boolean): Request = this
 
 
-    abstract fun buildDownloader(context: Context): Downloader
+    abstract fun buildDownloader(context: Context): Downloader<*>
 }
