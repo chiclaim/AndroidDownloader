@@ -366,9 +366,12 @@ Caused by: java.lang.IllegalArgumentException: Unknown URL content://downloads/m
 - 任务存入数据库，删除记录
 - 支持 ETAG
 - 通知栏进度条
+- 进度信息，要进行速度采样，然后在通知回调
 - 如果禁用通知栏
 - 国际化
 - 多文件下载通知栏能够聚合
+- 相同 url 重复触发下载操作
+- 网络重新连接，能够自动继续下载
 
 
 

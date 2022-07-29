@@ -1,5 +1,6 @@
 package com.chiclaim.android.updater.util
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
@@ -10,6 +11,7 @@ import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
 import android.provider.Settings
+import androidx.core.content.FileProvider
 import com.chiclaim.android.updater.DownloadListener
 import java.io.File
 
@@ -18,10 +20,30 @@ internal object Utils {
 
     private const val DOWNLOAD_COMPONENT_PACKAGE = "com.android.providers.downloads"
 
+    fun startInstall(context: Context, apkFile: File) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addCategory(Intent.CATEGORY_DEFAULT)
+
+        val uri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", apkFile)
+        } else {
+            Uri.fromFile(apkFile)
+        }
+        if (context !is Activity) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        intent.setDataAndType(uri, "application/vnd.android.package-archive")
+        context.startActivity(intent)
+    }
+
     fun startInstall(context: Context, uri: Uri?) {
         val install = Intent(Intent.ACTION_VIEW)
         install.setDataAndType(uri, "application/vnd.android.package-archive")
-        install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (context !is Activity) {
+            install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
         install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         context.startActivity(install)
     }
@@ -171,33 +193,8 @@ internal object Utils {
         }
     }
 
-
-    internal fun DownloadListener.postSuccess(handler: Handler, file: File) {
-        handler.post {
-            onComplete(Uri.fromFile(file))
-        }
-    }
-
-    internal fun DownloadListener.postProgress(
-        handler: Handler,
-        status: Int,
-        totalBytes: Long,
-        wroteLength: Long
-    ) {
-        handler.post {
-            onProgressUpdate(
-                status,
-                totalBytes,
-                wroteLength
-            )
-        }
-    }
-
-    internal fun DownloadListener.postFailed(handler: Handler, e: Throwable) {
-        handler.post {
-            onFailed(e)
-        }
-    }
+    internal fun getPercent(totalSize: Long, downloadedSize: Long) = if (totalSize <= 0) 0 else
+        (downloadedSize / totalSize.toDouble() * 100).toInt()
 
 
     fun getDownloadPath(context: Context): File = context.externalCacheDir ?: context.filesDir

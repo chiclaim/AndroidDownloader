@@ -24,7 +24,7 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
             return
         }
 
-        if (request.isIgnoreLocal()) {
+        if (request.ignoreLocal) {
             download(request, listener)
             return
         }
@@ -41,7 +41,7 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
                         if (path != null && File(path).exists()) {
                             listener?.onComplete(uri)
                             //本地的版本大于当前程序的版本直接安装
-                            if (request.isNeedInstall() && Utils.compare(context, uri)) {
+                            if (request.needInstall && Utils.compare(context, uri)) {
                                 Utils.startInstall(context, uri)
                             }
                             return

@@ -2,6 +2,7 @@ package com.chiclaim.android.updater
 
 import android.content.Context
 import android.net.Uri
+import androidx.annotation.DrawableRes
 import com.chiclaim.android.updater.util.NotifierVisibility
 
 /**
@@ -13,34 +14,51 @@ abstract class Request(val url: String) {
     /**
      * Whether to ignore the local file, if true, it will be downloaded again
      */
-    private var ignoreLocal = false
+    var ignoreLocal = false
+        private set
 
     /**
      * 本次下载是否为更新当前的APP，如果是，则会自动处理弹出安装界面
      */
-    private var needInstall = false
+    var needInstall = false
+        private set
 
-    private var notificationVisibility = NOTIFIER_VISIBLE_NOTIFY_COMPLETED
+    var notificationVisibility = NOTIFIER_VISIBLE_NOTIFY_COMPLETED
+        private set
+
+    var notificationSmallIcon = -1
+        private set
+
+    var notificationTitle: CharSequence? = null
+        private set
+    var notificationContent: CharSequence? = null
+        private set
+
+    fun setNotificationSmallIcon(@DrawableRes smallIcon: Int): Request {
+        this.notificationSmallIcon = smallIcon
+        return this
+    }
 
     fun setIgnoreLocal(ignore: Boolean): Request {
         this.ignoreLocal = ignore
         return this
     }
 
-    fun isIgnoreLocal() = ignoreLocal
 
     fun setNeedInstall(need: Boolean): Request {
         this.needInstall = need
         return this
     }
 
-    fun isNeedInstall() = needInstall
+    open fun setNotificationTitle(title: CharSequence): Request{
+        this.notificationTitle = title
+        return this
+    }
 
-    fun getNotificationVisibility() = notificationVisibility
-
-    abstract fun setNotificationTitle(title: CharSequence): Request
-
-    abstract fun setNotificationDescription(description: CharSequence): Request
+    open fun setNotificationContent(content: CharSequence): Request{
+        this.notificationContent = content
+        return this
+    }
 
     open fun allowScanningByMediaScanner(): Request = this
 

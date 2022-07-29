@@ -15,6 +15,7 @@ class UpgradeDialogInfo() : Parcelable {
     var negativeText: String? = null
     var positiveText: String? = null
     var ignoreLocal = false
+    var notifierSmallIcon = -1
 
     constructor(parcel: Parcel) : this() {
         url = parcel.readString()
@@ -23,6 +24,7 @@ class UpgradeDialogInfo() : Parcelable {
         negativeText = parcel.readString()
         positiveText = parcel.readString()
         ignoreLocal = parcel.readInt() != 0
+        notifierSmallIcon = parcel.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -32,6 +34,7 @@ class UpgradeDialogInfo() : Parcelable {
         parcel.writeString(negativeText)
         parcel.writeString(positiveText)
         parcel.writeInt(if (ignoreLocal) 1 else 0)
+        parcel.writeInt(notifierSmallIcon)
     }
 
     override fun describeContents(): Int {

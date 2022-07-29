@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import com.chiclaim.android.updater.R
+import com.chiclaim.android.updater.STATUS_RUNNING
 
 
 /**
@@ -18,7 +19,15 @@ internal class NotifierUtils private constructor() {
     companion object {
         private const val CHANNEL_ID = "download_channel_normal"
 
-        fun showNotification(context: Context, id: Int, @DrawableRes drawable: Int, percent: Int) {
+        fun showNotification(
+            context: Context,
+            id: Int,
+            @DrawableRes drawable: Int,
+            percent: Int,
+            title: CharSequence,
+            content: CharSequence?,
+            @DownloadStatus status: Int
+        ) {
             val notificationManager: NotificationManager =
                 context.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -27,25 +36,32 @@ internal class NotifierUtils private constructor() {
                 val channel = NotificationChannel(
                     CHANNEL_ID,
                     context.getString(R.string.updater_notifier_channel_name),
-                    NotificationManager.IMPORTANCE_DEFAULT
+                    NotificationManager.IMPORTANCE_LOW
                 )
                 notificationManager.createNotificationChannel(channel)
             }
 
             val builder = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(drawable)
-                .setContentTitle("Title")
-                .setContentText("Content")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentTitle(title)
                 .setAutoCancel(false)
                 .setOngoing(percent != 100)
-                .setProgress(100, percent, percent <= 0)
-                .setSubText( // don't use setContentInfo(deprecated in API level 24)
+
+            if (percent >= 0) {
+                builder.setSubText( // don't use setContentInfo(deprecated in API level 24)
                     context.getString(
                         R.string.updater_notifier_subtext_placeholder,
                         percent
                     )
                 )
+            }
+
+            if (status == STATUS_RUNNING)
+                builder.setProgress(100, percent, percent <= 0)
+
+            content?.let {
+                builder.setContentText(it)
+            }
             notificationManager.notify(id, builder.build())
         }
 

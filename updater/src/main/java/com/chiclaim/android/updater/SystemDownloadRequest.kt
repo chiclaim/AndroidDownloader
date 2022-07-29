@@ -14,8 +14,8 @@ class SystemDownloadRequest(url: String) : Request(url) {
         return this
     }
 
-    override fun setNotificationDescription(description: CharSequence): Request {
-        rawRequest.setDescription(description)
+    override fun setNotificationContent(content: CharSequence): Request {
+        rawRequest.setDescription(content)
         return this
     }
 

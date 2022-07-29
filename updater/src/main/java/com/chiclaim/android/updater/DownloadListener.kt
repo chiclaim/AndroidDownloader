@@ -9,7 +9,7 @@ import android.net.Uri
 interface DownloadListener {
 
 
-    fun onProgressUpdate(status: Int, totalSize: Long, downloadedSize: Long)
+    fun onProgressUpdate(percent:Int)
 
 
     fun onComplete(uri: Uri?)

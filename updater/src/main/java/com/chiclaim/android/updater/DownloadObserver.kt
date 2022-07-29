@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.ContentObserver
 import android.os.Handler
 import android.os.Looper
+import com.chiclaim.android.updater.util.Utils.getPercent
 
 
 /**
@@ -28,8 +29,6 @@ internal class DownloadObserver(
     }
 
 
-
-
     override fun onChange(selfChange: Boolean) {
 
         super.onChange(selfChange)
@@ -37,7 +36,7 @@ internal class DownloadObserver(
             val info = SystemDownloadManager(context).getDownloadInfo(downloadId)
             info?.let {
                 handler.post {
-                    listener?.onProgressUpdate(info.status, info.totalSize, info.downloadedSize)
+                    listener?.onProgressUpdate(getPercent(info.totalSize, info.downloadedSize))
                     if (info.hasComplete()) {
                         // 下载完毕后，移除观察者
                         context.contentResolver.unregisterContentObserver(this)

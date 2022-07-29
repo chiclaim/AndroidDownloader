@@ -13,14 +13,6 @@ class EmbedDownloadRequest(url: String) : Request(url) {
     lateinit var destinationDir: Uri
         private set
 
-    override fun setNotificationTitle(title: CharSequence): Request {
-        return this
-    }
-
-    override fun setNotificationDescription(description: CharSequence): Request {
-        return this
-    }
-
     override fun allowScanningByMediaScanner(): Request {
         return this
     }
@@ -37,6 +29,9 @@ class EmbedDownloadRequest(url: String) : Request(url) {
     }
 
     override fun buildDownloader(context: Context): Downloader<*> {
+        if (notificationVisibility != NOTIFIER_HIDDEN && notificationSmallIcon == -1)
+            throw IllegalArgumentException("must set notification small icon")
+
         if (!this::destinationDir.isInitialized) {
             destinationDir = Uri.fromFile(getDownloadPath(context))
         }

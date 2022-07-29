@@ -64,10 +64,11 @@ class UpgradeDialogActivity : AppCompatActivity() {
         findViewById<View>(R.id.tv_updater_confirm).setOnClickListener {
             progressBar?.isIndeterminate = true
             progressBar?.visibility = View.VISIBLE
-            DownloadRequest.newRequest(dialogInfo.url!!, DownloadMode.EMBED)
+            DownloadRequest.newRequest(dialogInfo.url!!, DownloadMode.DOWNLOAD_MANAGER)
+                .setNotificationSmallIcon(dialogInfo.notifierSmallIcon)
                 .setIgnoreLocal(dialogInfo.ignoreLocal)
                 .setNotificationTitle(appName)
-                .setNotificationDescription(getString(R.string.system_download_description))
+                .setNotificationContent(getString(R.string.system_download_description))
                 .allowScanningByMediaScanner()
                 .setAllowedNetworkTypes(
                     DownloadManager.Request.NETWORK_MOBILE
@@ -76,15 +77,10 @@ class UpgradeDialogActivity : AppCompatActivity() {
                 .buildDownloader(applicationContext)
                 .startDownload(object : DownloadListener {
                     override fun onProgressUpdate(
-                        status: Int,
-                        totalSize: Long,
-                        downloadedSize: Long
+                        percent: Int
                     ) {
-                        val progress =
-                            if (totalSize <= 0) 0 else
-                                (downloadedSize / totalSize.toDouble() * 100).toInt()
-                        progressBar?.isIndeterminate = progress == 0
-                        progressBar?.progress = progress
+                        progressBar?.isIndeterminate = percent == 0
+                        progressBar?.progress = percent
                     }
 
                     override fun onComplete(uri: Uri?) {
