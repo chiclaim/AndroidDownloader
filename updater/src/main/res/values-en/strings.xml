@@ -4,6 +4,11 @@
     <string name="updater_title">A new version found</string>
     <string name="updater_cancel">Cancel</string>
     <string name="updater_ok">Update</string>
+    <string name="updater_desc_default">Fix known bugs</string>
+    <string name="updater_tip_title">Tip</string>
+    <string name="updater_setting">setup</string>
+    <string name="updater_without_install_permission">ou have not given permission to install the app</string>
+    <string name="updater_notification_disable">Notification bar is disabled</string>
     <string name="updater_notifier_channel_name">download</string>
     <string name="updater_notifier_subtext_placeholder">%1$d%%</string>
     <string name="updater_notifier_title_placeholder">%1$s new version</string>
