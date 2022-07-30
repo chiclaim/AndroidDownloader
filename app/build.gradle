@@ -14,10 +14,20 @@ android {
         versionName VERSION_NAME_UPDATER as String
 
     }
+
+    signingConfigs {
+        release {
+            keyAlias 'release123'
+            keyPassword 'release123'
+            storeFile file('../release.ks')
+            storePassword 'release123'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
