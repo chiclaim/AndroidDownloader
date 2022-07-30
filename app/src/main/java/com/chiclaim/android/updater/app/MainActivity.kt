@@ -10,6 +10,8 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.chiclaim.android.updater.*
+import com.chiclaim.android.updater.util.startInstall
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -52,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onComplete(uri: Uri?) {
                     Log.d("MainActivity", "下载完成")
-
+                    startInstall(applicationContext, File(uri?.path!!))
                 }
 
                 override fun onFailed(e: Throwable) {

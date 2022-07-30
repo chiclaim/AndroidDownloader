@@ -4,13 +4,13 @@ import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.chiclaim.android.updater.util.Utils
+import com.chiclaim.android.updater.util.startInstall
 
 /**
  *
  * @author by chiclaim@google.com
  */
-class DownloadReceiver : BroadcastReceiver() {
+class SystemDownloadReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         require(intent != null && context != null)
@@ -31,8 +31,8 @@ class DownloadReceiver : BroadcastReceiver() {
         val dManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager
             ?: return
         val downloadFileUri = dManager.getUriForDownloadedFile(downloadApkId)
-        if (downloadFileUri != null) {
-            Utils.startInstall(context, downloadFileUri)
+        downloadFileUri?.let {
+            startInstall(context, it)
         }
     }
 

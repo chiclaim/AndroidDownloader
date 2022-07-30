@@ -7,10 +7,8 @@ import kotlin.jvm.Synchronized
 internal class SpHelper private constructor(context: Context) {
 
 
-    private val sp: SharedPreferences
-
-    init {
-        sp = context.applicationContext.getSharedPreferences(
+    private val sp: SharedPreferences by lazy {
+        context.applicationContext.getSharedPreferences(
             "dfire_download_sp",
             Context.MODE_PRIVATE
         )

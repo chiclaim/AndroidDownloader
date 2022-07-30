@@ -16,7 +16,7 @@
 
 
         <receiver
-            android:name="com.chiclaim.android.updater.DownloadReceiver"
+            android:name="com.chiclaim.android.updater.SystemDownloadReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
@@ -27,7 +27,7 @@
 
         <provider
             android:name="com.chiclaim.android.updater.DownloadFileProvider"
-            android:authorities="${applicationId}.fileProvider"
+            android:authorities="${applicationId}${authoritiesSuffix}"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

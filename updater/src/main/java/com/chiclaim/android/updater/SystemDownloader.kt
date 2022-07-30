@@ -4,6 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import com.chiclaim.android.updater.util.Utils
+import com.chiclaim.android.updater.util.checkDownloadComponentEnable
+import com.chiclaim.android.updater.util.showDownloadComponentSetting
+import com.chiclaim.android.updater.util.startInstall
 import java.io.File
 
 internal class SystemDownloader(context: Context, request: SystemDownloadRequest) :
@@ -14,13 +17,13 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
     }
 
     override fun startDownload(listener: DownloadListener?) {
-        if (!Utils.checkDownloadState(context)) {
+        if (!checkDownloadComponentEnable(context)) {
             Toast.makeText(
                 context,
                 R.string.system_download_component_disable,
                 Toast.LENGTH_SHORT
             ).show()
-            Utils.showDownloadSetting(context)
+            showDownloadComponentSetting(context)
             return
         }
 
@@ -31,19 +34,20 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
 
         val downloadId = Utils.getLocalDownloadId(context, request.url)
         if (downloadId != -1L) {
+            val downloadInfo = downloader.getDownloadInfo(downloadId)
+            if (downloadInfo == null) {
+                download(request, listener)
+                return
+            }
             //获取下载状态
-            when (val status = downloader.getDownloadStatus(downloadId)) {
+            when (downloadInfo.status) {
                 STATUS_SUCCESSFUL -> {
                     val uri = downloader.getDownloadedFileUri(downloadId)
-                    if (uri != null) {
-                        val path = uri.path
-                        // 判断文件是否被删除
-                        if (path != null && File(path).exists()) {
+                    uri?.path?.let {
+                        val file = File(it)
+                        if (file.exists() && file.length() == downloadInfo.totalSize) {
                             listener?.onComplete(uri)
-                            //本地的版本大于当前程序的版本直接安装
-                            if (request.needInstall && Utils.compare(context, uri)) {
-                                Utils.startInstall(context, uri)
-                            }
+                            if (request.needInstall) startInstall(context, uri)
                             return
                         }
                     }
@@ -53,7 +57,7 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
                 STATUS_FAILED, STATUS_UNKNOWN -> {
                     download(request, listener)
                 }
-                else -> printDownloadStatus(downloadId, status)
+                else -> printDownloadStatus(downloadId, downloadInfo.status)
             }
         } else {
             download(request, listener)

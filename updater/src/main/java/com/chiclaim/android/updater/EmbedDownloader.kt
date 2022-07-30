@@ -12,7 +12,6 @@ import com.chiclaim.android.updater.DownloadException.Companion.ERROR_UNHANDLED
 import com.chiclaim.android.updater.util.MD5
 import com.chiclaim.android.updater.util.NotifierUtils
 import com.chiclaim.android.updater.util.Utils.getPercent
-import com.chiclaim.android.updater.util.Utils.startInstall
 import java.io.File
 import java.io.FileOutputStream
 import java.net.*
