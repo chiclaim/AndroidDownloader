@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white_3">#333333</color>
+    <color name="black_3">#333333</color>
+    <color name="updater_positive_color">#4169E1</color>
 </resources>

@@ -47,7 +47,7 @@ class UpgradeDialogActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dialog_layout)
+        setContentView(R.layout.activity_upgrade_dialog_layout)
 
         val dialogInfo: UpgradeDialogInfo = intent.getParcelableExtra(EXTRA_DIALOG_INFO)
             ?: error("need $EXTRA_DIALOG_INFO parameter")
@@ -64,7 +64,7 @@ class UpgradeDialogActivity : AppCompatActivity() {
             dialogInfo.title ?: getString(R.string.updater_title)
 
         findViewById<TextView>(R.id.tv_updater_desc).text =
-            dialogInfo.description ?: ""
+            dialogInfo.description ?: getString(R.string.updater_desc_default)
 
         findViewById<TextView>(R.id.tv_updater_cancel).text =
             dialogInfo.negativeText ?: getString(R.string.updater_cancel)
@@ -87,6 +87,7 @@ class UpgradeDialogActivity : AppCompatActivity() {
                 .setIgnoreLocal(dialogInfo.ignoreLocal)
                 .setNotificationTitle(appName)
                 .setNotificationContent(getString(R.string.system_download_description))
+                .setNeedInstall(true)
                 .allowScanningByMediaScanner()
                 .setAllowedNetworkTypes(
                     DownloadManager.Request.NETWORK_MOBILE

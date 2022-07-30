@@ -12,8 +12,7 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.chiclaim.android.updater.*
-import com.chiclaim.android.updater.util.startInstall
-import java.io.File
+import com.chiclaim.android.updater.util.settingPackageInstall
 
 class MainActivity : AppCompatActivity() {
 
@@ -62,6 +61,7 @@ class MainActivity : AppCompatActivity() {
             .setNotificationContent(getString(R.string.system_download_description))
             .allowScanningByMediaScanner()
             .setIgnoreLocal(true)
+            .setNeedInstall(true)
             .setNotificationSmallIcon(R.mipmap.ic_launcher)
             //.setAllowedNetworkTypes(
             //    DownloadManager.Request.NETWORK_MOBILE
@@ -77,7 +77,6 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onComplete(uri: Uri?) {
                     Log.d("MainActivity", "下载完成")
-                    startInstall(applicationContext, File(uri?.path!!))
                 }
 
                 override fun onFailed(e: Throwable) {
@@ -102,6 +101,10 @@ class MainActivity : AppCompatActivity() {
             description = "1. 修复已知问题\n2. 修复已知问题"
             notifierSmallIcon = R.mipmap.ic_launcher
         }, mode)
+    }
+
+    fun settingInstallPermission(view: View) {
+        settingPackageInstall(this, 100)
     }
 
 }

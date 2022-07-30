@@ -11,13 +11,13 @@
         android:id="@+id/et_download"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="download uri"
+        android:hint="download url"
         android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <Button
             android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:onClick="setting"
-            android:text="Setting"
+            android:text="Setting DownloadManager"
             android:textAllCaps="false"
             android:textSize="20sp" />
 
@@ -41,8 +41,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:onClick="settingInstallPermission"
+            android:text="Setting InstallPermission"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:onClick="showUpdateDialog"
-            android:text="showDialog"
+            android:text="Show Upgrade Dialog"
             android:textAllCaps="false"
             android:textSize="20sp" />
 

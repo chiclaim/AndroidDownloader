@@ -13,9 +13,28 @@ import android.provider.MediaStore
 import android.provider.Settings
 import androidx.core.content.FileProvider
 import com.chiclaim.android.updater.BuildConfig
+import com.chiclaim.android.updater.UpgradePermissionDialogActivity
 import java.io.File
 
 private const val DOWNLOAD_COMPONENT_PACKAGE = "com.android.providers.downloads"
+
+fun hasInstallPermission(context: Context): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        return context.packageManager.canRequestPackageInstalls()
+    }
+    return true
+}
+
+fun settingPackageInstall(activity: Activity, requestCode: Int) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val intentSetting = Intent(
+            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+            Uri.parse("package:" + activity.packageName)
+        )
+        //intentSetting.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        activity.startActivityForResult(intentSetting, requestCode)
+    }
+}
 
 fun startInstall(context: Context, apkFile: File) {
     val uri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -31,6 +50,10 @@ fun startInstall(context: Context, apkFile: File) {
 }
 
 fun startInstall(context: Context, uri: Uri) {
+    if (!hasInstallPermission(context)) {
+        UpgradePermissionDialogActivity.launch(context, uri.toString())
+        return
+    }
     val intent = Intent(Intent.ACTION_VIEW)
     if (context !is Activity) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

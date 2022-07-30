@@ -10,35 +10,37 @@
         android:id="@+id/tv_updater_title"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:gravity="center|left"
-        android:textColor="@color/white_3"
         android:layout_marginLeft="18dp"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="更新提醒" />
+        android:gravity="center|left"
+        android:textColor="@color/black_3"
+        android:textSize="@dimen/dialog_title_size"
+        android:textStyle="normal"
+        tools:text="更新提醒" />
 
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <TextView
             android:id="@+id/tv_updater_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start"
+            android:maxHeight="400dp"
             android:paddingLeft="20dp"
-            android:paddingBottom="40dp"
             android:paddingRight="20dp"
-            android:textColor="@color/white_3"
-            android:textSize="16sp"
-            android:text="XXX有新版本，是否更新？\nXXX有新版本，是否更新？" />
+            android:paddingBottom="40dp"
+            android:textColor="@color/black_3"
+            android:textSize="@dimen/dialog_content_size"
+            tools:text="XXX有新版本，是否更新？\nXXX有新版本，是否更新？" />
     </ScrollView>
 
     <ProgressBar
         android:id="@+id/pb_updater"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 
     <LinearLayout
@@ -49,27 +51,27 @@
         <TextView
             android:id="@+id/tv_updater_cancel"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="45dp"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="@string/updater_cancel"
-            android:textColor="@color/white_3"
-            android:textSize="18sp"/>
+            android:textColor="@color/black_3"
+            android:textSize="@dimen/dialog_btn_size" />
 
         <View
             android:layout_width="0.5dp"
             android:layout_height="match_parent"
-            android:background="#eeeeee"/>
+            android:background="#eeeeee" />
 
         <TextView
             android:id="@+id/tv_updater_confirm"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="45dp"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="@string/updater_ok"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"/>
+            android:textColor="@color/updater_positive_color"
+            android:textSize="@dimen/dialog_btn_size" />
     </LinearLayout>
 
 </LinearLayout>

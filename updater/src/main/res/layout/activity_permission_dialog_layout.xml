@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/gb_dialog"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_permission_title"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center|left"
+        android:textColor="@color/black_3"
+        android:layout_marginLeft="18dp"
+        android:textSize="@dimen/dialog_title_size"
+        android:textStyle="normal"
+        android:text="@string/updater_tip_title" />
+
+
+    <TextView
+        android:id="@+id/tv_permission_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:paddingLeft="20dp"
+        android:paddingBottom="40dp"
+        android:paddingRight="20dp"
+        android:textColor="@color/black_3"
+        android:textSize="@dimen/dialog_content_size"
+        android:text="@string/updater_without_install_permission" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_permission_cancel"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:text="@string/updater_cancel"
+            android:textColor="@color/black_3"
+            android:textSize="@dimen/dialog_btn_size"/>
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#eeeeee"/>
+
+        <TextView
+            android:id="@+id/tv_permission_confirm"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:text="@string/updater_setting"
+            android:textColor="@color/updater_positive_color"
+            android:textSize="@dimen/dialog_btn_size"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -14,6 +14,9 @@
         <activity android:name="com.chiclaim.android.updater.UpgradeDialogActivity"
             android:theme="@style/UpgradeTransparentDialogStyle"/>
 
+        <activity android:name="com.chiclaim.android.updater.UpgradePermissionDialogActivity"
+            android:theme="@style/UpgradeTransparentDialogStyle"/>
+
 
         <receiver
             android:name="com.chiclaim.android.updater.SystemDownloadReceiver"
