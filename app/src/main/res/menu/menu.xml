@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/mode_embed"
+        android:title="@string/menu_download_mode_embed"
+        app:showAsAction="never"/>
+    <item android:id="@+id/mode_system"
+        android:title="@string/menu_download_mode_system"
+        app:showAsAction="never"/>
+
+</menu>

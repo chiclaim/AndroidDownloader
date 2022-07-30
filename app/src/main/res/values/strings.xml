@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">App Updater</string>
+    <string name="menu_download_mode_system">SystemDownloadManager</string>
+    <string name="menu_download_mode_embed">EmbedHttpUrlConnection</string>
 </resources>

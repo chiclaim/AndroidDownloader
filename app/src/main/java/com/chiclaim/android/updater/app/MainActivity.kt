@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -19,12 +21,33 @@ class MainActivity : AppCompatActivity() {
         private const val APK_URL = "https://app.2dfire.com/fandian/tv/tv_release_2010300.apk"
     }
 
+    private var mode = DownloadMode.EMBED
+
     private var editText: EditText? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         editText = findViewById(R.id.et_download) as? EditText
         editText?.setText(APK_URL)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.mode_system -> {
+                mode = DownloadMode.DOWNLOAD_MANAGER
+                return true
+            }
+            R.id.mode_embed -> {
+                mode = DownloadMode.EMBED
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     fun download(view: View) {
@@ -34,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         }
         var callbackCount = 0
 
-        DownloadRequest.newRequest(url, DownloadMode.EMBED)
+        DownloadRequest.newRequest(url, mode)
             .setNotificationTitle(resources.getString(R.string.app_name))
             .setNotificationContent(getString(R.string.system_download_description))
             .allowScanningByMediaScanner()
@@ -78,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             title = "发现新版本"
             description = "1. 修复已知问题\n2. 修复已知问题"
             notifierSmallIcon = R.mipmap.ic_launcher
-        }, DownloadMode.EMBED)
+        }, mode)
     }
 
 }
