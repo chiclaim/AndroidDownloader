@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.chiclaim.android.updater.*
+import com.chiclaim.android.updater.util.goNotificationSettings
 import com.chiclaim.android.updater.util.settingPackageInstall
 
 class MainActivity : AppCompatActivity() {
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             .allowScanningByMediaScanner()
             .setIgnoreLocal(true)
             .setNeedInstall(true)
+            .setNotificationVisibility(NOTIFIER_VISIBLE)
             .setNotificationSmallIcon(R.mipmap.ic_launcher)
             .setShowNotificationDisableTip(true)
             //.setAllowedNetworkTypes(
@@ -97,7 +99,7 @@ class MainActivity : AppCompatActivity() {
     fun showUpdateDialog(view: View) {
         UpgradeDialogActivity.launch(this, UpgradeDialogInfo().apply {
             url = APK_URL
-            ignoreLocal = false
+            ignoreLocal = true
             title = "发现新版本"
             description = "1. 修复已知问题\n2. 修复已知问题"
             notifierSmallIcon = R.mipmap.ic_launcher
@@ -106,6 +108,10 @@ class MainActivity : AppCompatActivity() {
 
     fun settingInstallPermission(view: View) {
         settingPackageInstall(this, 100)
+    }
+
+    fun goSettingNotification(view: View) {
+        goNotificationSettings(this)
     }
 
 }

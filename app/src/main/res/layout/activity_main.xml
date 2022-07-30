@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="download url"
-        android:textSize="20sp" />
+        android:textSize="@dimen/btn_size" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -22,39 +22,43 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:onClick="download"
             android:text="Download"
             android:textAllCaps="false"
-            android:textSize="20sp" />
-
+            android:textSize="@dimen/btn_size" />
+        
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:onClick="setting"
-            android:text="Setting DownloadManager"
-            android:textAllCaps="false"
-            android:textSize="20sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:onClick="settingInstallPermission"
-            android:text="Setting InstallPermission"
-            android:textAllCaps="false"
-            android:textSize="20sp" />
-
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:onClick="showUpdateDialog"
             android:text="Show Upgrade Dialog"
             android:textAllCaps="false"
-            android:textSize="20sp" />
+            android:textSize="@dimen/btn_size" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="setting"
+            android:text="Setting DownloadManager"
+            android:textAllCaps="false"
+            android:textSize="@dimen/btn_size" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="settingInstallPermission"
+            android:text="Setting InstallPermission"
+            android:textAllCaps="false"
+            android:textSize="@dimen/btn_size" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="goSettingNotification"
+            android:text="Setting Notification"
+            android:textAllCaps="false"
+            android:textSize="@dimen/btn_size" />
 
     </LinearLayout>
 
