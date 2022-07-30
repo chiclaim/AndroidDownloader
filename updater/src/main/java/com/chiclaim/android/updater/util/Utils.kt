@@ -1,17 +1,7 @@
 package com.chiclaim.android.updater.util
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.database.Cursor
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.provider.Settings
-import androidx.core.content.FileProvider
-import com.chiclaim.android.updater.BuildConfig
 import java.io.File
 
 
@@ -65,5 +55,12 @@ internal object Utils {
         (downloadedSize / totalSize.toDouble() * 100).toInt()
 
 
-    fun getDownloadPath(context: Context): File = context.externalCacheDir ?: context.filesDir
+    fun getDownloadDir(context: Context): File {
+        val dir = context.externalCacheDir
+        // a file named cache
+        if (dir?.isDirectory == true) {
+            return dir
+        }
+        return context.filesDir
+    }
 }
