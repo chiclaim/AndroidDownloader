@@ -106,7 +106,9 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
     private fun postPercent(percent: Int, listener: DownloadListener?) {
         handler.post {
             listener?.onProgressUpdate(percent)
-            if (request.notificationVisibility == NOTIFIER_VISIBLE_NOTIFY_COMPLETED) {
+            if (request.notificationVisibility == NOTIFIER_VISIBLE_NOTIFY_COMPLETED
+                || request.notificationVisibility == NOTIFIER_VISIBLE
+            ) {
                 NotifierUtils.showNotification(
                     context,
                     request.url.hashCode(),
@@ -123,18 +125,22 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
 
     private fun postSuccessful(destinationFile: File, listener: DownloadListener?) {
         handler.post {
-            if (request.notificationVisibility == NOTIFIER_VISIBLE_NOTIFY_COMPLETED
-                || request.notificationVisibility == NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION
-            ) {
-                NotifierUtils.showNotification(
-                    context,
-                    request.url.hashCode(),
-                    request.notificationSmallIcon,
-                    100,
-                    request.notificationTitle ?: getDefaultTitle(),
-                    context.getString(R.string.updater_notifier_success_to_install),
-                    STATUS_SUCCESSFUL
-                )
+            when (request.notificationVisibility) {
+                NOTIFIER_VISIBLE_NOTIFY_COMPLETED, NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION -> {
+                    NotifierUtils.showNotification(
+                        context,
+                        request.url.hashCode(),
+                        request.notificationSmallIcon,
+                        100,
+                        request.notificationTitle ?: getDefaultTitle(),
+                        context.getString(R.string.updater_notifier_success_to_install),
+                        STATUS_SUCCESSFUL
+                    )
+                }
+                NOTIFIER_VISIBLE -> {
+                    NotifierUtils.cancelNotification(context, request.url.hashCode())
+                }
+
             }
             listener?.onComplete(Uri.fromFile(destinationFile))
             if (request.needInstall) startInstall(context, destinationFile)
