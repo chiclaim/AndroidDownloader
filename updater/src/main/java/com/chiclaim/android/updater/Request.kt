@@ -34,6 +34,17 @@ abstract class Request(val url: String) {
     var notificationContent: CharSequence? = null
         private set
 
+    /**
+     * 当通知栏被禁用，是否提示
+     */
+    var showNotificationDisableTip = false
+        private set
+
+    fun setShowNotificationDisableTip(show:Boolean): Request {
+        this.showNotificationDisableTip = show
+        return this
+    }
+
     fun setNotificationSmallIcon(@DrawableRes smallIcon: Int): Request {
         this.notificationSmallIcon = smallIcon
         return this

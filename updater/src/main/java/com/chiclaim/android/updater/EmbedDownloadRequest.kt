@@ -2,6 +2,7 @@ package com.chiclaim.android.updater
 
 import android.content.Context
 import android.net.Uri
+import com.chiclaim.android.updater.util.Utils.checkNotificationsEnabled
 import com.chiclaim.android.updater.util.Utils.getDownloadDir
 import java.io.File
 
@@ -30,8 +31,12 @@ class EmbedDownloadRequest(url: String) : Request(url) {
     }
 
     override fun buildDownloader(context: Context): Downloader<*> {
-        if (notificationVisibility != NOTIFIER_HIDDEN && notificationSmallIcon == -1)
-            throw IllegalArgumentException("must set notification small icon")
+        if (notificationVisibility != NOTIFIER_HIDDEN) {
+            if (showNotificationDisableTip)
+                checkNotificationsEnabled(context)
+            if (notificationSmallIcon == -1)
+                throw IllegalArgumentException("must set notification small icon")
+        }
 
         if (!this::destinationUri.isInitialized) {
             val filename = url.substringAfterLast("/")

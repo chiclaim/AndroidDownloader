@@ -3,6 +3,7 @@ package com.chiclaim.android.updater
 import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
+import com.chiclaim.android.updater.util.Utils
 
 
 class SystemDownloadRequest(url: String) : Request(url) {
@@ -69,7 +70,10 @@ class SystemDownloadRequest(url: String) : Request(url) {
 
     fun getRequest(): DownloadManager.Request = rawRequest
 
-    override fun buildDownloader(context: Context): Downloader<*> =
-        SystemDownloader(context.applicationContext, this)
+    override fun buildDownloader(context: Context): Downloader<*> {
+        if (notificationVisibility != NOTIFIER_HIDDEN && showNotificationDisableTip)
+            Utils.checkNotificationsEnabled(context)
+        return SystemDownloader(context.applicationContext, this)
+    }
 
 }

@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             .setIgnoreLocal(true)
             .setNeedInstall(true)
             .setNotificationSmallIcon(R.mipmap.ic_launcher)
+            .setShowNotificationDisableTip(true)
             //.setAllowedNetworkTypes(
             //    DownloadManager.Request.NETWORK_MOBILE
             //            or DownloadManager.Request.NETWORK_WIFI

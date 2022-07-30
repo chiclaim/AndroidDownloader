@@ -2,6 +2,9 @@ package com.chiclaim.android.updater.util
 
 import android.content.Context
 import android.database.Cursor
+import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
+import com.chiclaim.android.updater.R
 import java.io.File
 
 
@@ -62,5 +65,12 @@ internal object Utils {
             return dir
         }
         return context.filesDir
+    }
+
+    fun checkNotificationsEnabled(context: Context) {
+        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+            Toast.makeText(context, R.string.updater_notification_disable, Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 }
