@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             // DownloadMode.DOWNLOAD_MANAGER，默认为 /data/user/0/com.android.providers.downloads/cache/your_download_file_name
             //.setDestinationDir(Uri.fromFile(applicationContext.externalCacheDir))
             .buildDownloader(applicationContext).startDownload(object : DownloadListener {
-                override fun onProgressUpdate(percent:Int) {
+                override fun onProgressUpdate(percent: Int) {
 
                     Log.d("MainActivity", "${++callbackCount} - 下载进度：$percent%")
                 }
@@ -74,11 +74,11 @@ class MainActivity : AppCompatActivity() {
     fun showUpdateDialog(view: View) {
         UpgradeDialogActivity.launch(this, UpgradeDialogInfo().apply {
             url = APK_URL
-            ignoreLocal = true
+            ignoreLocal = false
             title = "发现新版本"
             description = "1. 修复已知问题\n2. 修复已知问题"
             notifierSmallIcon = R.mipmap.ic_launcher
-        })
+        }, DownloadMode.EMBED)
     }
 
 }

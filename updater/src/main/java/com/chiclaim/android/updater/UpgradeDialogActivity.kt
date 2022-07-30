@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
 
 /**
  *
@@ -22,11 +23,21 @@ class UpgradeDialogActivity : AppCompatActivity() {
     companion object {
 
         private const val EXTRA_DIALOG_INFO = "EXTRA_DIALOG_INFO"
+        private const val EXTRA_DOWNLOAD_MODE = "EXTRA_DOWNLOAD_MODE"
+
 
         @JvmStatic
-        fun launch(context: Context, info: UpgradeDialogInfo) {
+        fun launch(
+            context: Context,
+            info: UpgradeDialogInfo,
+            mode: DownloadMode = DownloadMode.EMBED
+        ) {
             val intent = Intent(context, UpgradeDialogActivity::class.java)
             intent.putExtra(EXTRA_DIALOG_INFO, info)
+            when (mode) {
+                DownloadMode.EMBED -> intent.putExtra(EXTRA_DOWNLOAD_MODE, 1)
+                DownloadMode.DOWNLOAD_MANAGER -> intent.putExtra(EXTRA_DOWNLOAD_MODE, 2)
+            }
             if (context is Application) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
@@ -40,6 +51,12 @@ class UpgradeDialogActivity : AppCompatActivity() {
 
         val dialogInfo: UpgradeDialogInfo = intent.getParcelableExtra(EXTRA_DIALOG_INFO)
             ?: error("need $EXTRA_DIALOG_INFO parameter")
+
+        val mode = when (intent.getIntExtra(EXTRA_DOWNLOAD_MODE, 1)) {
+            2 -> DownloadMode.DOWNLOAD_MANAGER
+            else -> DownloadMode.EMBED
+        }
+
 
         progressBar = findViewById(R.id.pb_updater)
 
@@ -64,7 +81,8 @@ class UpgradeDialogActivity : AppCompatActivity() {
         findViewById<View>(R.id.tv_updater_confirm).setOnClickListener {
             progressBar?.isIndeterminate = true
             progressBar?.visibility = View.VISIBLE
-            DownloadRequest.newRequest(dialogInfo.url!!, DownloadMode.DOWNLOAD_MANAGER)
+            val url = dialogInfo.url ?: return@setOnClickListener
+            val request = DownloadRequest.newRequest(url, mode)
                 .setNotificationSmallIcon(dialogInfo.notifierSmallIcon)
                 .setIgnoreLocal(dialogInfo.ignoreLocal)
                 .setNotificationTitle(appName)
@@ -74,7 +92,11 @@ class UpgradeDialogActivity : AppCompatActivity() {
                     DownloadManager.Request.NETWORK_MOBILE
                             or DownloadManager.Request.NETWORK_WIFI
                 )
-                .buildDownloader(applicationContext)
+
+            dialogInfo.destinationPath?.let {
+                request.setDestinationUri(Uri.fromFile(File(it)))
+            }
+            request.buildDownloader(applicationContext)
                 .startDownload(object : DownloadListener {
                     override fun onProgressUpdate(
                         percent: Int

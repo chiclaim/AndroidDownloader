@@ -2,7 +2,8 @@ package com.chiclaim.android.updater
 
 import android.content.Context
 import android.net.Uri
-import com.chiclaim.android.updater.util.Utils.getDownloadPath
+import com.chiclaim.android.updater.util.Utils.getDownloadDir
+import java.io.File
 
 /**
  *
@@ -10,7 +11,7 @@ import com.chiclaim.android.updater.util.Utils.getDownloadPath
  */
 class EmbedDownloadRequest(url: String) : Request(url) {
 
-    lateinit var destinationDir: Uri
+    lateinit var destinationUri: Uri
         private set
 
     override fun allowScanningByMediaScanner(): Request {
@@ -23,8 +24,8 @@ class EmbedDownloadRequest(url: String) : Request(url) {
         return this
     }
 
-    override fun setDestinationDir(uri: Uri): Request {
-        this.destinationDir = uri
+    override fun setDestinationUri(uri: Uri): Request {
+        this.destinationUri = uri
         return this
     }
 
@@ -32,8 +33,9 @@ class EmbedDownloadRequest(url: String) : Request(url) {
         if (notificationVisibility != NOTIFIER_HIDDEN && notificationSmallIcon == -1)
             throw IllegalArgumentException("must set notification small icon")
 
-        if (!this::destinationDir.isInitialized) {
-            destinationDir = Uri.fromFile(getDownloadPath(context))
+        if (!this::destinationUri.isInitialized) {
+            val filename = url.substringAfterLast("/")
+            destinationUri = Uri.fromFile(File(getDownloadDir(context), filename))
         }
         return EmbedDownloader(context, this)
     }

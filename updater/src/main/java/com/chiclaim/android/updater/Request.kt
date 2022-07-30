@@ -68,7 +68,7 @@ abstract class Request(val url: String) {
         subPath: String?
     ): Request = this
 
-    open fun setDestinationDir(uri: Uri): Request = this
+    open fun setDestinationUri(uri: Uri): Request = this
 
 
     open fun setMimeType(mimeType: String): Request = this

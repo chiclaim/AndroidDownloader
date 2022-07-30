@@ -33,7 +33,10 @@ class SystemDownloadRequest(url: String) : Request(url) {
         return this
     }
 
-    override fun setDestinationDir(uri: Uri): Request {
+    /**
+     * 必须是外部存储路径，不能是当前应用的黑盒目录（因为是系统应用来下载）
+     */
+    override fun setDestinationUri(uri: Uri): Request {
         rawRequest.setDestinationUri(uri)
         return this
     }

@@ -59,18 +59,18 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
         return conn
     }
 
-    private fun prepareDestinationFile(urlHash: String): File {
-        val dir = File(
-            request.destinationDir.path
+    private fun prepareDestinationFile(record: DownloadRecord): File {
+        val file = File(
+            request.destinationUri.path
                 ?: throw NullPointerException("request must set destinationDir")
         )
-        if (!dir.exists()) {
-            dir.mkdirs()
+        if (file.isDirectory) {
+            val ext: String = request.url.substringAfterLast(".", "").run {
+                if (length > 10) "" else ".${this}"
+            }
+            return File(file, "${record.hashUrl}$ext")
         }
-        val ext: String = request.url.substringAfterLast(".", "").run {
-            if (length > 10) "" else ".${this}"
-        }
-        return File(dir, "$urlHash$ext")
+        return file
     }
 
     private fun prepareRecord(): DownloadRecord {
@@ -196,7 +196,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                         throw DownloadException(ERROR_TOO_MANY_REDIRECTS, "too many redirect times")
                     }
                     val record = prepareRecord()
-                    val destinationFile = prepareDestinationFile(record.hashUrl!!)
+                    val destinationFile = prepareDestinationFile(record)
 
                     val currentLength =
                         if (destinationFile.exists()) destinationFile.length() else 0
