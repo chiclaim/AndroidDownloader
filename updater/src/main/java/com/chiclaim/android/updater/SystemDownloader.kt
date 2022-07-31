@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import com.chiclaim.android.updater.util.Utils
+import com.chiclaim.android.updater.util.Utils.getRealPathFromURI
 import com.chiclaim.android.updater.util.checkDownloadComponentEnable
 import com.chiclaim.android.updater.util.showDownloadComponentSetting
 import com.chiclaim.android.updater.util.startInstall
@@ -43,13 +44,17 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
             when (downloadInfo.status) {
                 STATUS_SUCCESSFUL -> {
                     val uri = downloader.getDownloadedFileUri(downloadId)
-                    uri?.path?.let {
-                        val file = File(it)
-                        if (file.exists() && file.length() == downloadInfo.totalSize) {
-                            listener?.onComplete(uri)
-                            if (request.needInstall) startInstall(context, uri)
-                            return
+                    if (uri != null) {
+                        val path = getRealPathFromURI(context, uri)
+                        path?.let {
+                            val file = File(it)
+                            if (file.exists() && file.length() == downloadInfo.totalSize) {
+                                listener?.onComplete(uri)
+                                if (request.needInstall) startInstall(context, file)
+                                return
+                            }
                         }
+
                     }
                     //重新下载
                     download(request, listener)

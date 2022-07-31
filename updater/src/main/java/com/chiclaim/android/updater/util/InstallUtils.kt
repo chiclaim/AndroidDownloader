@@ -9,11 +9,11 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import android.provider.Settings
 import androidx.core.content.FileProvider
 import com.chiclaim.android.updater.BuildConfig
 import com.chiclaim.android.updater.UpgradePermissionDialogActivity
+import com.chiclaim.android.updater.util.Utils.getRealPathFromURI
 import java.io.File
 
 private const val DOWNLOAD_COMPONENT_PACKAGE = "com.android.providers.downloads"
@@ -61,23 +61,6 @@ fun startInstall(context: Context, uri: Uri) {
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     intent.setDataAndType(uri, "application/vnd.android.package-archive")
     context.startActivity(intent)
-}
-
-private fun getRealPathFromURI(context: Context, contentURI: Uri): String? {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        val cursor = context.contentResolver.query(
-            contentURI, null,
-            null, null, null
-        )
-        cursor?.use {
-            cursor.moveToFirst()
-            val index = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
-            if (index != -1) return cursor.getString(index)
-        }
-    } else {
-        return contentURI.path
-    }
-    return null
 }
 
 

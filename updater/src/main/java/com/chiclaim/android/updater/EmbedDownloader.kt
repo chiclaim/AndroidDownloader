@@ -62,8 +62,8 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
 
     private fun prepareDestinationFile(record: DownloadRecord): File {
         val file = File(
-            request.destinationUri.path
-                ?: throw NullPointerException("request must set destinationDir")
+            request.destinationUri?.path
+                ?: throw NullPointerException("request must set destinationDir path")
         )
         if (file.isDirectory) {
             val ext: String = request.url.substringAfterLast(".", "").run {

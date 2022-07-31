@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import com.chiclaim.android.updater.util.Utils
+import java.io.File
 
 
 class SystemDownloadRequest(url: String) : Request(url) {
@@ -39,7 +40,7 @@ class SystemDownloadRequest(url: String) : Request(url) {
      */
     override fun setDestinationUri(uri: Uri): Request {
         rawRequest.setDestinationUri(uri)
-        return this
+        return super.setDestinationUri(uri)
     }
 
 
@@ -73,6 +74,10 @@ class SystemDownloadRequest(url: String) : Request(url) {
     override fun buildDownloader(context: Context): Downloader<*> {
         if (notificationVisibility != NOTIFIER_HIDDEN && showNotificationDisableTip)
             Utils.checkNotificationsEnabled(context)
+        if (destinationUri == null) {
+            val filename = url.substringAfterLast("/")
+            setDestinationUri(Uri.fromFile(File(Utils.getDownloadDir(context), filename)))
+        }
         return SystemDownloader(context.applicationContext, this)
     }
 

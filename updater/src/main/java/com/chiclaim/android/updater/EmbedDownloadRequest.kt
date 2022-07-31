@@ -12,9 +12,6 @@ import java.io.File
  */
 class EmbedDownloadRequest(url: String) : Request(url) {
 
-    lateinit var destinationUri: Uri
-        private set
-
     override fun allowScanningByMediaScanner(): Request {
         return this
     }
@@ -22,11 +19,6 @@ class EmbedDownloadRequest(url: String) : Request(url) {
     override fun setDestinationInExternalFilesDir(
         context: Context, dirType: String?, subPath: String?
     ): Request {
-        return this
-    }
-
-    override fun setDestinationUri(uri: Uri): Request {
-        this.destinationUri = uri
         return this
     }
 
@@ -38,9 +30,9 @@ class EmbedDownloadRequest(url: String) : Request(url) {
                 throw IllegalArgumentException("must set notification small icon")
         }
 
-        if (!this::destinationUri.isInitialized) {
+        if (destinationUri == null) {
             val filename = url.substringAfterLast("/")
-            destinationUri = Uri.fromFile(File(getDownloadDir(context), filename))
+            setDestinationUri(Uri.fromFile(File(getDownloadDir(context), filename)))
         }
         return EmbedDownloader(context, this)
     }

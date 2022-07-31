@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             .setNotificationTitle(resources.getString(R.string.app_name))
             .setNotificationContent(getString(R.string.system_download_description))
             .allowScanningByMediaScanner()
-            .setIgnoreLocal(true)
+            .setIgnoreLocal(false)
             .setNeedInstall(true)
             .setNotificationVisibility(NOTIFIER_VISIBLE)
             .setNotificationSmallIcon(R.mipmap.ic_launcher)

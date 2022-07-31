@@ -2,6 +2,9 @@ package com.chiclaim.android.updater.util
 
 import android.content.Context
 import android.database.Cursor
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
 import com.chiclaim.android.updater.R
@@ -72,5 +75,23 @@ internal object Utils {
             Toast.makeText(context, R.string.updater_notification_disable, Toast.LENGTH_SHORT)
                 .show()
         }
+    }
+
+
+    fun getRealPathFromURI(context: Context, contentURI: Uri): String? {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val cursor = context.contentResolver.query(
+                contentURI, null,
+                null, null, null
+            )
+            cursor?.use {
+                cursor.moveToFirst()
+                val index = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
+                if (index != -1) return cursor.getString(index)
+            }
+        } else {
+            return contentURI.path
+        }
+        return null
     }
 }

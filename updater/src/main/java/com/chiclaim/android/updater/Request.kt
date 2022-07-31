@@ -11,6 +11,9 @@ import com.chiclaim.android.updater.util.NotifierVisibility
  */
 abstract class Request(val url: String) {
 
+    var destinationUri: Uri? = null
+        protected set
+
     /**
      * Whether to ignore the local file, if true, it will be downloaded again
      */
@@ -40,7 +43,12 @@ abstract class Request(val url: String) {
     var showNotificationDisableTip = false
         private set
 
-    fun setShowNotificationDisableTip(show:Boolean): Request {
+    open fun setDestinationUri(uri: Uri): Request {
+        this.destinationUri = uri
+        return this
+    }
+
+    fun setShowNotificationDisableTip(show: Boolean): Request {
         this.showNotificationDisableTip = show
         return this
     }
@@ -61,12 +69,12 @@ abstract class Request(val url: String) {
         return this
     }
 
-    open fun setNotificationTitle(title: CharSequence): Request{
+    open fun setNotificationTitle(title: CharSequence): Request {
         this.notificationTitle = title
         return this
     }
 
-    open fun setNotificationContent(content: CharSequence): Request{
+    open fun setNotificationContent(content: CharSequence): Request {
         this.notificationContent = content
         return this
     }
@@ -78,8 +86,6 @@ abstract class Request(val url: String) {
         dirType: String?,
         subPath: String?
     ): Request = this
-
-    open fun setDestinationUri(uri: Uri): Request = this
 
 
     open fun setMimeType(mimeType: String): Request = this
