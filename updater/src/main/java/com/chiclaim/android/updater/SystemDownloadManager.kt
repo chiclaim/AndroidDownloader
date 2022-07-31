@@ -13,12 +13,6 @@ import com.chiclaim.android.updater.util.SpHelper
 internal class SystemDownloadManager(context: Context) {
 
 
-    private val context: Context
-
-    init {
-        this.context = context.applicationContext
-    }
-
     private val downloadManager: DownloadManager by lazy {
         context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
     }
@@ -119,6 +113,11 @@ internal class SystemDownloadManager(context: Context) {
 
                 index = c.getColumnIndex(DownloadManager.COLUMN_STATUS)
                 if (index != -1) info.status = c.getInt(index)
+
+                if (info.status == STATUS_FAILED) {
+                    index = c.getColumnIndex(DownloadManager.COLUMN_REASON)
+                    if (index != -1) info.reason = c.getString(index)
+                }
 
                 index = c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)
 

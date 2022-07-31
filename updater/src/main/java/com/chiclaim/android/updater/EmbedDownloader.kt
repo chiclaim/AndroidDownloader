@@ -12,10 +12,12 @@ import com.chiclaim.android.updater.DownloadException.Companion.ERROR_UNHANDLED
 import com.chiclaim.android.updater.util.MD5
 import com.chiclaim.android.updater.util.NotifierUtils
 import com.chiclaim.android.updater.util.Utils.getPercent
+import com.chiclaim.android.updater.util.Utils.getTipFromException
 import com.chiclaim.android.updater.util.startInstall
 import java.io.File
 import java.io.FileOutputStream
-import java.net.*
+import java.net.HttpURLConnection
+import java.net.URL
 
 /**
  *
@@ -103,9 +105,9 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
         )
     }
 
-    private fun postPercent(percent: Int, listener: DownloadListener?) {
+    private fun postPercent(percent: Int) {
         handler.post {
-            listener?.onProgressUpdate(percent)
+            onProgressUpdate(percent)
             if (request.notificationVisibility == NOTIFIER_VISIBLE_NOTIFY_COMPLETED
                 || request.notificationVisibility == NOTIFIER_VISIBLE
             ) {
@@ -123,7 +125,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
 
     }
 
-    private fun postSuccessful(destinationFile: File, listener: DownloadListener?) {
+    private fun postSuccessful(destinationFile: File) {
         handler.post {
             when (request.notificationVisibility) {
                 NOTIFIER_VISIBLE_NOTIFY_COMPLETED, NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION -> {
@@ -142,12 +144,12 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                 }
 
             }
-            listener?.onComplete(Uri.fromFile(destinationFile))
+            onComplete(Uri.fromFile(destinationFile))
             if (request.needInstall) startInstall(context, destinationFile)
         }
     }
 
-    private fun postFailed(e: Exception, listener: DownloadListener?) {
+    private fun postFailed(e: Exception) {
         handler.post {
             if (request.notificationVisibility != NOTIFIER_HIDDEN
             ) {
@@ -157,46 +159,17 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                     request.notificationSmallIcon,
                     -1,
                     request.notificationTitle ?: getDefaultTitle(),
-                    getContentFromException(e),
+                    getTipFromException(context, e),
                     STATUS_FAILED
                 )
             }
-            listener?.onFailed(e)
-        }
-    }
-
-    private fun getContentFromException(exception: Exception): String {
-        if (exception is DownloadException) {
-            return when (exception.errorType) {
-                ERROR_CANNOT_RESUME ->
-                    context.getString(R.string.updater_notifier_content_partial_error)
-                ERROR_TOO_MANY_REDIRECTS ->
-                    context.getString(R.string.updater_notifier_content_too_many_redirects)
-                ERROR_MISSING_LOCATION_WHEN_REDIRECT ->
-                    context.getString(R.string.updater_notifier_content_missing_location)
-                else ->
-                    context.getString(
-                        R.string.updater_notifier_content_unhandled_err,
-                        exception.responseCode
-                    )
-            }
-        } else {
-            return when (exception) {
-                is SocketTimeoutException ->
-                    context.getString(R.string.updater_notifier_content_network_timeout)
-                is SocketException -> context.getString(R.string.updater_notifier_content_without_network)
-                is ConnectException -> context.getString(R.string.updater_notifier_content_without_network)
-                is UnknownHostException -> context.getString(R.string.updater_notifier_content_without_network)
-                else -> context.getString(
-                    R.string.updater_notifier_content_err_placeholder,
-                    exception.message ?: exception::class.java.name
-                )
-            }
+            onFailed(e)
         }
     }
 
 
-    override fun startDownload(listener: DownloadListener?) {
+    override fun startDownload() {
+        super.startDownload()
         DownloadExecutor.execute {
             var url: URL? = null
             var conn: HttpURLConnection? = null
@@ -212,7 +185,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                     val currentLength =
                         if (destinationFile.exists()) destinationFile.length() else 0
                     if (checkComplete(record, currentLength)) {
-                        postSuccessful(destinationFile, listener)
+                        postSuccessful(destinationFile)
                         return@execute
                     }
 
@@ -233,13 +206,13 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                                     val notifyInterval = now - lastNotifyTime
                                     if (notifyInterval > 700 || record.totalBytes == wroteLength) {
                                         val percent = getPercent(record.totalBytes, wroteLength)
-                                        postPercent(percent, listener)
+                                        postPercent(percent)
                                         lastNotifyTime = now
                                     }
                                 }
                             }
                         }
-                        postSuccessful(destinationFile, listener)
+                        postSuccessful(destinationFile)
                     }
 
                     val resuming = conn.getRequestProperty("Range")?.isNotEmpty() ?: false
@@ -302,7 +275,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    postFailed(e, listener)
+                    postFailed(e)
                     break // break while on exception
                 } finally {
                     conn?.disconnect()

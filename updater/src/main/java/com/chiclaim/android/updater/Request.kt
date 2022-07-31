@@ -110,4 +110,19 @@ abstract class Request(val url: String) {
 
 
     abstract fun buildDownloader(context: Context): Downloader<*>
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Request) return false
+
+        if (url != other.url) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return url.hashCode()
+    }
+
+
 }

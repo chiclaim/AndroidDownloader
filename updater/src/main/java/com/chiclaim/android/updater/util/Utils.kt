@@ -7,8 +7,13 @@ import android.os.Build
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
+import com.chiclaim.android.updater.DownloadException
 import com.chiclaim.android.updater.R
 import java.io.File
+import java.net.ConnectException
+import java.net.SocketException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 
 internal object Utils {
@@ -94,4 +99,38 @@ internal object Utils {
         }
         return null
     }
+
+     fun getTipFromException(context: Context, exception: Throwable): String {
+        if (exception is DownloadException) {
+            return when (exception.errorType) {
+                DownloadException.ERROR_NO_NETWORK ->
+                    context.getString(R.string.updater_notifier_content_without_network)
+                DownloadException.ERROR_CANNOT_RESUME ->
+                    context.getString(R.string.updater_notifier_content_partial_error)
+                DownloadException.ERROR_TOO_MANY_REDIRECTS ->
+                    context.getString(R.string.updater_notifier_content_too_many_redirects)
+                DownloadException.ERROR_MISSING_LOCATION_WHEN_REDIRECT ->
+                    context.getString(R.string.updater_notifier_content_missing_location)
+                else ->
+                    context.getString(
+                        R.string.updater_notifier_content_unhandled_err,
+                        exception.responseCode
+                    )
+            }
+        } else {
+            return when (exception) {
+                is SocketTimeoutException ->
+                    context.getString(R.string.updater_notifier_content_network_timeout)
+                is SocketException -> context.getString(R.string.updater_notifier_content_without_network)
+                is ConnectException -> context.getString(R.string.updater_notifier_content_without_network)
+                is UnknownHostException -> context.getString(R.string.updater_notifier_content_without_network)
+                else -> context.getString(
+                    R.string.updater_notifier_content_err_placeholder,
+                    exception.message ?: exception::class.java.name
+                )
+            }
+        }
+    }
+
+
 }

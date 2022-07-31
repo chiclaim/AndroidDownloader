@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.chiclaim.android.updater.util.Utils.checkNotificationsEnabled
 import com.chiclaim.android.updater.util.Utils.getDownloadDir
+import com.chiclaim.android.updater.util.e
 import java.io.File
 
 /**
@@ -23,6 +24,10 @@ class EmbedDownloadRequest(url: String) : Request(url) {
     }
 
     override fun buildDownloader(context: Context): Downloader<*> {
+        if (DownloaderManager.isRunning(this)) {
+            e("下载任务已经存在")
+            return EmptyDownloader(context, this)
+        }
         if (notificationVisibility != NOTIFIER_HIDDEN) {
             if (showNotificationDisableTip)
                 checkNotificationsEnabled(context)

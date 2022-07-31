@@ -18,13 +18,15 @@ import com.chiclaim.android.updater.*
 import com.chiclaim.android.updater.util.goNotificationSettings
 import com.chiclaim.android.updater.util.settingPackageInstall
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DownloadListener {
 
     companion object {
-        private const val APK_URL = "https://app.2dfire.com/fandian/tv/tv_release_2010300.apk"
+        private const val APK_URL =
+            "https://download.2dfire.com/app2/1002/da8470cd64a42247304276858b7b461_2Dfire_Manager_6076.apk"
     }
 
     private var mode = DownloadMode.EMBED
+    private var downloader: Downloader<*>? = null
 
     private var editText: EditText? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,13 +60,13 @@ class MainActivity : AppCompatActivity() {
         if (TextUtils.isEmpty(editText!!.text.toString())) {
             url = APK_URL
         }
-        var callbackCount = 0
 
-        DownloadRequest.newRequest(url, mode)
+
+        downloader = DownloadRequest.newRequest(url, mode)
             .setNotificationTitle(resources.getString(R.string.app_name))
             .setNotificationContent(getString(R.string.system_download_description))
             .allowScanningByMediaScanner()
-            .setIgnoreLocal(false)
+            .setIgnoreLocal(true)
             .setNeedInstall(true)
             .setNotificationVisibility(NOTIFIER_VISIBLE)
             .setNotificationSmallIcon(R.mipmap.ic_launcher)
@@ -75,19 +77,25 @@ class MainActivity : AppCompatActivity() {
             //)
             // DownloadMode.DOWNLOAD_MANAGER，默认为 /data/user/0/com.android.providers.downloads/cache/your_download_file_name
             //.setDestinationDir(Uri.fromFile(applicationContext.externalCacheDir))
-            .buildDownloader(applicationContext).startDownload(object : DownloadListener {
-                override fun onProgressUpdate(percent: Int) {
+            .buildDownloader(applicationContext).registerListener(this)
+        downloader?.startDownload()
+    }
 
-                    Log.d("MainActivity", "${++callbackCount} - 下载进度：$percent%")
-                }
+    override fun onDownloadStart() {
 
-                override fun onComplete(uri: Uri?) {
-                    Log.d("MainActivity", "下载完成")
-                }
+    }
 
-                override fun onFailed(e: Throwable) {
-                }
-            })
+    var callbackCount = 0
+    override fun onProgressUpdate(percent: Int) {
+
+        Log.d("MainActivity", "${++callbackCount} - 下载进度：$percent%")
+    }
+
+    override fun onDownloadComplete(uri: Uri) {
+        Log.d("MainActivity", "下载完成")
+    }
+
+    override fun onDownloadFailed(e: Throwable) {
     }
 
     fun setting(view: View) {
@@ -102,7 +110,7 @@ class MainActivity : AppCompatActivity() {
     fun showUpdateDialog(view: View) {
         UpgradeDialogActivity.launch(this, UpgradeDialogInfo().apply {
             url = APK_URL
-            ignoreLocal = true
+            ignoreLocal = false
             title = "发现新版本"
             description = "1. 修复已知问题\n2. 修复已知问题"
             notifierSmallIcon = R.mipmap.ic_launcher
@@ -129,6 +137,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        downloader?.unregisterListener(this)
     }
 
 }

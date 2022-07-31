@@ -9,16 +9,21 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.chiclaim.android.updater.util.Utils.getTipFromException
+import com.chiclaim.android.updater.util.e
 import java.io.File
 
 /**
  *
  * @author by chiclaim@google.com
  */
-class UpgradeDialogActivity : AppCompatActivity() {
+class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
 
     private var progressBar: ProgressBar? = null
+    private var downloader: Downloader<*>? = null
+    private var visiable = false
 
     companion object {
 
@@ -97,23 +102,44 @@ class UpgradeDialogActivity : AppCompatActivity() {
             dialogInfo.destinationPath?.let {
                 request.setDestinationUri(Uri.fromFile(File(it)))
             }
-            request.buildDownloader(applicationContext)
-                .startDownload(object : DownloadListener {
-                    override fun onProgressUpdate(
-                        percent: Int
-                    ) {
-                        progressBar?.isIndeterminate = percent == 0
-                        progressBar?.progress = percent
-                    }
-
-                    override fun onComplete(uri: Uri?) {
-                        finish()
-                    }
-
-                    override fun onFailed(e: Throwable) {
-                    }
-                })
+            downloader = request.buildDownloader(applicationContext)
+                .registerListener(this)
+            downloader?.startDownload()
         }
 
+    }
+
+    override fun onDownloadStart() {
+    }
+
+    override fun onProgressUpdate(
+        percent: Int
+    ) {
+        progressBar?.isIndeterminate = percent == 0
+        progressBar?.progress = percent
+        if (BuildConfig.DEBUG) e("下载$percent%...")
+    }
+
+    override fun onDownloadComplete(uri: Uri) {
+        finish()
+        if (BuildConfig.DEBUG) e("下载完成...")
+
+    }
+
+    override fun onDownloadFailed(e: Throwable) {
+        if (visiable) {
+            val msg = getTipFromException(applicationContext, e)
+            Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        visiable = hasFocus
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        downloader?.unregisterListener(this)
     }
 }

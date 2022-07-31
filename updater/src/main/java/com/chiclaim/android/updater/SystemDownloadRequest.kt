@@ -72,6 +72,9 @@ class SystemDownloadRequest(url: String) : Request(url) {
     fun getRequest(): DownloadManager.Request = rawRequest
 
     override fun buildDownloader(context: Context): Downloader<*> {
+        if (DownloaderManager.isRunning(this)) {
+            return EmptyDownloader(context, this)
+        }
         if (notificationVisibility != NOTIFIER_HIDDEN && showNotificationDisableTip)
             Utils.checkNotificationsEnabled(context)
         if (destinationUri == null) {

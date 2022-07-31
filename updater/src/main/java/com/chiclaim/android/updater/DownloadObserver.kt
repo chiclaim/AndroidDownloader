@@ -4,6 +4,8 @@ import android.content.Context
 import android.database.ContentObserver
 import android.os.Handler
 import android.os.Looper
+import com.chiclaim.android.updater.DownloadException.Companion.ERROR_DM_FAILED
+import com.chiclaim.android.updater.DownloadException.Companion.ERROR_MISSING_URI
 import com.chiclaim.android.updater.util.Utils.getPercent
 
 
@@ -14,15 +16,11 @@ import com.chiclaim.android.updater.util.Utils.getPercent
 internal class DownloadObserver(
     context: Context,
     private val downloadId: Long,
-    private var listener: DownloadListener?
+    private var downloader: Downloader<*>
 ) : ContentObserver(null) {
 
 
-    private val context: Context
-
-    init {
-        this.context = context.applicationContext
-    }
+    private val context: Context = context.applicationContext
 
     private val handler by lazy {
         Handler(Looper.getMainLooper())
@@ -30,22 +28,41 @@ internal class DownloadObserver(
 
 
     override fun onChange(selfChange: Boolean) {
-
         super.onChange(selfChange)
         DownloadExecutor.execute {
-            val info = SystemDownloadManager(context).getDownloadInfo(downloadId)
-            info?.let {
-                handler.post {
-                    listener?.onProgressUpdate(getPercent(info.totalSize, info.downloadedSize))
-                    if (info.hasComplete()) {
-                        // 下载完毕后，移除观察者
+            val info = SystemDownloadManager(context).getDownloadInfo(downloadId) ?: return@execute
+            handler.post {
+                downloader.onProgressUpdate(getPercent(info.totalSize, info.downloadedSize))
+                when (info.status) {
+                    STATUS_SUCCESSFUL -> {
                         context.contentResolver.unregisterContentObserver(this)
-                        listener?.onComplete(info.uri)
+                        val uri = info.uri
+                        if (uri == null) {
+                            downloader.onFailed(
+                                DownloadException(
+                                    ERROR_MISSING_URI,
+                                    context.getString(R.string.updater_notifier_failed_missing_uri)
+                                )
+                            )
+                        } else {
+                            downloader.onComplete(uri)
+                        }
+                    }
+                    STATUS_FAILED -> {
+                        context.contentResolver.unregisterContentObserver(this)
+                        downloader.onFailed(
+                            DownloadException(
+                                ERROR_DM_FAILED,
+                                context.getString(
+                                    R.string.updater_notifier_content_err_placeholder,
+                                    info.reason ?: "-"
+                                )
+                            )
+                        )
                     }
                 }
             }
         }
+
     }
-
-
 }

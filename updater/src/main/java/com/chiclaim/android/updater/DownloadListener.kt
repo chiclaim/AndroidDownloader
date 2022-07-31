@@ -8,13 +8,14 @@ import android.net.Uri
  */
 interface DownloadListener {
 
+    fun onDownloadStart()
 
-    fun onProgressUpdate(percent:Int)
+    fun onProgressUpdate(percent: Int)
 
 
-    fun onComplete(uri: Uri?)
+    fun onDownloadComplete(uri: Uri)
 
-    fun onFailed(e: Throwable)
+    fun onDownloadFailed(e: Throwable)
 
 
 }

@@ -13,11 +13,14 @@ import java.io.File
 internal class SystemDownloader(context: Context, request: SystemDownloadRequest) :
     Downloader<SystemDownloadRequest>(context.applicationContext, request) {
 
+    private var observer: DownloadObserver? = null
+
     private val downloader: SystemDownloadManager by lazy {
         SystemDownloadManager(this.context)
     }
 
-    override fun startDownload(listener: DownloadListener?) {
+    override fun startDownload() {
+        super.onStart()
         if (!checkDownloadComponentEnable(context)) {
             Toast.makeText(
                 context,
@@ -29,7 +32,7 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
         }
 
         if (request.ignoreLocal) {
-            download(request, listener)
+            download(request)
             return
         }
 
@@ -37,7 +40,7 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
         if (downloadId != -1L) {
             val downloadInfo = downloader.getDownloadInfo(downloadId)
             if (downloadInfo == null) {
-                download(request, listener)
+                download(request)
                 return
             }
             //获取下载状态
@@ -49,34 +52,45 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
                         path?.let {
                             val file = File(it)
                             if (file.exists() && file.length() == downloadInfo.totalSize) {
-                                listener?.onComplete(uri)
+                                onComplete(uri)
                                 if (request.needInstall) startInstall(context, file)
                                 return
                             }
                         }
-
                     }
                     //重新下载
-                    download(request, listener)
+                    download(request)
+                }
+                STATUS_RUNNING -> {
+                    registerListener(downloadId)
                 }
                 STATUS_FAILED, STATUS_UNKNOWN -> {
-                    download(request, listener)
+                    download(request)
                 }
                 else -> printDownloadStatus(downloadId, downloadInfo.status)
             }
         } else {
-            download(request, listener)
+            download(request)
         }
     }
 
-    private fun download(request: SystemDownloadRequest, listener: DownloadListener?) {
-        val downloadId = downloader.download(request.getRequest())
-        Utils.saveDownloadId(context, request.url, downloadId)
+    private fun registerListener(downloadId: Long) {
+        if (observer != null) {
+            return
+        }
+        val ob = DownloadObserver(context.applicationContext, downloadId, this)
+        observer = ob
         context.contentResolver.registerContentObserver(
             Uri.parse("content://downloads/my_downloads/$downloadId"),
             true,
-            DownloadObserver(context.applicationContext, downloadId, listener)
+            ob
         )
+    }
+
+    private fun download(request: SystemDownloadRequest) {
+        val downloadId = downloader.download(request.getRequest())
+        Utils.saveDownloadId(context, request.url, downloadId)
+        registerListener(downloadId)
     }
 
 }

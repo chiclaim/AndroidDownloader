@@ -27,7 +27,7 @@
             android:text="Download"
             android:textAllCaps="false"
             android:textSize="@dimen/btn_size" />
-        
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,6 +59,15 @@
             android:text="Setting Notification"
             android:textAllCaps="false"
             android:textSize="@dimen/btn_size" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="checkWritePermission"
+            android:text="Setting Write Permission"
+            android:textAllCaps="false"
+            android:textSize="@dimen/btn_size" />
+
 
     </LinearLayout>
 
