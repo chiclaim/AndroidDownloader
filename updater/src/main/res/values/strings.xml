@@ -18,6 +18,6 @@
     <string name="updater_notifier_content_missing_location">下载失败，重定向地址丢失</string>
     <string name="updater_notifier_content_partial_error">Partial 响应码错误</string>
     <string name="updater_notifier_content_unhandled_err">下载失败(%1$d)，点击重试</string>
-    <string name="updater_notifier_content_unknown_err">未知错误</string>
+    <string name="updater_notifier_content_err_placeholder">下载失败: %1$s</string>
     <string name="updater_notifier_success_to_install">下载完成，点击安装</string>
 </resources>

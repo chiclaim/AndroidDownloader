@@ -18,6 +18,6 @@
     <string name="updater_notifier_content_missing_location">Download failed, redirect address is missing</string>
     <string name="updater_notifier_content_partial_error">Partial response code error</string>
     <string name="updater_notifier_content_unhandled_err">Download failed (%1$d), click Retry</string>
-    <string name="updater_notifier_content_unknown_err">unknown error</string>
+    <string name="updater_notifier_content_err_placeholder">failed: %1$s</string>
     <string name="updater_notifier_success_to_install">completed，click to install</string>
 </resources>

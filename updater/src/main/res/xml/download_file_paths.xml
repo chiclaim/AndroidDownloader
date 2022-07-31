@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path
-        name="external_files"
+    <!--Context.getFilesDir()-->
+    <files-path
+        name="download1"
         path="." />
+
+    <!--getCacheDir()-->
+    <cache-path
+        name="download2"
+        path="." />
+
+    <!--Environment.getExternalStorageDirectory()-->
+    <external-path
+        name="download3"
+        path="." />
+
+    <!--Context.getExternalCacheDir()-->
     <external-cache-path
-        name="external_cache_files"
+        name="download4"
+        path="." />
+
+    <!--Context.getExternalFilesDir(String) or Context.getExternalFilesDir(null)-->
+    <external-files-path
+        name="download5"
         path="." />
 </paths>
