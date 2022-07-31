@@ -14,6 +14,127 @@
         android:hint="download url"
         android:textSize="@dimen/btn_size" />
 
+    <RadioGroup
+        android:id="@+id/rg_engine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"
+            android:text="下载引擎："/>
+
+        <RadioButton
+            android:id="@+id/rb_engine_embed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:textSize="12sp"
+            android:text="Embed" />
+
+        <RadioButton
+            android:id="@+id/rb_engine_dm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="System DM" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"
+            android:text="下载设置："/>
+
+        <CheckBox
+            android:id="@+id/cb_ignore_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:textSize="12sp"
+            android:text="忽略已下载的文件" />
+
+        <CheckBox
+            android:id="@+id/cb_auto_install"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:checked="true"
+            android:text="自动安装" />
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rg_notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="5dp"
+            android:text="通知栏设置："/>
+
+
+        <RadioButton
+            android:id="@+id/rb_only_downloading_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="仅下载时展示通知" />
+
+        <RadioButton
+            android:id="@+id/rb_only_complete_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="仅下载完成展示通知" />
+
+        <RadioButton
+            android:id="@+id/rb_always_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:checked="true"
+            android:text="下载和完成都展示通知" />
+
+
+        <RadioButton
+            android:id="@+id/rb_hide_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="不展示通知栏" />
+
+        <CheckBox
+            android:id="@+id/cb_disable_notifier_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:checked="true"
+            android:text="通知栏禁用提示" />
+
+    </RadioGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="10dp"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

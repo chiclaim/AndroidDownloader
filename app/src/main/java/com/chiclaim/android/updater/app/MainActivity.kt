@@ -9,10 +9,10 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.chiclaim.android.updater.*
 import com.chiclaim.android.updater.util.goNotificationSettings
@@ -21,11 +21,17 @@ import com.chiclaim.android.updater.util.settingPackageInstall
 class MainActivity : AppCompatActivity(), DownloadListener {
 
     companion object {
-        private const val APK_URL =
-            "https://download.2dfire.com/app2/1002/da8470cd64a42247304276858b7b461_2Dfire_Manager_6076.apk"
+        private const val APK_URL = "https://app.2dfire.com/fandian/tv/tv_release_2010300.apk"
     }
 
+    private var fileUrl: String = APK_URL
     private var mode = DownloadMode.EMBED
+    private var ignoreLocalFile = false
+    private var autoInstall = false
+    private var notifierDisableTip = false
+    private var notifierVisibility: Int = 0
+
+
     private var downloader: Downloader<*>? = null
 
     private var editText: EditText? = null
@@ -36,47 +42,81 @@ class MainActivity : AppCompatActivity(), DownloadListener {
         editText?.setText(APK_URL)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.mode_system -> {
-                mode = DownloadMode.DOWNLOAD_MANAGER
-                return true
-            }
-            R.id.mode_embed -> {
-                mode = DownloadMode.EMBED
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    fun download(view: View) {
-        var url = editText!!.text.toString()
+    private fun getDownloadParameters() {
+        fileUrl = editText!!.text.toString()
         if (TextUtils.isEmpty(editText!!.text.toString())) {
-            url = APK_URL
+            fileUrl = APK_URL
+        }
+        findViewById<RadioGroup>(R.id.rg_engine).run {
+            fun setMode(id: Int) {
+                when (id) {
+                    R.id.rb_engine_dm -> mode = DownloadMode.DOWNLOAD_MANAGER
+                    R.id.rb_engine_embed -> mode = DownloadMode.EMBED
+                }
+            }
+
+            val checkBtnId = checkedRadioButtonId
+            setMode(checkBtnId)
+            setOnCheckedChangeListener { group, checkedId ->
+                setMode(checkBtnId)
+            }
+        }
+
+        findViewById<CheckBox>(R.id.cb_ignore_local).run {
+            ignoreLocalFile = isChecked
+            setOnCheckedChangeListener { buttonView, isChecked ->
+                ignoreLocalFile = isChecked
+            }
+        }
+
+        findViewById<CheckBox>(R.id.cb_auto_install).run {
+            autoInstall = isChecked
+            setOnCheckedChangeListener { buttonView, isChecked ->
+                autoInstall = isChecked
+            }
+        }
+
+        findViewById<CheckBox>(R.id.cb_disable_notifier_tip).run {
+            notifierDisableTip = isChecked
+            setOnCheckedChangeListener { buttonView, isChecked ->
+                notifierDisableTip = isChecked
+            }
         }
 
 
-        downloader = DownloadRequest.newRequest(url, mode)
+        findViewById<RadioGroup>(R.id.rg_notification).run {
+            fun setNotifierVisibility(id: Int) {
+                notifierVisibility = when (id) {
+                    R.id.rb_always_notification -> NOTIFIER_VISIBLE_NOTIFY_COMPLETED
+                    R.id.rb_hide_notification -> NOTIFIER_HIDDEN
+                    R.id.rb_only_complete_notification -> NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION
+                    R.id.rb_only_downloading_notification -> NOTIFIER_VISIBLE
+                    else -> NOTIFIER_VISIBLE_NOTIFY_COMPLETED
+                }
+            }
+            setNotifierVisibility(checkedRadioButtonId)
+            setOnCheckedChangeListener { group, checkedId ->
+                setNotifierVisibility(checkedId)
+            }
+        }
+
+    }
+
+    private fun createCommonRequest(url: String): Request =
+        DownloadRequest.newRequest(url, mode)
             .setNotificationTitle(resources.getString(R.string.app_name))
             .setNotificationContent(getString(R.string.system_download_description))
             .allowScanningByMediaScanner()
-            .setIgnoreLocal(true)
-            .setNeedInstall(true)
-            .setNotificationVisibility(NOTIFIER_VISIBLE)
+            .setIgnoreLocal(ignoreLocalFile)
+            .setNeedInstall(autoInstall)
+            .setNotificationVisibility(notifierVisibility)
             .setNotificationSmallIcon(R.mipmap.ic_launcher)
-            .setShowNotificationDisableTip(true)
-            //.setAllowedNetworkTypes(
-            //    DownloadManager.Request.NETWORK_MOBILE
-            //            or DownloadManager.Request.NETWORK_WIFI
-            //)
-            // DownloadMode.DOWNLOAD_MANAGER，默认为 /data/user/0/com.android.providers.downloads/cache/your_download_file_name
-            //.setDestinationDir(Uri.fromFile(applicationContext.externalCacheDir))
+            .setShowNotificationDisableTip(notifierDisableTip)
+
+
+    fun download(view: View) {
+        getDownloadParameters()
+        downloader = createCommonRequest(fileUrl)
             .buildDownloader(applicationContext).registerListener(this)
         downloader?.startDownload()
     }
@@ -109,11 +149,11 @@ class MainActivity : AppCompatActivity(), DownloadListener {
 
     fun showUpdateDialog(view: View) {
         UpgradeDialogActivity.launch(this, UpgradeDialogInfo().apply {
-            url = APK_URL
-            ignoreLocal = false
-            title = "发现新版本"
-            description = "1. 修复已知问题\n2. 修复已知问题"
-            notifierSmallIcon = R.mipmap.ic_launcher
+            this.url = fileUrl
+            this.ignoreLocal = ignoreLocalFile
+            this.title = "发现新版本"
+            this.description = "1. 修复已知问题\n2. 修复已知问题"
+            this.notifierSmallIcon = R.mipmap.ic_launcher
         }, mode)
     }
 

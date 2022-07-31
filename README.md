@@ -367,13 +367,18 @@ Caused by: java.lang.IllegalArgumentException: Unknown URL content://downloads/m
 - [x] 国际化
 - [x] 进度信息，要进行速度采样，避免短时间创建大量通知对象
 - [x] 如果禁用通知栏，可以设置是否提示
-- 支持 MD5 校验
+- [x] 添加 FileProvider 其他 path
+- [x] 检查回调内存产生的内存泄露
+- [x] 相同 url 重复触发下载操作
+- 强制更新
 - HTTPS 证书
+- 支持 MD5 校验
 - 任务存入数据库，删除记录
 - 支持 ETAG
 - 多文件下载通知栏能够聚合
-- 相同 url 重复触发下载操作
 - 网络重新连接，能够自动继续下载
+- 根据网络类型指定下载策略
 
 
+https://download.2dfire.com/app2/1002/da8470cd64a42247304276858b7b461_2Dfire_Manager_6076.apk
 
