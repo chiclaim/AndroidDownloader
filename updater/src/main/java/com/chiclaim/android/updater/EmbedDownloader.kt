@@ -187,7 +187,10 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                 is SocketException -> context.getString(R.string.updater_notifier_content_without_network)
                 is ConnectException -> context.getString(R.string.updater_notifier_content_without_network)
                 is UnknownHostException -> context.getString(R.string.updater_notifier_content_without_network)
-                else -> context.getString(R.string.updater_notifier_content_unknown_err)
+                else -> context.getString(
+                    R.string.updater_notifier_content_err_placeholder,
+                    exception.message ?: exception::class.java.name
+                )
             }
         }
     }
