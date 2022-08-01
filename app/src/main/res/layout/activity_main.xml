@@ -129,6 +129,36 @@
 
     </RadioGroup>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="5dp"
+            android:text="升级弹窗设置："/>
+
+        <CheckBox
+            android:id="@+id/cb_force_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:checked="false"
+            android:text="强制更新" />
+
+        <CheckBox
+            android:id="@+id/cb_background_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:checked="false"
+            android:text="后台下载" />
+
+    </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

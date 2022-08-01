@@ -25,7 +25,7 @@ class EmbedDownloadRequest(url: String) : Request(url) {
 
     override fun buildDownloader(context: Context): Downloader<*> {
         if (DownloaderManager.isRunning(this)) {
-            e("下载任务已经存在")
+            if (BuildConfig.DEBUG) e("下载任务已经存在")
             return EmptyDownloader(context, this)
         }
         if (notificationVisibility != NOTIFIER_HIDDEN) {

@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import com.chiclaim.android.updater.util.Utils
+import com.chiclaim.android.updater.util.e
 import java.io.File
 
 
@@ -73,6 +74,7 @@ class SystemDownloadRequest(url: String) : Request(url) {
 
     override fun buildDownloader(context: Context): Downloader<*> {
         if (DownloaderManager.isRunning(this)) {
+            if (BuildConfig.DEBUG) e("下载任务已经存在")
             return EmptyDownloader(context, this)
         }
         if (notificationVisibility != NOTIFIER_HIDDEN && showNotificationDisableTip)

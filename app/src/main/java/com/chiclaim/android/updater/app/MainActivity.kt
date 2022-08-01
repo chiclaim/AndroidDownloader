@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity(), DownloadListener {
     private var autoInstall = false
     private var notifierDisableTip = false
     private var notifierVisibility: Int = 0
+    private var isForceUpdate = false
+    private var isBackgroundDownload = false
 
 
     private var downloader: Downloader<*>? = null
@@ -42,7 +44,7 @@ class MainActivity : AppCompatActivity(), DownloadListener {
         editText?.setText(APK_URL)
     }
 
-    private fun getDownloadParameters() {
+    private fun initDownloadParameters() {
         fileUrl = editText!!.text.toString()
         if (TextUtils.isEmpty(editText!!.text.toString())) {
             fileUrl = APK_URL
@@ -57,28 +59,28 @@ class MainActivity : AppCompatActivity(), DownloadListener {
 
             val checkBtnId = checkedRadioButtonId
             setMode(checkBtnId)
-            setOnCheckedChangeListener { group, checkedId ->
-                setMode(checkBtnId)
+            setOnCheckedChangeListener { _, checkedId ->
+                setMode(checkedId)
             }
         }
 
         findViewById<CheckBox>(R.id.cb_ignore_local).run {
             ignoreLocalFile = isChecked
-            setOnCheckedChangeListener { buttonView, isChecked ->
+            setOnCheckedChangeListener { _, isChecked ->
                 ignoreLocalFile = isChecked
             }
         }
 
         findViewById<CheckBox>(R.id.cb_auto_install).run {
             autoInstall = isChecked
-            setOnCheckedChangeListener { buttonView, isChecked ->
+            setOnCheckedChangeListener { _, isChecked ->
                 autoInstall = isChecked
             }
         }
 
         findViewById<CheckBox>(R.id.cb_disable_notifier_tip).run {
             notifierDisableTip = isChecked
-            setOnCheckedChangeListener { buttonView, isChecked ->
+            setOnCheckedChangeListener { _, isChecked ->
                 notifierDisableTip = isChecked
             }
         }
@@ -95,8 +97,22 @@ class MainActivity : AppCompatActivity(), DownloadListener {
                 }
             }
             setNotifierVisibility(checkedRadioButtonId)
-            setOnCheckedChangeListener { group, checkedId ->
+            setOnCheckedChangeListener { _, checkedId ->
                 setNotifierVisibility(checkedId)
+            }
+        }
+
+        findViewById<CheckBox>(R.id.cb_force_update).run {
+            isForceUpdate = isChecked
+            setOnCheckedChangeListener { _, isChecked ->
+                isForceUpdate = isChecked
+            }
+        }
+
+        findViewById<CheckBox>(R.id.cb_background_download).run {
+            isBackgroundDownload = isChecked
+            setOnCheckedChangeListener { _, isChecked ->
+                isBackgroundDownload = isChecked
             }
         }
 
@@ -115,7 +131,7 @@ class MainActivity : AppCompatActivity(), DownloadListener {
 
 
     fun download(view: View) {
-        getDownloadParameters()
+        initDownloadParameters()
         downloader = createCommonRequest(fileUrl)
             .buildDownloader(applicationContext).registerListener(this)
         downloader?.startDownload()
@@ -148,12 +164,16 @@ class MainActivity : AppCompatActivity(), DownloadListener {
     }
 
     fun showUpdateDialog(view: View) {
+        initDownloadParameters()
         UpgradeDialogActivity.launch(this, UpgradeDialogInfo().apply {
             this.url = fileUrl
             this.ignoreLocal = ignoreLocalFile
-            this.title = "发现新版本"
+            this.title = if (isForceUpdate) "重要安全升级" else "发现新版本"
             this.description = "1. 修复已知问题\n2. 修复已知问题"
+            this.forceUpdate = isForceUpdate
+            this.negativeText = if (isForceUpdate) "退出程序" else "取消"
             this.notifierSmallIcon = R.mipmap.ic_launcher
+            this.backgroundDownload = isBackgroundDownload
         }, mode)
     }
 

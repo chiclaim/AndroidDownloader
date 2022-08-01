@@ -1,5 +1,6 @@
 package com.chiclaim.android.updater
 
+import android.app.ActivityManager
 import android.app.Application
 import android.app.DownloadManager
 import android.content.Context
@@ -23,7 +24,12 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
 
     private var progressBar: ProgressBar? = null
     private var downloader: Downloader<*>? = null
-    private var visiable = false
+    private var activityVisible = false
+
+    private var tvNegative: TextView? = null
+    private var tvPositive: TextView? = null
+
+    private lateinit var dialogInfo: UpgradeDialogInfo
 
     companion object {
 
@@ -54,7 +60,7 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_upgrade_dialog_layout)
 
-        val dialogInfo: UpgradeDialogInfo = intent.getParcelableExtra(EXTRA_DIALOG_INFO)
+        dialogInfo = intent.getParcelableExtra(EXTRA_DIALOG_INFO)
             ?: error("need $EXTRA_DIALOG_INFO parameter")
 
         val mode = when (intent.getIntExtra(EXTRA_DOWNLOAD_MODE, 1)) {
@@ -71,21 +77,24 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
         findViewById<TextView>(R.id.tv_updater_desc).text =
             dialogInfo.description ?: getString(R.string.updater_desc_default)
 
-        findViewById<TextView>(R.id.tv_updater_cancel).text =
-            dialogInfo.negativeText ?: getString(R.string.updater_cancel)
+        tvNegative = findViewById<TextView>(R.id.tv_updater_cancel).apply {
+            this.text = dialogInfo.negativeText ?: getString(R.string.updater_cancel)
+        }
 
-        findViewById<TextView>(R.id.tv_updater_confirm).text =
-            dialogInfo.positiveText ?: getString(R.string.updater_ok)
-
+        tvPositive = findViewById<TextView>(R.id.tv_updater_confirm).apply {
+            text = dialogInfo.positiveText ?: getString(R.string.updater_ok)
+        }
         findViewById<View>(R.id.tv_updater_cancel).setOnClickListener {
+            if (dialogInfo.forceUpdate) {
+                exitApp()
+                return@setOnClickListener
+            }
             finish()
         }
 
         val appName = applicationInfo.loadLabel(packageManager)
 
         findViewById<View>(R.id.tv_updater_confirm).setOnClickListener {
-            progressBar?.isIndeterminate = true
-            progressBar?.visibility = View.VISIBLE
             val url = dialogInfo.url ?: return@setOnClickListener
             val request = DownloadRequest.newRequest(url, mode)
                 .setNotificationSmallIcon(dialogInfo.notifierSmallIcon)
@@ -105,8 +114,21 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
             downloader = request.buildDownloader(applicationContext)
                 .registerListener(this)
             downloader?.startDownload()
-        }
 
+            // 非强制更新
+            if (!dialogInfo.forceUpdate) {
+                // 已经在下载
+                if (downloader is EmptyDownloader || dialogInfo.backgroundDownload) {
+                    Toast.makeText(
+                        applicationContext, R.string.updater_notifier_background_downloading,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                } else {
+                    tvPositive?.setText(R.string.updater_notifier_background_download)
+                }
+            }
+        }
     }
 
     override fun onDownloadStart() {
@@ -121,13 +143,17 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
     }
 
     override fun onDownloadComplete(uri: Uri) {
-        finish()
+        if (!dialogInfo.forceUpdate) {
+            finish()
+        }
+        // 强制更新情况下，用户从安装页面返回（取消安装），再次点击立即更新，不需要重新下载
+        dialogInfo.ignoreLocal = false
         if (BuildConfig.DEBUG) e("下载完成...")
 
     }
 
     override fun onDownloadFailed(e: Throwable) {
-        if (visiable) {
+        if (activityVisible) {
             val msg = getTipFromException(applicationContext, e)
             Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
         }
@@ -135,11 +161,26 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        visiable = hasFocus
+        activityVisible = hasFocus
     }
 
     override fun onDestroy() {
         super.onDestroy()
         downloader?.unregisterListener(this)
+    }
+
+    private fun exitApp() {
+        val activityManager: ActivityManager =
+            getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        activityManager.runningAppProcesses.forEach {
+            if (it.pid != android.os.Process.myPid()) android.os.Process.killProcess(it.pid)
+        }
+        android.os.Process.killProcess(android.os.Process.myPid())
+        System.exit(0)
+    }
+
+    override fun onBackPressed() {
+        if (!dialogInfo.forceUpdate)
+            super.onBackPressed()
     }
 }
