@@ -14,24 +14,25 @@ internal object DBManager {
     const val DB_VERSION = 1
 
     // share single database object
-    private lateinit var dbHelper: com.chiclaim.android.downloader.DBManager.DBHelper
+    private lateinit var dbHelper: DBHelper
 
     internal class DBHelper(context: Context) :
-        SQLiteOpenHelper(context,
-            com.chiclaim.android.downloader.DBManager.DOWNLOAD_DB_NAME, null,
-            com.chiclaim.android.downloader.DBManager.DB_VERSION
+        SQLiteOpenHelper(
+            context,
+            DOWNLOAD_DB_NAME, null,
+            DB_VERSION
         ) {
 
         override fun onCreate(db: SQLiteDatabase?) {
             db?.execSQL(
                 """
-            CREATE TABLE ${com.chiclaim.android.downloader.DownloadRecord.Companion.TABLE_NAME}(
-                ${com.chiclaim.android.downloader.DownloadRecord.Companion.COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT, 
-                ${com.chiclaim.android.downloader.DownloadRecord.Companion.COLUMN_URI} TEXT, 
-                ${com.chiclaim.android.downloader.DownloadRecord.Companion.COLUMN_FILENAME} TEXT, 
-                ${com.chiclaim.android.downloader.DownloadRecord.Companion.COLUMN_HASH_URL} TEXT, 
-                ${com.chiclaim.android.downloader.DownloadRecord.Companion.COLUMN_TOTAL_BYTES} INTEGER, 
-                ${com.chiclaim.android.downloader.DownloadRecord.Companion.COLUMN_STATUS} INTEGER)
+            CREATE TABLE ${DownloadRecord.TABLE_NAME}(
+                ${DownloadRecord.COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT, 
+                ${DownloadRecord.COLUMN_URI} TEXT, 
+                ${DownloadRecord.COLUMN_FILENAME} TEXT, 
+                ${DownloadRecord.COLUMN_HASH_URL} TEXT, 
+                ${DownloadRecord.COLUMN_TOTAL_BYTES} INTEGER, 
+                ${DownloadRecord.COLUMN_STATUS} INTEGER)
         """.trimIndent()
             )
         }
@@ -46,12 +47,11 @@ internal object DBManager {
      * return single database object
      */
     @Synchronized
-    fun getDB(context: Context): com.chiclaim.android.downloader.DBManager.DBHelper {
+    fun getDB(context: Context): DBHelper {
         if (!this::dbHelper.isInitialized) {
-            com.chiclaim.android.downloader.DBManager.dbHelper =
-                com.chiclaim.android.downloader.DBManager.DBHelper(context)
+            dbHelper = DBHelper(context)
         }
-        return com.chiclaim.android.downloader.DBManager.dbHelper
+        return dbHelper
     }
 
 
@@ -60,7 +60,7 @@ internal object DBManager {
      */
     fun close() {
         if (this::dbHelper.isInitialized) {
-            com.chiclaim.android.downloader.DBManager.dbHelper.close()
+            dbHelper.close()
         }
     }
 
