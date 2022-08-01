@@ -1,1 +1,1 @@
-include ':updater', ':app'
+include ':downloader', ':app'

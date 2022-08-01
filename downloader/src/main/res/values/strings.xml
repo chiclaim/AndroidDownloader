@@ -1,0 +1,26 @@
+<resources>
+    <string name="downloader_component_disable">下载服务不可用,请您启用</string>
+    <string name="downloader_title">发现新版本啦</string>
+    <string name="downloader_cancel">取消</string>
+    <string name="downloader_ok">立即更新</string>
+    <string name="downloader_desc_default">修复已知问题</string>
+    <string name="downloader_tip_title">提示</string>
+    <string name="downloader_setting">设置</string>
+    <string name="downloader_without_install_permission">您尚未授予应用安装权限，无法更新</string>
+    <string name="downloader_notifier_description">版本更新</string>
+    <string name="downloader_notification_disable">通知栏被禁用</string>
+    <string name="downloader_notifier_channel_name">下载</string>
+    <string name="downloader_notifier_subtext_placeholder">%1$d%%</string>
+    <string name="downloader_notifier_title_placeholder">%1$s新版本</string>
+    <string name="downloader_notifier_content_without_network">下载失败，等待网络连接</string>
+    <string name="downloader_notifier_content_network_timeout">网络超时，点击重试</string>
+    <string name="downloader_notifier_content_too_many_redirects">下载失败，重定向次数过多</string>
+    <string name="downloader_notifier_content_missing_location">下载失败，重定向地址丢失</string>
+    <string name="downloader_notifier_content_partial_error">Partial 响应码错误</string>
+    <string name="downloader_notifier_content_unhandled_err">下载失败(%1$d)，点击重试</string>
+    <string name="downloader_notifier_content_err_placeholder">下载失败: %1$s</string>
+    <string name="downloader_notifier_success_to_install">下载完成，点击安装</string>
+    <string name="downloader_notifier_failed_missing_uri">文件 URI 未找到</string>
+    <string name="downloader_notifier_background_downloading">正在后台下载新版本</string>
+    <string name="downloader_notifier_background_download">后台下载</string>
+</resources>
