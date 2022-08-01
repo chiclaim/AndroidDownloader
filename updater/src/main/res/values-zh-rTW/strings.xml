@@ -21,5 +21,6 @@
     <string name="updater_notifier_content_err_placeholder">下載失敗: %1$s</string>
     <string name="updater_notifier_success_to_install">下載完成，點擊安裝</string>
     <string name="updater_notifier_failed_missing_uri">文件 URI 未找到</string>
-
+    <string name="updater_notifier_background_downloading">正在後台下載新版本</string>
+    <string name="updater_notifier_background_download">後台下載</string>
 </resources>
