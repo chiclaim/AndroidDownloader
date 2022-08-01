@@ -101,7 +101,7 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
                 .setIgnoreLocal(dialogInfo.ignoreLocal)
                 .setNotificationTitle(appName)
                 .setNotificationContent(getString(R.string.system_download_description))
-                .setNeedInstall(true)
+                .setNeedInstall(dialogInfo.forceUpdate || dialogInfo.needInstall)
                 .allowScanningByMediaScanner()
                 .setAllowedNetworkTypes(
                     DownloadManager.Request.NETWORK_MOBILE

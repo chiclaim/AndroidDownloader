@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity(), DownloadListener {
     private var fileUrl: String = APK_URL
     private var mode = DownloadMode.EMBED
     private var ignoreLocalFile = false
-    private var autoInstall = false
+    private var needInstall = false
     private var notifierDisableTip = false
     private var notifierVisibility: Int = 0
     private var isForceUpdate = false
@@ -72,9 +72,9 @@ class MainActivity : AppCompatActivity(), DownloadListener {
         }
 
         findViewById<CheckBox>(R.id.cb_auto_install).run {
-            autoInstall = isChecked
+            needInstall = isChecked
             setOnCheckedChangeListener { _, isChecked ->
-                autoInstall = isChecked
+                needInstall = isChecked
             }
         }
 
@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity(), DownloadListener {
             .setNotificationContent(getString(R.string.system_download_description))
             .allowScanningByMediaScanner()
             .setIgnoreLocal(ignoreLocalFile)
-            .setNeedInstall(autoInstall)
+            .setNeedInstall(needInstall)
             .setNotificationVisibility(notifierVisibility)
             .setNotificationSmallIcon(R.mipmap.ic_launcher)
             .setShowNotificationDisableTip(notifierDisableTip)
@@ -165,15 +165,16 @@ class MainActivity : AppCompatActivity(), DownloadListener {
 
     fun showUpdateDialog(view: View) {
         initDownloadParameters()
-        UpgradeDialogActivity.launch(this, UpgradeDialogInfo().apply {
-            this.url = fileUrl
-            this.ignoreLocal = ignoreLocalFile
-            this.title = if (isForceUpdate) "重要安全升级" else "发现新版本"
-            this.description = "1. 修复已知问题\n2. 修复已知问题"
-            this.forceUpdate = isForceUpdate
-            this.negativeText = if (isForceUpdate) "退出程序" else "取消"
-            this.notifierSmallIcon = R.mipmap.ic_launcher
-            this.backgroundDownload = isBackgroundDownload
+        UpgradeDialogActivity.launch(this, UpgradeDialogInfo().also {
+            it.url = fileUrl
+            it.ignoreLocal = ignoreLocalFile
+            it.title = if (isForceUpdate) "重要安全升级" else "发现新版本"
+            it.description = "1. 修复已知问题\n2. 修复已知问题"
+            it.forceUpdate = isForceUpdate
+            it.negativeText = if (isForceUpdate) "退出程序" else "取消"
+            it.notifierSmallIcon = R.mipmap.ic_launcher
+            it.backgroundDownload = isBackgroundDownload
+            it.needInstall = needInstall
         }, mode)
     }
 
