@@ -2,12 +2,16 @@ package com.chiclaim.android.downloader.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import com.chiclaim.android.downloader.R
+import com.chiclaim.android.downloader.STATUS_FAILED
 import com.chiclaim.android.downloader.STATUS_RUNNING
+import com.chiclaim.android.downloader.STATUS_SUCCESSFUL
+import java.io.File
 
 
 /**
@@ -31,7 +35,8 @@ internal class NotifierUtils private constructor() {
             percent: Int,
             title: CharSequence,
             content: CharSequence?,
-            @DownloadStatus status: Int
+            @DownloadStatus status: Int,
+            file: File? = null
         ) {
             val notificationManager = getNotificationManager(context)
             // 在 Android 8.0 及更高版本上，需要在系统中注册应用的通知渠道
@@ -47,7 +52,7 @@ internal class NotifierUtils private constructor() {
             val builder = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(drawable)
                 .setContentTitle(title)
-                .setAutoCancel(false)
+                .setAutoCancel(status == STATUS_SUCCESSFUL) // canceled when it is clicked by the user.
                 .setOngoing(percent != 100)
 
             if (percent >= 0) {
@@ -57,6 +62,21 @@ internal class NotifierUtils private constructor() {
                         percent
                     )
                 )
+            }
+
+            if (status == STATUS_SUCCESSFUL) {
+                // click to install
+                file?.let {
+                    val clickIntent = createInstallIntent(context, it)
+                    val pendingIntent = PendingIntent.getActivity(
+                        context,
+                        0,
+                        clickIntent,
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
+                        else PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                    builder.setContentIntent(pendingIntent)
+                }
             }
 
             if (status == STATUS_RUNNING)

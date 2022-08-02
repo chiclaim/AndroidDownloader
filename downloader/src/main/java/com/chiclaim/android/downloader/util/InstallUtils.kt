@@ -36,7 +36,7 @@ fun settingPackageInstall(activity: Activity, requestCode: Int) {
     }
 }
 
-fun startInstall(context: Context, apkFile: File) {
+fun createInstallIntent(context: Context, apkFile: File): Intent {
     val uri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         FileProvider.getUriForFile(
             context,
@@ -46,13 +46,13 @@ fun startInstall(context: Context, apkFile: File) {
     } else {
         Uri.fromFile(apkFile)
     }
-    startInstall(context, uri)
+    return createInstallIntent(context, uri)
+
 }
 
-fun startInstall(context: Context, uri: Uri) {
+fun createInstallIntent(context: Context, uri: Uri): Intent {
     if (!hasInstallPermission(context)) {
-        UpgradePermissionDialogActivity.launch(context, uri.toString())
-        return
+        return UpgradePermissionDialogActivity.createIntent(context, uri.toString())
     }
     val intent = Intent(Intent.ACTION_VIEW)
     if (context !is Activity) {
@@ -60,7 +60,15 @@ fun startInstall(context: Context, uri: Uri) {
     }
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     intent.setDataAndType(uri, "application/vnd.android.package-archive")
-    context.startActivity(intent)
+    return intent
+}
+
+fun startInstall(context: Context, apkFile: File) {
+    context.startActivity(createInstallIntent(context, apkFile))
+}
+
+fun startInstall(context: Context, uri: Uri) {
+    context.startActivity(createInstallIntent(context, uri))
 }
 
 

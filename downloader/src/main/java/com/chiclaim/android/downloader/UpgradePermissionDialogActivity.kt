@@ -23,13 +23,17 @@ class UpgradePermissionDialogActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_URI = "extra_uri_path"
 
-        fun launch(context: Context, filePath: String) {
+        fun createIntent(context: Context, uri: String): Intent {
             val intent = Intent(context, UpgradePermissionDialogActivity::class.java)
             if (context !is Activity) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-            intent.putExtra(EXTRA_URI, filePath)
-            context.startActivity(intent)
+            intent.putExtra(EXTRA_URI, uri)
+            return intent
+        }
+
+        fun launch(context: Context, uri: String) {
+            context.startActivity(createIntent(context, uri))
         }
     }
 

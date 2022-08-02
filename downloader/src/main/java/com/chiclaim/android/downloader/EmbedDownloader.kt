@@ -136,7 +136,8 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                         100,
                         request.notificationTitle ?: getDefaultTitle(),
                         context.getString(R.string.downloader_notifier_success_to_install),
-                        STATUS_SUCCESSFUL
+                        STATUS_SUCCESSFUL,
+                        destinationFile
                     )
                 }
                 NOTIFIER_VISIBLE -> {
