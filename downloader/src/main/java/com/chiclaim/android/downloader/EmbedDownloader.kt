@@ -62,7 +62,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
         return conn
     }
 
-    private fun prepareDestinationFile(record: DownloadRecord): File {
+    private fun prepareDestinationFile(): File {
         val file = File(
             request.destinationUri?.path
                 ?: throw NullPointerException("request must set destinationDir path")
@@ -71,23 +71,33 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
             val ext: String = request.url.substringAfterLast(".", "").run {
                 if (length > 10) "" else ".${this}"
             }
-            return File(file, "${record.hashUrl}$ext")
+            return File(file, "${MD5.md5(request.url)}$ext")
         }
         return file
     }
 
-    private fun prepareRecord(): DownloadRecord {
-        val urlHash = MD5.md5(request.url)
-        var record = DownloadRecord(hashUrl = urlHash)
-        record = record.queryByUrlHash(context).firstOrNull().run {
+    private fun prepareRecord(destinationFile: File): DownloadRecord {
+        var record = DownloadRecord(
+            url = request.url,
+            fileName = destinationFile.name,
+            destinationUri = destinationFile.absolutePath,
+            ignoreLocal = request.ignoreLocal,
+            needInstall = request.needInstall,
+            notificationTitle = request.notificationTitle.toString(),
+            notificationContent = request.notificationContent.toString(),
+            notificationVisibility = request.notificationVisibility,
+            status = STATUS_RUNNING
+        )
+        record = record.queryByUrl(context).firstOrNull().run {
             if (this == null) {
                 val rowId = record.insert(context)
                 if (rowId != -1L) {
-                    record.queryByUrlHash(context).firstOrNull() ?: record
+                    record.queryByUrl(context).firstOrNull() ?: record
                 } else {
                     record
                 }
             } else {
+                this.status = STATUS_RUNNING
                 this
             }
         }
@@ -105,7 +115,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
         )
     }
 
-    private fun postPercent(percent: Int) {
+    private fun callPercent(percent: Int) {
         handler.post {
             onProgressUpdate(percent)
             if (request.notificationVisibility == NOTIFIER_VISIBLE_NOTIFY_COMPLETED
@@ -125,7 +135,9 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
 
     }
 
-    private fun postSuccessful(destinationFile: File) {
+    private fun callSuccessful(record: DownloadRecord, destinationFile: File) {
+        record.status = STATUS_SUCCESSFUL
+        record.update(context)
         handler.post {
             when (request.notificationVisibility) {
                 NOTIFIER_VISIBLE_NOTIFY_COMPLETED, NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION -> {
@@ -150,7 +162,11 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
         }
     }
 
-    private fun postFailed(e: Exception) {
+    private fun callFailed(record: DownloadRecord?, e: Exception) {
+        record?.let {
+            it.status = STATUS_FAILED
+            it.update(context)
+        }
         handler.post {
             if (request.notificationVisibility != NOTIFIER_HIDDEN
             ) {
@@ -176,18 +192,22 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
             var conn: HttpURLConnection? = null
             var redirectCount = 0
             while (true) {
+                var record: DownloadRecord? = null
                 try {
                     if (redirectCount >= MAX_REDIRECTS) {
                         throw DownloadException(ERROR_TOO_MANY_REDIRECTS, "too many redirect times")
                     }
-                    val record = prepareRecord()
-                    val destinationFile = prepareDestinationFile(record)
+
+                    val destinationFile = prepareDestinationFile()
+
+                    record = prepareRecord(destinationFile)
+
 
                     val currentLength =
                         if (destinationFile.exists()) destinationFile.length() else 0
                     if (checkComplete(record, currentLength)) {
-                        postSuccessful(destinationFile)
-                        return@execute
+                        callSuccessful(record, destinationFile)
+                        break
                     }
 
                     conn = prepareConnection(url, currentLength)
@@ -207,13 +227,13 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                                     val notifyInterval = now - lastNotifyTime
                                     if (notifyInterval > 700 || record.totalBytes == wroteLength) {
                                         val percent = getPercent(record.totalBytes, wroteLength)
-                                        postPercent(percent)
+                                        callPercent(percent)
                                         lastNotifyTime = now
                                     }
                                 }
                             }
                         }
-                        postSuccessful(destinationFile)
+                        callSuccessful(record, destinationFile)
                     }
 
                     val resuming = conn.getRequestProperty("Range")?.isNotEmpty() ?: false
@@ -276,7 +296,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    postFailed(e)
+                    callFailed(record, e)
                     break // break while on exception
                 } finally {
                     conn?.disconnect()

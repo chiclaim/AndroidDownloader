@@ -26,23 +26,6 @@ internal object Utils {
         SpHelper.get(context).putLong("${MD5.md5(url)}-id", id)
     }
 
-    fun saveFileSize(context: Context, url: String, size: Long) {
-        SpHelper.get(context).putLong("${MD5.md5(url)}-size", size)
-    }
-
-    fun getFileSize(context: Context, url: String, defaultValue: Long): Long {
-        return SpHelper.get(context).getLong("${MD5.md5(url)}-size", defaultValue)
-    }
-
-    fun removeFileSize(context: Context, url: String) {
-        return SpHelper.get(context).remove("${MD5.md5(url)}-size")
-    }
-
-    inline fun getValueFromCursor(cursor: Cursor, column: String, block: (index: Int) -> Unit) {
-        val index = cursor.getColumnIndex(column)
-        if (index != -1) block(index)
-    }
-
     inline fun <reified T> Cursor.getValue(column: String): T? {
         val index = getColumnIndex(column)
         if (index == -1) return null
@@ -57,6 +40,7 @@ internal object Utils {
             java.lang.Short::class.java -> cursor.getShort(index)
             java.lang.Float::class.java -> cursor.getFloat(index)
             java.lang.Double::class.java -> cursor.getDouble(index)
+            java.lang.Boolean::class.java -> cursor.getInt(index) == 1
             ByteArray::class.java -> cursor.getBlob(index)
             else -> null
         }
@@ -100,7 +84,7 @@ internal object Utils {
         return null
     }
 
-     fun getTipFromException(context: Context, exception: Throwable): String {
+    fun getTipFromException(context: Context, exception: Throwable): String {
         if (exception is DownloadException) {
             return when (exception.errorType) {
                 DownloadException.ERROR_NO_NETWORK ->

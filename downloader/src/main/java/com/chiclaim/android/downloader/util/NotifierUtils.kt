@@ -8,7 +8,6 @@ import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import com.chiclaim.android.downloader.R
-import com.chiclaim.android.downloader.STATUS_FAILED
 import com.chiclaim.android.downloader.STATUS_RUNNING
 import com.chiclaim.android.downloader.STATUS_SUCCESSFUL
 import java.io.File
@@ -31,7 +30,7 @@ internal class NotifierUtils private constructor() {
         fun showNotification(
             context: Context,
             id: Int,
-            @DrawableRes drawable: Int,
+            @DrawableRes notifierSmallIcon: Int,
             percent: Int,
             title: CharSequence,
             content: CharSequence?,
@@ -50,7 +49,7 @@ internal class NotifierUtils private constructor() {
             }
 
             val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(drawable)
+                .setSmallIcon(notifierSmallIcon)
                 .setContentTitle(title)
                 .setAutoCancel(status == STATUS_SUCCESSFUL) // canceled when it is clicked by the user.
                 .setOngoing(percent != 100)

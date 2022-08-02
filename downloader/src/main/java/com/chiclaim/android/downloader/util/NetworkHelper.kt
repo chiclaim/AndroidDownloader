@@ -1,4 +1,4 @@
-package com.chiclaim.android.downloader
+package com.chiclaim.android.downloader.util
 
 import android.content.Context
 import android.net.ConnectivityManager

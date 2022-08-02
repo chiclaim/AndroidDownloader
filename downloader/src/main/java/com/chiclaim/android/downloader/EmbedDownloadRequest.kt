@@ -31,8 +31,8 @@ class EmbedDownloadRequest(url: String) : Request(url) {
         if (notificationVisibility != NOTIFIER_HIDDEN) {
             if (showNotificationDisableTip)
                 checkNotificationsEnabled(context)
-            if (notificationSmallIcon == -1)
-                throw IllegalArgumentException("must set notification small icon")
+            if (notificationSmallIcon == -1 || notificationSmallIcon == 0)
+                setNotificationSmallIcon(context.applicationInfo.icon)
         }
 
         if (destinationUri == null) {

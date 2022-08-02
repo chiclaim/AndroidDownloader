@@ -28,9 +28,14 @@ internal object DBManager {
                 """
             CREATE TABLE ${DownloadRecord.TABLE_NAME}(
                 ${DownloadRecord.COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT, 
-                ${DownloadRecord.COLUMN_URI} TEXT, 
+                ${DownloadRecord.COLUMN_URL} TEXT, 
                 ${DownloadRecord.COLUMN_FILENAME} TEXT, 
-                ${DownloadRecord.COLUMN_HASH_URL} TEXT, 
+                ${DownloadRecord.COLUMN_DESTINATION_URI} TEXT, 
+                ${DownloadRecord.COLUMN_IGNORE_LOCAL} NUMERIC, 
+                ${DownloadRecord.COLUMN_NEED_INSTALL} NUMERIC, 
+                ${DownloadRecord.COLUMN_NOTIFICATION_VISIBILITY} INTEGER, 
+                ${DownloadRecord.COLUMN_NOTIFICATION_TITLE} TEXT, 
+                ${DownloadRecord.COLUMN_NOTIFICATION_CONTENT} TEXT, 
                 ${DownloadRecord.COLUMN_TOTAL_BYTES} INTEGER, 
                 ${DownloadRecord.COLUMN_STATUS} INTEGER)
         """.trimIndent()
