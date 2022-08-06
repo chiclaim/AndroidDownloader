@@ -16,11 +16,16 @@
 
 | 厂商        | 机型    |  系统版本  |
 | --------   | -----:   | :----: |
-| 小米        | Redmi4     |   Android6.0.1/MIUI8.5    |
-| 华为        | 荣耀7i      |   Android6.0.1/EMUI4.0.3  |
-| 华为        | 荣耀V8      |   Android7.0/EMUI5.0  |
-| 华为        | 荣耀V10      |   Android9.0  |
-| 华为        | Mate20      |   Android9.0  |
+| 小米        | Redmi4     |   Android 6.0.1    |
+| 华为        | 荣耀7i      |   Android 6.0.1  |
+| 华为        | 荣耀V8      |   Android 7.0  |
+| 小米        | Note4X      |   Android 7.0  |
+| vivo        | Y85A      |   Android 8.1.0  |
+| 华为        | 荣耀V10      |   Android 9  |
+| 华为        | Mate20      |   Android 9  |
+| vivo        | x50      |   Android 10  |
+| 荣耀        | 荣耀 Magic3 至臻版      |   Android 11  |
+| 小米        | 小米 11 Ultra      |   Android 12  |
 
 ### 1.  如何使用DownloadManager
 
