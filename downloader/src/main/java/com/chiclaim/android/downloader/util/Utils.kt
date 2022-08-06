@@ -40,7 +40,7 @@ internal object Utils {
             java.lang.Short::class.java -> cursor.getShort(index)
             java.lang.Float::class.java -> cursor.getFloat(index)
             java.lang.Double::class.java -> cursor.getDouble(index)
-            java.lang.Boolean::class.java -> cursor.getInt(index) == 1
+            java.lang.Boolean::class.java -> cursor.getInt(index) != 0
             ByteArray::class.java -> cursor.getBlob(index)
             else -> null
         }

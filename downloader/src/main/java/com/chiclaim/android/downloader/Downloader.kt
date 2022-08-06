@@ -1,69 +1,33 @@
 package com.chiclaim.android.downloader
 
-import android.content.Context
-import android.net.Uri
+import android.content.Intent
 
-abstract class Downloader<T : Request>(val context: Context, internal val request: T) {
+abstract class Downloader(internal val request: DownloadRequest) {
 
-    private var listeners: MutableList<DownloadListener>? = null
 
-    internal fun onStart() {
-        DownloaderManager.addDownload(this)
-        this.listeners?.forEach {
-            it.onDownloadStart()
-        }
+    /**
+     * 具体的下载实现
+     */
+    internal open fun download() {
+        DownloaderManager.addIfAbsent(this)
+        request.onStart()
     }
 
-    internal fun onComplete(uri: Uri) {
-        DownloaderManager.removeDownload(request)
-        this.listeners?.forEach {
-            it.onDownloadComplete(uri)
-        }
-    }
-
-    internal fun onFailed(e: Throwable) {
-        DownloaderManager.removeDownload(request)
-        this.listeners?.forEach {
-            it.onDownloadFailed(e)
-        }
-    }
-
-    internal fun onProgressUpdate(percent: Int) {
-        this.listeners?.forEach {
-            it.onProgressUpdate(percent)
-        }
-    }
-
-
+    /**
+     * 在 Service 中开始下载
+     */
     open fun startDownload() {
-        onStart()
+        DownloaderManager.addIfAbsent(this)
+        val intent = Intent("${request.context.packageName}${BuildConfig.SERVICE_ACTION_SUFFIX}")
+        intent.setPackage(request.context.packageName)
+        intent.putExtra(DownloadService.EXTRA_URL, request.url)
+        request.context.startService(intent)
     }
 
-
-    private fun initListenerList() {
-        if (listeners == null) {
-            synchronized(this) {
-                if (listeners == null) {
-                    listeners = mutableListOf()
-                }
-            }
-        }
-    }
-
-    fun registerListener(listener: DownloadListener): Downloader<*> {
-        initListenerList()
-        listeners?.add(listener)
-        return this
-    }
-
-    fun unregisterListener(listener: DownloadListener) {
-        if (listeners == null) return
-        listeners?.remove(listener)
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Downloader<*>) return false
+        if (other !is Downloader) return false
 
         if (request.url != other.request.url) return false
 

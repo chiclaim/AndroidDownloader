@@ -4,12 +4,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
-import com.chiclaim.android.downloader.R
-import com.chiclaim.android.downloader.STATUS_RUNNING
-import com.chiclaim.android.downloader.STATUS_SUCCESSFUL
+import com.chiclaim.android.downloader.*
 import java.io.File
 
 
@@ -21,6 +20,11 @@ internal class NotifierUtils private constructor() {
 
     companion object {
         private const val CHANNEL_ID = "download_channel_normal"
+
+        private fun getPendingIntentFlag() =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            else PendingIntent.FLAG_UPDATE_CURRENT
+
 
         private fun getNotificationManager(context: Context): NotificationManager {
             return context.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE)
@@ -35,7 +39,8 @@ internal class NotifierUtils private constructor() {
             title: CharSequence,
             content: CharSequence?,
             @DownloadStatus status: Int,
-            file: File? = null
+            file: File? = null,
+            url: String? = null
         ) {
             val notificationManager = getNotificationManager(context)
             // 在 Android 8.0 及更高版本上，需要在系统中注册应用的通知渠道
@@ -62,24 +67,35 @@ internal class NotifierUtils private constructor() {
                     )
                 )
             }
-
-            if (status == STATUS_SUCCESSFUL) {
-                // click to install
-                file?.let {
-                    val clickIntent = createInstallIntent(context, it)
-                    val pendingIntent = PendingIntent.getActivity(
-                        context,
-                        0,
-                        clickIntent,
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
-                        else PendingIntent.FLAG_UPDATE_CURRENT
-                    )
+            when (status) {
+                STATUS_SUCCESSFUL -> {
+                    // click to install
+                    file?.let {
+                        val clickIntent = createInstallIntent(context, it)
+                        val pendingIntent = PendingIntent.getActivity(
+                            context,
+                            0,
+                            clickIntent,
+                            getPendingIntentFlag()
+                        )
+                        builder.setContentIntent(pendingIntent)
+                    }
+                }
+                STATUS_RUNNING -> {
+                    builder.setProgress(100, percent, percent <= 0)
+                }
+                STATUS_FAILED -> {
+                    val intent =
+                        Intent("${context.packageName}${BuildConfig.SERVICE_ACTION_SUFFIX}")
+                    intent.setPackage(context.packageName)
+                    intent.putExtra(DownloadService.EXTRA_URL, url)
+                    intent.putExtra(DownloadService.EXTRA_FROM, DownloadService.FROM_NOTIFIER)
+                    val pendingIntent =
+                        PendingIntent.getService(context, 1, intent, getPendingIntentFlag())
                     builder.setContentIntent(pendingIntent)
+                    //builder.addAction(NotificationCompat.Action(null, null, pendingIntent))
                 }
             }
-
-            if (status == STATUS_RUNNING)
-                builder.setProgress(100, percent, percent <= 0)
 
             content?.let {
                 builder.setContentText(it)

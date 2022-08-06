@@ -1,6 +1,5 @@
 package com.chiclaim.android.downloader
 
-import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
@@ -23,8 +22,8 @@ import java.net.URL
  *
  * @author by chiclaim@google.com
  */
-class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
-    Downloader<EmbedDownloadRequest>(context.applicationContext, request) {
+class EmbedDownloader(request: DownloadRequest) :
+    Downloader(request) {
 
     companion object {
         private const val HTTP_TEMP_REDIRECT = 307
@@ -76,6 +75,21 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
         return file
     }
 
+    private fun fillRequestFromDB(dbRecord: DownloadRecord) {
+        dbRecord.notificationTitle?.let {
+            request.setNotificationTitle(it)
+        }
+        dbRecord.notificationContent?.let {
+            request.setNotificationContent(it)
+        }
+        dbRecord.destinationUri?.let {
+            request.setDestinationUri(Uri.parse(it))
+        }
+        request.setIgnoreLocal(dbRecord.ignoreLocal)
+        request.setNeedInstall(dbRecord.needInstall)
+        request.setNotificationVisibility(dbRecord.notificationVisibility)
+    }
+
     private fun prepareRecord(destinationFile: File): DownloadRecord {
         var record = DownloadRecord(
             url = request.url,
@@ -88,45 +102,48 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
             notificationVisibility = request.notificationVisibility,
             status = STATUS_RUNNING
         )
-        record = record.queryByUrl(context).firstOrNull().run {
+        record = record.queryByUrl(request.context).firstOrNull().run {
             if (this == null) {
-                val rowId = record.insert(context)
+                val rowId = record.insert(request.context)
                 if (rowId != -1L) {
-                    record.queryByUrl(context).firstOrNull() ?: record
+                    record.queryByUrl(request.context).firstOrNull() ?: record
                 } else {
                     record
                 }
-            } else {
-                this.status = STATUS_RUNNING
-                this
+            } else { // 如果数据库存在记录
+                // 来自通知栏点击(request 中只有 url 属性值)
+                if (request.fromNotifier) {
+                    fillRequestFromDB(this)
+                    this.status = STATUS_RUNNING
+                    this
+                }
+                // 普通下载，以传递进来的 request 为准，设置 totalBytes 即可
+                else {
+                    record.totalBytes = this.totalBytes
+                    record
+                }
             }
         }
         return record
     }
 
     private fun checkComplete(record: DownloadRecord, currentLength: Long): Boolean {
-        return !request.ignoreLocal && record.totalBytes > 0 && record.totalBytes == currentLength
+        return !record.ignoreLocal && record.totalBytes > 0 && record.totalBytes == currentLength
     }
 
-    private fun getDefaultTitle(): String {
-        return context.getString(
-            R.string.downloader_notifier_title_placeholder,
-            context.applicationInfo.loadLabel(context.packageManager)
-        )
-    }
 
     private fun callPercent(percent: Int) {
         handler.post {
-            onProgressUpdate(percent)
+            request.onProgressUpdate(percent)
             if (request.notificationVisibility == NOTIFIER_VISIBLE_NOTIFY_COMPLETED
                 || request.notificationVisibility == NOTIFIER_VISIBLE
             ) {
                 NotifierUtils.showNotification(
-                    context,
+                    request.context,
                     request.url.hashCode(),
                     request.notificationSmallIcon,
                     percent,
-                    request.notificationTitle ?: getDefaultTitle(),
+                    request.notificationTitle ?: "",
                     request.notificationContent,
                     STATUS_RUNNING,
                 )
@@ -137,56 +154,56 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
 
     private fun callSuccessful(record: DownloadRecord, destinationFile: File) {
         record.status = STATUS_SUCCESSFUL
-        record.update(context)
+        record.update(request.context)
         handler.post {
             when (request.notificationVisibility) {
                 NOTIFIER_VISIBLE_NOTIFY_COMPLETED, NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION -> {
                     NotifierUtils.showNotification(
-                        context,
+                        request.context,
                         request.url.hashCode(),
                         request.notificationSmallIcon,
                         100,
-                        request.notificationTitle ?: getDefaultTitle(),
-                        context.getString(R.string.downloader_notifier_success_to_install),
+                        request.notificationTitle ?: "",
+                        request.context.getString(R.string.downloader_notifier_success_to_install),
                         STATUS_SUCCESSFUL,
                         destinationFile
                     )
                 }
                 NOTIFIER_VISIBLE -> {
-                    NotifierUtils.cancelNotification(context, request.url.hashCode())
+                    NotifierUtils.cancelNotification(request.context, request.url.hashCode())
                 }
 
             }
-            onComplete(Uri.fromFile(destinationFile))
-            if (request.needInstall) startInstall(context, destinationFile)
+            request.onComplete(Uri.fromFile(destinationFile))
+            if (record.needInstall) startInstall(request.context, destinationFile)
         }
     }
 
     private fun callFailed(record: DownloadRecord?, e: Exception) {
         record?.let {
             it.status = STATUS_FAILED
-            it.update(context)
+            it.update(request.context)
         }
         handler.post {
             if (request.notificationVisibility != NOTIFIER_HIDDEN
             ) {
                 NotifierUtils.showNotification(
-                    context,
+                    request.context,
                     request.url.hashCode(),
                     request.notificationSmallIcon,
                     -1,
-                    request.notificationTitle ?: getDefaultTitle(),
-                    getTipFromException(context, e),
-                    STATUS_FAILED
+                    request.notificationTitle ?: "",
+                    getTipFromException(request.context, e),
+                    STATUS_FAILED,
+                    url = request.url
                 )
             }
-            onFailed(e)
+            request.onFailed(e)
         }
     }
 
 
-    override fun startDownload() {
-        super.startDownload()
+    override fun download() {
         DownloadExecutor.execute {
             var url: URL? = null
             var conn: HttpURLConnection? = null
@@ -248,7 +265,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                                 )
                             }
                             record.totalBytes = conn.contentLength.toLong()
-                            record.update(context)
+                            record.update(request.context)
                             writeFile()
                         }
                         // 206 断点续传
@@ -281,7 +298,7 @@ class EmbedDownloader(context: Context, request: EmbedDownloadRequest) :
                         // 416 服务器无法处理所请求的数据区间
                         HTTP_REQUESTED_RANGE_NOT_SATISFIABLE -> {
                             conn.disconnect()
-                            record.delete(context)
+                            record.delete(request.context)
                             request.setIgnoreLocal(true)
                             continue
                         }

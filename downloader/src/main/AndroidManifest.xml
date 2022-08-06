@@ -12,11 +12,15 @@
         android:allowBackup="true"
         android:supportsRtl="true">
 
-        <activity android:name="com.chiclaim.android.downloader.UpgradeDialogActivity"
-            android:theme="@style/UpgradeTransparentDialogStyle"/>
+        <activity
+            android:name="com.chiclaim.android.downloader.UpgradeDialogActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/UpgradeTransparentDialogStyle" />
 
-        <activity android:name="com.chiclaim.android.downloader.UpgradePermissionDialogActivity"
-            android:theme="@style/UpgradeTransparentDialogStyle"/>
+        <activity
+            android:name="com.chiclaim.android.downloader.UpgradePermissionDialogActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/UpgradeTransparentDialogStyle" />
 
 
         <receiver
@@ -38,6 +42,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/download_file_paths" />
         </provider>
+
+        <service
+            android:name="com.chiclaim.android.downloader.DownloadService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="${applicationId}${serviceActionSuffix}" />
+            </intent-filter>
+        </service>
 
 
     </application>

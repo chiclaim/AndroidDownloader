@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.chiclaim.android.downloader.*
+import com.chiclaim.android.downloader.util.DownloadEngine
 import com.chiclaim.android.downloader.util.goNotificationSettings
 import com.chiclaim.android.downloader.util.settingPackageInstall
 
@@ -25,7 +26,9 @@ class MainActivity : AppCompatActivity(), DownloadListener {
     }
 
     private var fileUrl: String = APK_URL
-    private var mode = DownloadMode.EMBED
+
+    @DownloadEngine
+    private var mode: Int = DOWNLOAD_ENGINE_EMBED
     private var ignoreLocalFile = false
     private var needInstall = false
     private var notifierDisableTip = false
@@ -34,7 +37,7 @@ class MainActivity : AppCompatActivity(), DownloadListener {
     private var isBackgroundDownload = false
 
 
-    private var downloader: Downloader<*>? = null
+    private var request: DownloadRequest? = null
 
     private var editText: EditText? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +55,8 @@ class MainActivity : AppCompatActivity(), DownloadListener {
         findViewById<RadioGroup>(R.id.rg_engine).run {
             fun setMode(id: Int) {
                 when (id) {
-                    R.id.rb_engine_dm -> mode = DownloadMode.DOWNLOAD_MANAGER
-                    R.id.rb_engine_embed -> mode = DownloadMode.EMBED
+                    R.id.rb_engine_dm -> mode = DOWNLOAD_ENGINE_SYSTEM_DM
+                    R.id.rb_engine_embed -> mode = DOWNLOAD_ENGINE_EMBED
                 }
             }
 
@@ -118,11 +121,10 @@ class MainActivity : AppCompatActivity(), DownloadListener {
 
     }
 
-    private fun createCommonRequest(url: String): Request =
-        DownloadRequest.newRequest(url, mode)
+    private fun createCommonRequest(url: String): DownloadRequest =
+        DownloadRequest(applicationContext, url, mode)
             .setNotificationTitle(resources.getString(R.string.app_name))
             .setNotificationContent(getString(R.string.downloader_notifier_description))
-            .allowScanningByMediaScanner()
             .setIgnoreLocal(ignoreLocalFile)
             .setNeedInstall(needInstall)
             .setNotificationVisibility(notifierVisibility)
@@ -132,9 +134,9 @@ class MainActivity : AppCompatActivity(), DownloadListener {
 
     fun download(view: View) {
         initDownloadParameters()
-        downloader = createCommonRequest(fileUrl)
-            .buildDownloader(applicationContext).registerListener(this)
-        downloader?.startDownload()
+        request = createCommonRequest(fileUrl)
+        request?.registerListener(this)
+        request?.startDownload()
     }
 
     override fun onDownloadStart() {
@@ -202,7 +204,7 @@ class MainActivity : AppCompatActivity(), DownloadListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        downloader?.unregisterListener(this)
+        request?.unregisterListener(this)
     }
 
 }

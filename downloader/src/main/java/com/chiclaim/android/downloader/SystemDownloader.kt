@@ -1,6 +1,6 @@
 package com.chiclaim.android.downloader
 
-import android.content.Context
+import android.app.DownloadManager
 import android.net.Uri
 import android.widget.Toast
 import com.chiclaim.android.downloader.util.Utils
@@ -10,37 +10,35 @@ import com.chiclaim.android.downloader.util.showDownloadComponentSetting
 import com.chiclaim.android.downloader.util.startInstall
 import java.io.File
 
-internal class SystemDownloader(context: Context, request: SystemDownloadRequest) :
-    Downloader<SystemDownloadRequest>(context.applicationContext, request) {
+internal class SystemDownloader(request: DownloadRequest) : Downloader(request) {
 
     private var observer: DownloadObserver? = null
 
     private val downloader: SystemDownloadManager by lazy {
-        SystemDownloadManager(this.context)
+        SystemDownloadManager(request.context)
     }
 
     override fun startDownload() {
-        super.onStart()
-        if (!checkDownloadComponentEnable(context)) {
+        if (!checkDownloadComponentEnable(request.context)) {
             Toast.makeText(
-                context,
+                request.context,
                 R.string.downloader_component_disable,
                 Toast.LENGTH_SHORT
             ).show()
-            showDownloadComponentSetting(context)
+            showDownloadComponentSetting(request.context)
             return
         }
 
         if (request.ignoreLocal) {
-            download(request)
+            download()
             return
         }
 
-        val downloadId = Utils.getLocalDownloadId(context, request.url)
+        val downloadId = Utils.getLocalDownloadId(request.context, request.url)
         if (downloadId != -1L) {
             val downloadInfo = downloader.getDownloadInfo(downloadId)
             if (downloadInfo == null) {
-                download(request)
+                download()
                 return
             }
             //获取下载状态
@@ -48,29 +46,29 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
                 STATUS_SUCCESSFUL -> {
                     val uri = downloader.getDownloadedFileUri(downloadId)
                     if (uri != null) {
-                        val path = getRealPathFromURI(context, uri)
+                        val path = getRealPathFromURI(request.context, uri)
                         path?.let {
                             val file = File(it)
                             if (file.exists() && file.length() == downloadInfo.totalSize) {
-                                onComplete(uri)
-                                if (request.needInstall) startInstall(context, file)
+                                request.onComplete(uri)
+                                if (request.needInstall) startInstall(request.context, file)
                                 return
                             }
                         }
                     }
                     //重新下载
-                    download(request)
+                    download()
                 }
                 STATUS_RUNNING -> {
                     registerListener(downloadId)
                 }
                 STATUS_FAILED, STATUS_UNKNOWN -> {
-                    download(request)
+                    download()
                 }
                 else -> printDownloadStatus(downloadId, downloadInfo.status)
             }
         } else {
-            download(request)
+            download()
         }
     }
 
@@ -78,18 +76,24 @@ internal class SystemDownloader(context: Context, request: SystemDownloadRequest
         if (observer != null) {
             return
         }
-        val ob = DownloadObserver(context.applicationContext, downloadId, this)
+        val ob = DownloadObserver(request.context.applicationContext, downloadId, this)
         observer = ob
-        context.contentResolver.registerContentObserver(
+        request.context.contentResolver.registerContentObserver(
             Uri.parse("content://downloads/my_downloads/$downloadId"),
             true,
             ob
         )
     }
 
-    private fun download(request: SystemDownloadRequest) {
-        val downloadId = downloader.download(request.getRequest())
-        Utils.saveDownloadId(context, request.url, downloadId)
+    override fun download() {
+        super.download()
+        val dr = DownloadManager.Request(Uri.parse(request.url))
+            .setTitle(request.notificationTitle)
+            .setDescription(request.notificationContent)
+            .setNotificationVisibility(request.notificationVisibility)
+        //.setAllowedNetworkTypes(request.allowedNetworkTypes)
+        val downloadId = downloader.download(dr)
+        Utils.saveDownloadId(request.context, request.url, downloadId)
         registerListener(downloadId)
     }
 

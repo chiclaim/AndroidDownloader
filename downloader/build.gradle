@@ -11,8 +11,10 @@ android {
         targetSdkVersion TARGET_SDK_VERSION as int
         versionCode VERSION_CODE_UPDATER as int
         versionName VERSION_NAME_UPDATER as String
-        manifestPlaceholders = [authoritiesSuffix: ".file.download.fileProvider"]
+        manifestPlaceholders = [authoritiesSuffix: ".file.download.fileProvider",
+                                serviceActionSuffix: ".file.download.DownloadService"]
         buildConfigField("String", "AUTHORITIES_SUFFIX", "\"${manifestPlaceholders['authoritiesSuffix']}\"")
+        buildConfigField("String", "SERVICE_ACTION_SUFFIX", "\"${manifestPlaceholders['serviceActionSuffix']}\"")
     }
     buildTypes {
         release {

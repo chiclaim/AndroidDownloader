@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentHashMap
 internal object DownloaderManager {
 
 
-    private val downloadingList = ConcurrentHashMap<Request, Downloader<*>>()
+    private val downloadingList = ConcurrentHashMap<DownloadRequest, Downloader>()
 
-    fun addDownload(downloader: Downloader<*>) {
+    fun addIfAbsent(downloader: Downloader) {
         downloadingList[downloader.request] = downloader
     }
 
-    fun removeDownload(vararg requests: Request) {
+    fun remove(vararg requests: DownloadRequest) {
         requests.forEach {
             downloadingList.remove(it)
         }
@@ -19,6 +19,8 @@ internal object DownloaderManager {
 
     fun runningCount() = downloadingList.size
 
-    fun isRunning(request: Request) = downloadingList.containsKey(request)
+    fun isRunning(request: DownloadRequest) = downloadingList.containsKey(request)
+
+    fun getDownloader(request: DownloadRequest): Downloader? = downloadingList[request]
 
 }

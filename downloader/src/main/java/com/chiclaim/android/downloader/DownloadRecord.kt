@@ -23,7 +23,7 @@ class DownloadRecord(
     var notificationTitle: String? = null,
     var notificationContent: String? = null,
     var totalBytes: Long = 0L,
-    var status: Int = 0
+    var status: Int = STATUS_UNKNOWN
 ) {
 
     companion object {
@@ -120,8 +120,8 @@ class DownloadRecord(
             put(COLUMN_URL, url)
             put(COLUMN_FILENAME, fileName)
             put(COLUMN_DESTINATION_URI, destinationUri)
-            put(COLUMN_IGNORE_LOCAL, ignoreLocal)
-            put(COLUMN_NEED_INSTALL, needInstall)
+            put(COLUMN_IGNORE_LOCAL, if (ignoreLocal) 1 else 0)
+            put(COLUMN_NEED_INSTALL, if (needInstall) 1 else 0)
             put(COLUMN_NOTIFICATION_VISIBILITY, notificationVisibility)
             put(COLUMN_NOTIFICATION_TITLE, notificationTitle)
             put(COLUMN_NOTIFICATION_CONTENT, notificationContent)

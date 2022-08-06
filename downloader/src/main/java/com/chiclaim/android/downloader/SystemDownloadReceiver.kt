@@ -19,12 +19,12 @@ class SystemDownloadReceiver : BroadcastReceiver() {
             if (downloadApkId != -1L) {
                 installApk(context, downloadApkId)
             }
-        } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED == intent.action) {
+        }// else if (DownloadManager.ACTION_NOTIFICATION_CLICKED == intent.action) {
             //如果还未完成下载，用户点击 Notification
-            val viewDownloadIntent = Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
-            viewDownloadIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(viewDownloadIntent)
-        }
+            //val viewDownloadIntent = Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
+            //viewDownloadIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            //context.startActivity(viewDownloadIntent)
+       // }
     }
 
     private fun installApk(context: Context, downloadApkId: Long) {

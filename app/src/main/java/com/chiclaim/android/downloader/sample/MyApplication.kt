@@ -28,6 +28,6 @@ class MyApplication : Application() {
             )
         }
 
-        NetworkHelper.registerNetworkCallback(this)
+        //NetworkHelper.registerNetworkCallback(this)
     }
 }

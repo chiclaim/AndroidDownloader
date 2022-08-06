@@ -12,6 +12,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.chiclaim.android.downloader.util.DownloadEngine
 import com.chiclaim.android.downloader.util.Utils.getTipFromException
 import com.chiclaim.android.downloader.util.e
 import java.io.File
@@ -23,7 +24,7 @@ import java.io.File
 class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
 
     private var progressBar: ProgressBar? = null
-    private var downloader: Downloader<*>? = null
+    private var request: DownloadRequest? = null
     private var activityVisible = false
 
     private var tvNegative: TextView? = null
@@ -41,14 +42,12 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
         fun launch(
             context: Context,
             info: UpgradeDialogInfo,
-            mode: DownloadMode = DownloadMode.EMBED
+            @DownloadEngine
+            engine: Int = DOWNLOAD_ENGINE_EMBED
         ) {
             val intent = Intent(context, UpgradeDialogActivity::class.java)
             intent.putExtra(EXTRA_DIALOG_INFO, info)
-            when (mode) {
-                DownloadMode.EMBED -> intent.putExtra(EXTRA_DOWNLOAD_MODE, 1)
-                DownloadMode.DOWNLOAD_MANAGER -> intent.putExtra(EXTRA_DOWNLOAD_MODE, 2)
-            }
+            intent.putExtra(EXTRA_DOWNLOAD_MODE, engine)
             if (context is Application) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
@@ -63,10 +62,7 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
         dialogInfo = intent.getParcelableExtra(EXTRA_DIALOG_INFO)
             ?: error("need $EXTRA_DIALOG_INFO parameter")
 
-        val mode = when (intent.getIntExtra(EXTRA_DOWNLOAD_MODE, 1)) {
-            2 -> DownloadMode.DOWNLOAD_MANAGER
-            else -> DownloadMode.EMBED
-        }
+        val mode = intent.getIntExtra(EXTRA_DOWNLOAD_MODE, 0)
 
 
         progressBar = findViewById(R.id.pb_updater)
@@ -96,29 +92,24 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
 
         findViewById<View>(R.id.tv_updater_confirm).setOnClickListener {
             val url = dialogInfo.url ?: return@setOnClickListener
-            val request = DownloadRequest.newRequest(url, mode)
-                .setNotificationSmallIcon(dialogInfo.notifierSmallIcon)
-                .setIgnoreLocal(dialogInfo.ignoreLocal)
-                .setNotificationTitle(appName)
-                .setNotificationContent(getString(R.string.downloader_notifier_description))
-                .setNeedInstall(dialogInfo.forceUpdate || dialogInfo.needInstall)
-                .allowScanningByMediaScanner()
-                .setAllowedNetworkTypes(
-                    DownloadManager.Request.NETWORK_MOBILE
-                            or DownloadManager.Request.NETWORK_WIFI
-                )
-
-            dialogInfo.destinationPath?.let {
-                request.setDestinationUri(Uri.fromFile(File(it)))
+            if (request == null) {
+                request = DownloadRequest(applicationContext, url, mode)
+                    .setNotificationSmallIcon(dialogInfo.notifierSmallIcon)
+                    .setIgnoreLocal(dialogInfo.ignoreLocal)
+                    .setNotificationTitle(appName)
+                    .setNotificationContent(getString(R.string.downloader_notifier_description))
+                    .setNeedInstall(dialogInfo.forceUpdate || dialogInfo.needInstall)
+                dialogInfo.destinationPath?.let {
+                    request?.setDestinationUri(Uri.fromFile(File(it)))
+                }
             }
-            downloader = request.buildDownloader(applicationContext)
-                .registerListener(this)
-            downloader?.startDownload()
+            request?.registerListener(this)
+            val newState = request?.startDownload() ?: false
 
             // 非强制更新
             if (!dialogInfo.forceUpdate) {
                 // 已经在下载
-                if (downloader is EmptyDownloader || dialogInfo.backgroundDownload) {
+                if (!newState || dialogInfo.backgroundDownload) {
                     Toast.makeText(
                         applicationContext, R.string.downloader_notifier_background_downloading,
                         Toast.LENGTH_SHORT
@@ -166,7 +157,7 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        downloader?.unregisterListener(this)
+        request?.unregisterListener(this)
     }
 
     private fun exitApp() {

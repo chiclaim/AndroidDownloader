@@ -20,7 +20,7 @@ const val NOTIFIER_VISIBLE = DownloadManager.Request.VISIBILITY_VISIBLE
 /**
  * 不展示通知栏.
  *
- * > 如果下载模式为 [DownloadMode.DOWNLOAD_MANAGER], 需要添加权限 android.permission.DOWNLOAD_WITHOUT_NOTIFICATION
+ * > 如果下载模式为 [DownloadEngine.DOWNLOAD_MANAGER], 需要添加权限 android.permission.DOWNLOAD_WITHOUT_NOTIFICATION
  */
 const val NOTIFIER_HIDDEN = DownloadManager.Request.VISIBILITY_HIDDEN
 
@@ -35,6 +35,16 @@ const val NOTIFIER_VISIBLE_NOTIFY_COMPLETED =
  */
 const val NOTIFIER_VISIBLE_NOTIFY_ONLY_COMPLETION =
     DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION
+
+/**
+ * 使用内置的下载引擎
+ */
+const val DOWNLOAD_ENGINE_EMBED = 0
+
+/**
+ * 使用系统的 DownloadManager
+ */
+const val DOWNLOAD_ENGINE_SYSTEM_DM = 1
 
 
 fun printDownloadStatus(downloadId: Long, status: Int) {
