@@ -27,6 +27,7 @@ class EmbedDownloader(request: DownloadRequest) :
 
     companion object {
         private const val HTTP_TEMP_REDIRECT = 307
+        private const val HTTP_PERM_REDIRECT = 308
         private const val HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416
         private const val MAX_REDIRECTS = 5  // can't be more than 7.
     }
@@ -279,11 +280,11 @@ class EmbedDownloader(request: DownloadRequest) :
                             }
                             writeFile(true)
                         }
-                        // 301,302,303,307 重定向
+                        // 301,302,303,307 308 重定向
                         HttpURLConnection.HTTP_MOVED_PERM,
                         HttpURLConnection.HTTP_MOVED_TEMP,
                         HttpURLConnection.HTTP_SEE_OTHER,
-                        HTTP_TEMP_REDIRECT -> {
+                        HTTP_TEMP_REDIRECT, HTTP_PERM_REDIRECT -> {
                             conn.disconnect()
                             val locationUrl: String =
                                 conn.getHeaderField("Location")
