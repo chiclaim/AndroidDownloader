@@ -3,7 +3,6 @@ package com.chiclaim.android.downloader.sample
 import android.app.Application
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
-import com.chiclaim.android.downloader.util.NetworkHelper
 
 
 class MyApplication : Application() {
