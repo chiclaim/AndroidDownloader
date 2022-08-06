@@ -11,7 +11,7 @@ import com.chiclaim.android.downloader.util.e
  *
  * @author by chiclaim@google.com
  */
-object NetworkHelper {
+internal object NetworkHelper {
 
     fun registerNetworkCallback(context: Context) {
         val connectivityManager =
