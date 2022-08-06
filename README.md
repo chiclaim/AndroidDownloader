@@ -8,7 +8,7 @@
 - 统一处理应用没有安装权限的交互逻辑
 - 内置通用的更新弹窗、支持强制更新（支持自定义更新弹窗）
 
-![image](/images/img.png|width=540)
+![image](/images/img.png|width=540px)
 
 ## 开发过程
 
