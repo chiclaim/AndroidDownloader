@@ -91,7 +91,7 @@ class EmbedDownloader(request: DownloadRequest) :
     }
 
     private fun prepareRecord(destinationFile: File): DownloadRecord {
-        var record = DownloadRecord(
+        var inputRecord = DownloadRecord(
             url = request.url,
             fileName = destinationFile.name,
             destinationUri = destinationFile.absolutePath,
@@ -102,13 +102,13 @@ class EmbedDownloader(request: DownloadRequest) :
             notificationVisibility = request.notificationVisibility,
             status = STATUS_RUNNING
         )
-        record = record.queryByUrl(request.context).firstOrNull().run {
+        inputRecord = inputRecord.queryByUrl(request.context).firstOrNull().run {
             if (this == null) {
-                val rowId = record.insert(request.context)
+                val rowId = inputRecord.insert(request.context)
                 if (rowId != -1L) {
-                    record.queryByUrl(request.context).firstOrNull() ?: record
+                    inputRecord.queryByUrl(request.context).firstOrNull() ?: inputRecord
                 } else {
-                    record
+                    inputRecord
                 }
             } else { // 如果数据库存在记录
                 // 来自通知栏点击(request 中只有 url 属性值)
@@ -117,14 +117,15 @@ class EmbedDownloader(request: DownloadRequest) :
                     this.status = STATUS_RUNNING
                     this
                 }
-                // 普通下载，以传递进来的 request 为准，设置 totalBytes 即可
+                // 普通下载，以传递进来的 request 为准，设置 id、totalBytes 即可
                 else {
-                    record.totalBytes = this.totalBytes
-                    record
+                    inputRecord.id = this.id
+                    inputRecord.totalBytes = this.totalBytes
+                    inputRecord
                 }
             }
         }
-        return record
+        return inputRecord
     }
 
     private fun checkComplete(record: DownloadRecord, currentLength: Long): Boolean {
