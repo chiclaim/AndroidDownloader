@@ -179,19 +179,19 @@ class DownloadRequest(
     }
 
     internal fun onComplete(uri: Uri) {
-        listeners?.clear()
-        DownloaderManager.remove(this)
         this.listeners?.forEach {
             it.onDownloadComplete(uri)
         }
+        DownloaderManager.remove(this)
+        listeners?.clear()
     }
 
     internal fun onFailed(e: Throwable) {
-        listeners?.clear()
-        DownloaderManager.remove(this)
         this.listeners?.forEach {
             it.onDownloadFailed(e)
         }
+        DownloaderManager.remove(this)
+        listeners?.clear()
     }
 
     internal fun onProgressUpdate(percent: Int) {
