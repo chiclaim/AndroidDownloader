@@ -2,7 +2,7 @@
     <string name="downloader_component_disable">The DownloadManager is unavailable, please enable it</string>
     <string name="downloader_notifier_description">New version update</string>
     <string name="downloader_title">A new version found</string>
-    <string name="downloader_cancel">Cancel</string>
+    <string name="downloader_cancel">cancel</string>
     <string name="downloader_ok">Update</string>
     <string name="downloader_desc_default">Fix known bugs</string>
     <string name="downloader_tip_title">Tip</string>

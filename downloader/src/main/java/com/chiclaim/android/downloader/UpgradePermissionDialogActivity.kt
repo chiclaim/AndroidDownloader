@@ -54,7 +54,7 @@ class UpgradePermissionDialogActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (hasInstallPermission(this)) {
+        if (hasInstallPermission(applicationContext)) {
             startInstall(this, Uri.parse(uri))
             finish()
         }
