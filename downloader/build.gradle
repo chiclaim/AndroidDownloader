@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.vanniktech.maven.publish'
 
 android {
     compileSdkVersion COMPILE_SDK_VERSION as int
@@ -28,4 +28,14 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.2.0'
+}
+
+allprojects {
+    plugins.withId("com.vanniktech.maven.publish") {
+        mavenPublish {
+            // 如果不设置，默认会上传到如下 URL，会提示 403
+            // https://oss.sonatype.org/service/local/staging/deploy/maven2/xxxx'
+            sonatypeHost = "S01"
+        }
+    }
 }
