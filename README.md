@@ -21,22 +21,13 @@
 - 由于各厂商 Android 定制化，最好能够统一处理应用没有安装权限的交互逻辑
 
 
-## 经过测试的机型
-
-| 厂商        | 机型    |  系统版本  |
-| --------   | -----:   | :----: |
-| 小米        | Redmi4     |   Android 6.0.1    |
-| 华为        | 荣耀7i      |   Android 6.0.1  |
-| 华为        | 荣耀V8      |   Android 7.0  |
-| 小米        | Note4X      |   Android 7.0  |
-| vivo        | Y85A      |   Android 8.1.0  |
-| 华为        | 荣耀V10      |   Android 9  |
-| 华为        | Mate20      |   Android 9  |
-| vivo        | x50      |   Android 10  |
-| 荣耀        | Magic3 至臻版      |   Android 11  |
-| 小米        | 小米 11 Ultra      |   Android 12  |
-
 ## 如何使用
+
+添加依赖：
+
+```
+implementation 'io.github.chiclaim:downloader:1.0.0'
+```
 
 ### 开始下载
 ```
@@ -68,7 +59,7 @@ override fun onDownloadFailed(e: Throwable) {
 }
 ```
 
-### 移除监听
+**移除监听：**
 
 ```
 override fun onDestroy() {
@@ -79,6 +70,56 @@ override fun onDestroy() {
 
 > 注意：下载完成、下载失败都会自动移除监听器
 
+### 默认升级弹窗
+
+```
+UpgradeDialogActivity.launch(this, UpgradeDialogInfo().also {
+    it.url = fileUrl
+    it.ignoreLocal = ignoreLocalFile
+    it.title = if (isForceUpdate) "重要安全升级" else "发现新版本"
+    it.description = "1. 修复已知问题\n2. 修复已知问题"
+    it.forceUpdate = isForceUpdate
+    it.negativeText = if (isForceUpdate) "退出程序" else "取消"
+    it.notifierSmallIcon = R.mipmap.ic_launcher
+    it.backgroundDownload = isBackgroundDownload
+    it.needInstall = needInstall
+})
+```
+
+### 自定义升级弹窗
+
+自定义升级弹窗非常简单，只需要在你的 Activity/Fragment/Dialog 调用：
+
+```
+val request = DownloadRequest(applicationContext, url, mode)
+    .setNotificationTitle(resources.getString(R.string.app_name))
+    .setNotificationContent(getString(R.string.downloader_notifier_description))
+    .setIgnoreLocal(ignoreLocalFile)
+    .setNeedInstall(needInstall)
+    .setNotificationVisibility(notifierVisibility)
+    .setNotificationSmallIcon(R.mipmap.ic_launcher)
+    .setShowNotificationDisableTip(notifierDisableTip)
+    .registerListener(this) // 注册监听
+    .startDownload()
+```
+
+然后实现相应的监听即可，关闭自定义弹窗时移除件监听即可。
+
+
+## 经过测试的机型
+
+| 厂商        | 机型    |  系统版本  |
+| --------   | -----:   | :----: |
+| 小米        | Redmi4     |   Android 6.0.1    |
+| 华为        | 荣耀7i      |   Android 6.0.1  |
+| 华为        | 荣耀V8      |   Android 7.0  |
+| 小米        | Note4X      |   Android 7.0  |
+| vivo        | Y85A      |   Android 8.1.0  |
+| 华为        | 荣耀V10      |   Android 9  |
+| 华为        | Mate20      |   Android 9  |
+| vivo        | x50      |   Android 10  |
+| 荣耀        | Magic3 至臻版      |   Android 11  |
+| 小米        | 小米 11 Ultra      |   Android 12  |
 
 ## TODOs
 
