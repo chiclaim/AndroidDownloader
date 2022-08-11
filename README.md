@@ -123,6 +123,10 @@ val request = DownloadRequest(applicationContext, url, mode)
 
 然后实现相应的监听即可，关闭自定义弹窗时移除件监听即可。
 
+### 混淆
+
+本库不需要额外的配置，四大组件不混淆即可
+
 
 ## 经过测试的机型
 
