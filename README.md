@@ -161,6 +161,7 @@ val request = DownloadRequest(applicationContext, url, mode)
 - [x] 通知栏的点击处理
 - [ ] 支持 ETAG
 - [ ] 支持 MD5 校验
+- [ ] 支持安装 APK 前进行签名校验
 - [ ] 支持多文件同时下载，打造成文件下载器
 - [ ] 多文件下载时，通知栏能够聚合
 - [ ] 网络重新连接，能够自动继续下载
