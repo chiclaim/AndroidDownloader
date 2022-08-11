@@ -16,7 +16,7 @@
 
 参考过 github 上其他的一些更新库，主要是参考了系统的 DownloadManager 源码。
 
-- 系统的 DownloadManager 更新通知栏进度之前，会进行速度采样，不能 Buffer 满了就通知，避免短时间创建大量通知对象
+- 系统的 DownloadManager 更新通知栏进度之前，会进行时间、速度采样，不能在 I/O 的时候 buffer 满了就通知，避免短时间创建大量通知对象
 - 重定向需要考虑 301,302,303,307 308，其中 301,302,303 在 HttpURLConnection 定义了常量，307，308 没有定义，需要自己定义常量
 - 重定向需要考虑最大次数，避免极端情况的死循环
 - 需要考虑下载续传的 Response code
@@ -34,13 +34,21 @@ implementation 'io.github.chiclaim:downloader:1.0.0'
 ### 开始下载
 ```
 val request = DownloadRequest(applicationContext, url, mode)
+    // 通知栏标题
     .setNotificationTitle(resources.getString(R.string.app_name))
+    // 通知栏描述
     .setNotificationContent(getString(R.string.downloader_notifier_description))
+    // 是否忽略本地下载好的文件，如果忽略则会重新下载
     .setIgnoreLocal(ignoreLocalFile)
+    // 下载完成是否启动安装
     .setNeedInstall(needInstall)
+    // 通知栏显示策略
     .setNotificationVisibility(notifierVisibility)
+    // 通知栏图标
     .setNotificationSmallIcon(R.mipmap.ic_launcher)
+    // 通知栏被禁用是否提示
     .setShowNotificationDisableTip(notifierDisableTip)
+    // 下载监听（进度、成功、失败等）
     .registerListener(this)
     .startDownload()
 ```
@@ -77,13 +85,21 @@ override fun onDestroy() {
 ```
 UpgradeDialogActivity.launch(this, UpgradeDialogInfo().also {
     it.url = fileUrl
+    // 是否忽略本地下载好的文件
     it.ignoreLocal = ignoreLocalFile
+    // 弹窗 title
     it.title = if (isForceUpdate) "重要安全升级" else "发现新版本"
+    // 更新描述
     it.description = "1. 修复已知问题\n2. 修复已知问题"
+    // 是否为强制更新
     it.forceUpdate = isForceUpdate
+    // 左侧按钮文案
     it.negativeText = if (isForceUpdate) "退出程序" else "取消"
+    // 通知栏小图标
     it.notifierSmallIcon = R.mipmap.ic_launcher
+    // 是否后台下载
     it.backgroundDownload = isBackgroundDownload
+    // 下载完成是否需要启动安装程序
     it.needInstall = needInstall
 })
 ```
