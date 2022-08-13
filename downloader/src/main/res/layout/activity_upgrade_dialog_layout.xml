@@ -10,31 +10,34 @@
         android:id="@+id/tv_updater_title"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginLeft="18dp"
-        android:gravity="center|left"
+        android:layout_marginStart="18dp"
+        android:gravity="start|center"
         android:textColor="@color/black_3"
         android:textSize="@dimen/dialog_title_size"
         android:textStyle="normal"
         tools:text="更新提醒" />
 
 
-    <ScrollView
+    <com.chiclaim.android.downloader.widget.MaxHeightScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:fadingEdgeLength="20dp"
+        android:requiresFadingEdge="vertical">
 
         <TextView
             android:id="@+id/tv_updater_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start"
-            android:maxHeight="400dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:paddingBottom="40dp"
-            android:textColor="@color/black_3"
+            android:textColor="@color/black_6"
             android:textSize="@dimen/dialog_content_size"
+            android:lineSpacingExtra="3dp"
             tools:text="XXX有新版本，是否更新？\nXXX有新版本，是否更新？" />
-    </ScrollView>
+
+    </com.chiclaim.android.downloader.widget.MaxHeightScrollView>
 
     <ProgressBar
         android:id="@+id/pb_updater"

@@ -2,7 +2,6 @@ package com.chiclaim.android.downloader
 
 import android.app.ActivityManager
 import android.app.Application
-import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -18,7 +17,7 @@ import com.chiclaim.android.downloader.util.e
 import java.io.File
 
 /**
- *
+ * 内置的更新弹窗
  * @author by chiclaim@google.com
  */
 class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
@@ -72,6 +71,8 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
 
         findViewById<TextView>(R.id.tv_updater_desc).text =
             dialogInfo.description ?: getString(R.string.downloader_desc_default)
+
+        // findViewById<MaxHeightScrollView>(R.id.scrollView).setMaxHeight(150)
 
         tvNegative = findViewById<TextView>(R.id.tv_updater_cancel).apply {
             this.text = dialogInfo.negativeText ?: getString(R.string.downloader_cancel)
