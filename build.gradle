@@ -7,6 +7,16 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            name = "Sonatype-Snapshots"
+//            setUrl("https://oss.sonatype.org/content/repositories/snapshots")
+            setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots")
+            credentials(PasswordCredentials.class) {
+//                username = property("ossrhUsername").toString()
+//                password = property("ossrhPassword").toString()
+            }
+        }
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
@@ -20,6 +30,16 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            name = "Sonatype-Snapshots"
+//            setUrl("https://oss.sonatype.org/content/repositories/snapshots")
+            setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots")
+            credentials(PasswordCredentials.class) {
+//                username = property("ossrhUsername").toString()
+//                password = property("ossrhPassword").toString()
+            }
+        }
+
     }
 }
 
