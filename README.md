@@ -28,7 +28,7 @@
 添加依赖：
 
 ```
-implementation 'io.github.chiclaim:downloader:1.0.0'
+implementation 'io.github.chiclaim:downloader:1.0.2'
 ```
 
 ### 开始下载
