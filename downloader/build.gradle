@@ -15,6 +15,7 @@ android {
                                 serviceActionSuffix: ".file.download.DownloadService"]
         buildConfigField("String", "AUTHORITIES_SUFFIX", "\"${manifestPlaceholders['authoritiesSuffix']}\"")
         buildConfigField("String", "SERVICE_ACTION_SUFFIX", "\"${manifestPlaceholders['serviceActionSuffix']}\"")
+        consumerProguardFiles "proguard-rules.pro"
     }
     buildTypes {
         release {

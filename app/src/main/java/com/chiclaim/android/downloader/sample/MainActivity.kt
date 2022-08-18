@@ -171,7 +171,14 @@ class MainActivity : AppCompatActivity(), DownloadListener {
             it.url = fileUrl
             it.ignoreLocal = ignoreLocalFile
             it.title = if (isForceUpdate) "重要安全升级" else "发现新版本"
-            it.description = "1. 修复已知问题\n2. 修复已知问题"
+            it.description = """
+                1. 支持断点续传，节省流量
+                2. 支持文件缓存，避免重复下载
+                3. 通知栏下载进度、点击安装与重试
+                4. 统一处理安装权限的交互逻辑
+                5. 时间采样，避免创建大量通知对象
+                6. 更新弹窗自适应大小
+            """.trimIndent()
             it.forceUpdate = isForceUpdate
             it.negativeText = if (isForceUpdate) "退出程序" else "取消"
             it.notifierSmallIcon = R.mipmap.ic_launcher
