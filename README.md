@@ -33,6 +33,9 @@ implementation 'io.github.chiclaim:downloader:1.0.0'
 
 ### 开始下载
 ```
+// mode = DownloadConstants.DOWNLOAD_ENGINE_EMBED      内置的下载引擎 HttpURLConnection
+// mode = DownloadConstants.DOWNLOAD_ENGINE_SYSTEM_DM  系统的 DownloadManager
+
 val request = DownloadRequest(applicationContext, url, mode)
     // 通知栏标题
     .setNotificationTitle(resources.getString(R.string.app_name))
@@ -145,7 +148,7 @@ val request = DownloadRequest(applicationContext, url, mode)
 
 ## TODOs
 
-- [x] 判断 DownloadManager 是否可用，如果可用，优先使用 DownloadManager，不可用，则使用常规的下载方式
+- [x] 提供两个下载引擎，HttpURLConnection 和系统的 DownloadManager
 - [x] 下载成功后，启动安装界面前，处理安装未知应用的权限。
 - [x] 判断文件是否已经下载，不仅要判断下载状态，还需要判断文件是否存在
 - [x] 断点续传
