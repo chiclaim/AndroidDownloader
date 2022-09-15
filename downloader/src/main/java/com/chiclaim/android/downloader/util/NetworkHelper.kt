@@ -3,15 +3,16 @@ package com.chiclaim.android.downloader.util
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
-import com.chiclaim.android.downloader.util.e
+
 
 /**
  *
  * @author by chiclaim@google.com
  */
-internal object NetworkHelper {
+object NetworkHelper {
 
     fun registerNetworkCallback(context: Context) {
         val connectivityManager =
@@ -32,6 +33,22 @@ internal object NetworkHelper {
                     e("onLost:" + Thread.currentThread().name)
                 }
 
+                override fun onCapabilitiesChanged(
+                    network: Network,
+                    networkCapabilities: NetworkCapabilities
+                ) {
+                    super.onCapabilitiesChanged(network, networkCapabilities)
+                    // 会被调用多次
+                    if (networkCapabilities.hasCapability(NET_CAPABILITY_INTERNET)) {
+                        if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                            e("wifi网络已连接" + Thread.currentThread().name)
+                        } else if(networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)){
+                            e("移动网络已连接" + Thread.currentThread().name)
+                        }else{
+                            e("其他链接 $networkCapabilities in thread ${Thread.currentThread().name}")
+                        }
+                    }
+                }
             })
     }
 }

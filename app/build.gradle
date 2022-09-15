@@ -39,8 +39,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-//    implementation project(':downloader')
-    implementation 'io.github.chiclaim:downloader:1.0.2'
+    implementation project(':downloader')
+//    implementation 'io.github.chiclaim:downloader:1.0.2'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 
 }
