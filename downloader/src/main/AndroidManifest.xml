@@ -23,14 +23,14 @@
             android:theme="@style/UpgradeTransparentDialogStyle" />
 
 
-        <receiver
-            android:name="com.chiclaim.android.downloader.SystemDownloadReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
-            </intent-filter>
-        </receiver>
+<!--        <receiver  合规检测-->
+<!--            android:name="com.chiclaim.android.downloader.SystemDownloadReceiver"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />-->
+<!--                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
 
 
         <provider
@@ -51,7 +51,10 @@
             </intent-filter>
         </service>
 
-
+        <provider
+            android:name=".InitContentProvider"
+            android:authorities="${applicationId}.chiclaim.downloader.init"
+            android:exported="false" />
     </application>
 
 </manifest>

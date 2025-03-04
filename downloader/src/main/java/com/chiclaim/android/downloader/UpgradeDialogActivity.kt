@@ -162,11 +162,7 @@ class UpgradeDialogActivity : AppCompatActivity(), DownloadListener {
     }
 
     private fun exitApp() {
-        val activityManager: ActivityManager =
-            getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        activityManager.runningAppProcesses.forEach {
-            if (it.pid != android.os.Process.myPid()) android.os.Process.killProcess(it.pid)
-        }
+        ActivityStackManager.finishAll()
         android.os.Process.killProcess(android.os.Process.myPid())
         System.exit(0)
     }
