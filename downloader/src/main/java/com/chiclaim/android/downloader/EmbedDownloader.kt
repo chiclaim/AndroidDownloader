@@ -206,6 +206,7 @@ class EmbedDownloader(request: DownloadRequest) :
 
 
     override fun download() {
+        super.download()
         DownloadExecutor.execute {
             var url: URL? = null
             var conn: HttpURLConnection? = null
